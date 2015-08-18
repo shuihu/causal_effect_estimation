@@ -79,6 +79,8 @@ void
 //anova(int n, double *y[], double *x, int nclass,
 //     int edge, double *improve, double *split, int *csplit,
 //      double myrisk, double *wt)
+// the rp_choose function:
+
 anova(int n, double *y[], double *x, int nclass,
     int edge, double *improve, double *split, int *csplit,
      double myrisk, double *wt, int parm)
@@ -97,18 +99,6 @@ anova(int n, double *y[], double *x, int nclass,
    // double min_node_size = parm[0];
     int min_node_size = parm;
     
-  
-
-   /*
-    * The improvement of a node is SS - (SS_L + SS_R), where
-    *   SS = sum of squares in a node = \sum w_i (x_i - \bar x)^2, where
-    * of course \bar x is a weighted mean \sum w_i x_i / \sum w_i
-    * Using the identity
-    *    \sum w_i(x_ - \bar x)^2 = \sum w_i (x_i-c)^2 - (\sum w_i)(c-\bar x)^2
-    * the improvement = w_l*(left mean - grand mean)^2
-    *                  +w_r*(right mean- grand mean)^2
-    * where w_l is the sum of weights in the left node, w_r similarly.
-    */
     right_wt = 0;
     right_n = n;
     right_sum = 0;
@@ -117,23 +107,26 @@ anova(int n, double *y[], double *x, int nclass,
       right_sum += *y[i];
       right_wt_sum += *y[i] * wt[i];
 	    right_wt += wt[i];
+      //Rprintf("w[%d] = %f,", i, wt[i] );
     }
+    
     //grandmean = right_sum / right_wt;
     temp = (right_wt_sum - right_sum * right_wt / n) /
                  ((1 - right_wt / n) * right_wt);
                  
     node_effect = temp * temp * n;
-
-
+    Rprintf("n = %d, node_effect = %f\n", n, node_effect);
+    
     if (nclass == 0) {
       /* continuous predictor */
       left_sum = 0;           /* No data in left branch, to start */
 	    left_wt_sum = 0;
       left_wt = 0;
 	    left_n = 0;
-	    right_sum = 0;          /* after subracting grand mean, it's zero */
-      right_wt_sum = 0;
+	   // right_sum = 0;          /* after subracting grand mean, it's zero */
+    //  right_wt_sum = 0;
 	    best = 0;
+      
 	    for (i = 0; right_n > edge; i++) {
 	      left_wt += wt[i];
 	      right_wt -= wt[i];
@@ -158,8 +151,11 @@ anova(int n, double *y[], double *x, int nclass,
               temp = (right_wt_sum - right_sum * right_wt / right_n) /
                  ((1 - right_wt / right_n) * right_wt);
               right_effect = temp * temp * right_n;
+      //        Rprintf("right_wt_sum = %f, right_sum = %f, right_wt = %f\n", right_wt_sum, right_sum, right_wt);
           
               temp = left_effect + right_effect - node_effect;
+      //        Rprintf("at %f,leftn: %d, lefteffect: %f, rightn: %d, righteffect: %f\n", x[i], left_n, left_effect,right_n, right_effect, node_effect);
+      //        Rprintf("current best is %f, and temp improv = %f.\n", best, temp);
               
 
               //temp = left_sum * left_sum / left_wt +
@@ -174,16 +170,24 @@ anova(int n, double *y[], double *x, int nclass,
 			              direction = LEFT;
 		              else
 			              direction = RIGHT;
-		          }
+		          }             
 	    }
 	   }
-
-	  *improve = best / myrisk;
+     // debug here:
+     
+     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	  //*improve = best / myrisk;
+    
+    *improve = best;
 	  if (best > 0) {         /* found something */
+//    Rprintf("best = %f, split = %f\n", best, (x[where] + x[where + 1]) / 2 );
 	      csplit[0] = direction;
         *split = (x[where] + x[where + 1]) / 2; /* where to split!!!!!!!!! */ 
         }
   }
+  
+  
+  
     /*
      * Categorical predictor
      */
@@ -192,23 +196,28 @@ anova(int n, double *y[], double *x, int nclass,
 	      sums[i] = 0;
 	      countn[i] = 0;
 	      wts[i] = 0;
+        wtsums[i] = 0;
 	    }
 
        /* rank the classes by their mean y value */
        /* RANK THE CLASSES BY THEI */
+       // Rprintf("nclass = %d ", nclass);
 	    for (i = 0; i < n; i++) {
 	        j = (int) x[i] - 1;
+          // Rprintf("%d cat, ", j);
 	        countn[j]++;
 	        wts[j] += wt[i];
 	        sums[j] += *y[i];
           // adding part
           wtsums[j] += *y[i] * wt[i];
 	    }
+      
     	for (i = 0; i < nclass; i++) {
 	        if (countn[i] > 0) {
             tsplit[i] = RIGHT;
 		        // mean[i] = sums[i] / wts[i];
             mean[i] = sums[i] / countn[i];
+            //Rprintf("countn[%d] = %d, mean[%d] = %f\n", i, countn[i], i, mean[i]);
 	        } else
             tsplit[i] = 0;
 	    }
@@ -220,12 +229,13 @@ anova(int n, double *y[], double *x, int nclass,
 	left_wt = 0;
 	left_sum = 0;
   left_wt_sum = 0;
-	right_sum = 0;
-  right_wt_sum = 0;
+//	right_sum = 0;
+//  right_wt_sum = 0;
 	left_n = 0;
 	best = 0;
 	where = 0;
 	while ((j = graycode()) < nclass) {
+    //Rprintf("graycode()= %d\n", j);
 	    tsplit[j] = LEFT;
 	    left_n += countn[j];
 	    right_n -= countn[j];
@@ -235,6 +245,7 @@ anova(int n, double *y[], double *x, int nclass,
       left_wt_sum += wtsums[j];
 	    right_sum -= sums[j];
       right_wt_sum -= wtsums[j];
+      
 	    if (left_n >= edge && right_n >= edge &&
           left_wt >= min_node_size &&
           left_n - left_wt >= min_node_size &&
@@ -244,13 +255,15 @@ anova(int n, double *y[], double *x, int nclass,
             temp = (left_wt_sum - left_sum * left_wt / left_n) /
                  ((1 - left_wt / left_n) * left_wt);
             left_effect = temp * temp * left_n;
+            
+             //Rprintf("left_sum = %f, left_wt_sum = %f, left_wt = %f, left_n = %d\n", left_sum, left_wt_sum, left_wt, left_n);
               
             temp = (right_wt_sum - right_sum * right_wt / right_n) /
                  ((1 - right_wt / right_n) * right_wt);
             right_effect = temp * temp * right_n;
           
             temp = left_effect + right_effect - node_effect;
-                    
+            //Rprintf("left_n= %d, lefteffect = %f, right_n = %d, righteffect = %f\n", left_n, left_effect, right_n, right_effect);    
             
             //temp = left_sum * left_sum / left_wt +
 		        //right_sum * right_sum / right_wt;
@@ -266,7 +279,9 @@ anova(int n, double *y[], double *x, int nclass,
 		        }
 	      }
 	 }
+   *improve = best;
 
-	*improve = best / myrisk;       /* % improvement */
+	//*improve = best / myrisk;       /* % improvement */
   }
+  Rprintf("for %f variable, improv = %f\n", x[0], *improve);
 }

@@ -14,13 +14,17 @@ int findNeighbor(int obs, int k) {
   int i, j, temp, neighbor;
   int obs2 = (obs < 0)? -(1 + obs) : obs;
   double dist, min = INFTY;
-  int found = 0;
+ // this found is to test whether I can find the neighbor in the validation set!
+ // int found = 0;
+ 
+ neighbor = 0;
   
   for (i = k; i < rp.n; i++) {
     j = rp.sorts[0][i];
     temp = (j < 0)? -(1 + j) : j;
     if (rp.wt[temp] != rp.wt[obs2]) {
-      found = 1;
+      //found = 1;
+      //Rprintf("found one!\n");
       dist = measureDistance(obs2, temp);
       if (dist < min) {
         neighbor = j;
@@ -29,8 +33,8 @@ int findNeighbor(int obs, int k) {
     }       
   }
   // for dubgging only:
-  if(found == 0) Rprintf("There is only one group in validation set!");
-  else Rprintf("two groups in validation! ");
+  //if(found == 0) Rprintf("There is only one group in validation set!");
+  //else Rprintf("two groups in validation! ");
   return neighbor;
 }
 

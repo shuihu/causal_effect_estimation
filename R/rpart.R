@@ -145,7 +145,15 @@ rpart <-
 	xval <- 0L
     } else if (length(xval) == 1L) {
         ## make random groups
-        xgroups <- sample(rep(1L:xval, length = nobs), nobs, replace = FALSE)
+        control_idx <- which(wt == 0)
+        treat_idx <- which(wt == 1)
+        xgroups <- rep(0, nobs)
+        xgroups[control_idx] <- sample(rep(1L:xval, length = length(control_idx)), length(control_idx), replace = F)
+        xgroups[treat_idx] <- sample(rep(1L:xval, length = length(treat_idx)), length(treat_idx), replace = F)  
+        # for debug:
+        print("xgroups = ")
+        print(xgroups)
+        #xgroups <- sample(rep(1L:xval, length = nobs), nobs, replace = FALSE)
     } else if (length(xval) == nobs) {
 	xgroups <- xval
 	xval <- length(unique(xgroups))

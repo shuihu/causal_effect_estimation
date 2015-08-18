@@ -32,6 +32,7 @@ rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *x
 	    otree = tree;
     }
     xpred[i] = tree->response_est[0];
+   
     
     while (cp[i] < tree2->complexity) {
       tree2 = branch(tree2, neighbor);
@@ -44,11 +45,15 @@ rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *x
       }
       otree2 = tree2;
     }
-    xpred2[i] = tree2->response_est[0];  
+    xpred2[i] = tree2->response_est[0]; 
+    
+    //Rprintf("under cp = %f,the estimated value for obs %d is %f, and its neighbor %d's is %f.\n", cp[i], obs, xpred[i], neighbor, xpred2[i]);
+    
     
     // matching function:
     temp = (2 * rp.wt[obs2] - 1) *(rp.ydata[obs2] - rp.ydata[neighbor2]);
     xtemp[i] = (temp - 0.5 * (xpred[i] + xpred2[i])) * (temp - 0.5 * (xpred[i] + xpred2[i]));
+    //Rprintf("under cp = %f, the error is %f\n", cp[i], xtemp[i]);
   }
   return;
   

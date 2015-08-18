@@ -57,6 +57,7 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
   
   // only for debugging
   int round = 0;
+  int done = 0;
 
 	/*
 	 * Allocate a set of temporary arrays
@@ -137,11 +138,18 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 		/* at this point k = #obs in the xval group */
 		/* rescale the cp */
     // Questions about rescale the cp: 
-		for (j = 0; j < rp.num_unique_cp; j++)
+    
+		//for (j = 0; j < rp.num_unique_cp; j++)
 			//cp[j] *= temp / old_wt;
-			cp[j] *= temp1 / rp.n;
+      if (done == 0) {
+        for (j = 0; j < rp.num_unique_cp; j++)
+          cp[j] *= temp1 / rp.n;
+        done = 1;
+        rp.alpha *= temp1 / rp.n;
+      }
+			//cp[j] *= temp1 / rp.n;
 		// rp.alpha *= temp / old_wt;
-		rp.alpha *= temp1 / rp.n;
+		//rp.alpha *= temp1 / rp.n;
 		old_wt = temp;
 
 
@@ -155,6 +163,7 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
     (*rp_eval) (k, rp.ytemp, xtree->response_est, &(xtree->risk), rp.wtemp, rp.max_y);
 		xtree->complexity = xtree->risk;
 		//partition(1, xtree, &temp, 0, k);
+   
     partition(1, xtree, &temp, 0, k, parms);
 
 		//the complexity should be min(me, any-node-above-me). This routine fixes that.
@@ -168,16 +177,16 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
       j = rp.sorts[0][i]; // left-out samples for testing
 			//rundown(xtree, j, cp, xpred, xtemp); 
       // for testing only
-      Rprintf("validation %d ", j);
+      //Rprintf("validation %d ", j);
      // Rprintf("x1 variable %f ", rp.xdata[0][j]);
       
       if (p < 0) {
         //matching method:
         neighbor = findNeighbor(j, k); 
         
-        Rprintf("and its neighbor %d ", neighbor);
+       // Rprintf("and its neighbor %d ", neighbor);
         rundown3(xtree, j, neighbor, cp, xpred, xpred2, xtemp);
-        Rprintf("the error is %f\n", xtemp[])
+        //Rprintf("the error is %f\n", xtemp[]);
         
        
       } else {

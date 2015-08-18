@@ -29,6 +29,8 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
     int min_node_size = parms;
     // only for debugging
     // static int min_node_size = 2;
+    
+    // 
 
     me = splitnode;
     n = n2 - n1;                /* total number of observations */

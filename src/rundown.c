@@ -13,7 +13,9 @@ rundown(pNode tree, int obs, double *cp, double *xpred, double *xtemp, double p)
 {
     int i, obs2 = (obs < 0) ? -(1 + obs) : obs;
     pNode otree =  tree;
-    int leaf;
+    
+    // for debug only:
+    int opnumber = 0;
 
     /*
      * Now, repeat the following: for the cp of interest, run down the tree
@@ -22,17 +24,20 @@ rundown(pNode tree, int obs, double *cp, double *xpred, double *xtemp, double p)
      *   predictor.
      */
     for (i = 0; i < rp.num_unique_cp; i++) {
-	while (cp[i] < tree->complexity) {
+      while (cp[i] < tree->complexity) {
 	    tree = branch(tree, obs);
 	    if (tree == 0)
 		goto oops;
 	    otree = tree;
 	}
 	xpred[i] = tree->response_est[0];
+  
+  //Rprintf("cp = %f, %d's prediction value: %f, ",cp[i], obs2, xpred[i]);
   // error functions where we need to change:
  // xtemp[i] = (*rp_error) (rp.ydata[obs2], tree->response_est);
  
 	xtemp[i] = (*rp_error) (rp.ydata[obs2], rp.wt[obs2], tree->response_est, p);
+  //Rprintf("error: %f\n", xtemp[i]);
     }
 
     return;
@@ -43,7 +48,8 @@ oops:;
 	    xpred[i] = otree->response_est[0];
   // xtemp[i] = (*rp_error) (rp.ydata[obs2], otree->response_est);
 	xtemp[i] = (*rp_error) (rp.ydata[obs2], rp.wt[obs2], otree->response_est, p);
-	return;
+	Rprintf("oops number %d.\n", opnumber++);
+  return;
     }
     /*
      * I never really expect to get to this code.  It can only happen if

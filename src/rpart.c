@@ -113,6 +113,8 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
     rp.n = nrows(xmat2);
     n = rp.n;                   /* I get tired of typing "rp.n" 100 times
 				 * below */
+    //Rprintf("rp.n = %d\n", n);
+    
     rp.nvar = ncols(xmat2);
     rp.numcat = INTEGER(ncat2);
     rp.wt = wt;
@@ -227,6 +229,9 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
     (*rp_eval) (n, rp.ydata, tree->response_est, &(tree->risk), wt, rp.max_y);
     tree->complexity = tree->risk;
     rp.alpha = rp.complexity * tree->risk;
+    // for debug only:
+   // Rprintf("The risk is %f\n", tree->complexity);
+    //Rprintf("rp.alpha = %f\n", rp.alpha);
 
     /*
      * Do the basic tree
@@ -256,6 +261,7 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
      * first the cp table
      */
     scale = 1 / tree->risk;
+    //Rprintf("the scale for rp is %f\n", scale);
     i = 0;
     cptable3 = PROTECT(allocMatrix(REALSXP, xvals > 1 ? 5 : 3,
 				   rp.num_unique_cp));
@@ -264,7 +270,9 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
 	dptr[i++] = cp->cp * scale;
 	dptr[i++] = cp->nsplit;
 	dptr[i++] = cp->risk * scale;
+ 
 	if (xvals > 1) {
+      Rprintf("cp->xrisk = %f, cp->std = %f\n", cp->xrisk, cp->xstd);
 	    dptr[i++] = cp->xrisk * scale;
 	    dptr[i++] = cp->xstd * scale;
 	}
