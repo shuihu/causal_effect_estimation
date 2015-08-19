@@ -272,9 +272,10 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
 	dptr[i++] = cp->risk * scale;
  
 	if (xvals > 1) {
-      Rprintf("cp->xrisk = %f, cp->std = %f\n", cp->xrisk, cp->xstd);
-	    dptr[i++] = cp->xrisk * scale;
-	    dptr[i++] = cp->xstd * scale;
+      //Rprintf("cp->xrisk = %f, cp->std = %f\n", cp->xrisk, cp->xstd);
+	    //dptr[i++] = cp->xrisk * scale;
+      dptr[i++] = cp->xrisk * scale ;
+	    dptr[i++] = cp->xstd * scale ;
 	}
     }
 

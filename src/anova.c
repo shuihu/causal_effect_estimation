@@ -115,7 +115,7 @@ anova(int n, double *y[], double *x, int nclass,
                  ((1 - right_wt / n) * right_wt);
                  
     node_effect = temp * temp * n;
-    Rprintf("n = %d, node_effect = %f\n", n, node_effect);
+    //Rprintf("n = %d, node_effect = %f\n", n, node_effect);
     
     if (nclass == 0) {
       /* continuous predictor */
@@ -280,8 +280,9 @@ anova(int n, double *y[], double *x, int nclass,
 	      }
 	 }
    *improve = best;
+   // Rprintf("for %f variable, improv = %f\n", x[0], *improve);
 
 	//*improve = best / myrisk;       /* % improvement */
   }
-  Rprintf("for %f variable, improv = %f\n", x[0], *improve);
+  //Rprintf("for %f variable, improv = %f\n", x[0], *improve);
 }

@@ -1,25 +1,3 @@
-/*
- * Cross validate a model.  This routine is responsible for filling in
- *  two vectors -- xrisk = cross-validated risk estimate
- *                 xstd  = std of xrisk
- *
- * Basic method is to use a stratified partitioning of the data (NOT random)
- *  into n_xval subgroups.  One by one, each of these groups is left out of
- *  the partitioning by setting 'which' to 0.  After partitioning, the risk
- *  of each left out subject is determined, under each of the unique
- *  complexity parameters.
- * The x-groups are set by the calling S-routine, so they can actually be
- *  random, non-random, or whatever, as far as this routine is concerned.
- *
- *  n_xval: number of cross-validation subsets
- *  cptable: head of the complexity parameter table, were results will be
- *              stored
- *  x_grp(n): defines the groups.  Integers from 1 to n_xval
- *  maxcat  : max # categories, in any given categorical variable
- *  errmsg   : possible error message
- *  parms   : vector of input parameters, initializers for the splitting rule
- *  savesort: saved version of rp.sorts
- */
 #include <math.h>
 #include "rpart.h"
 #include "node.h"
@@ -58,6 +36,8 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
   // only for debugging
   int round = 0;
   int done = 0;
+  int count = 0;
+  //Rprintf("n_xval = %d\n", n_xval);
 
 	/*
 	 * Allocate a set of temporary arrays
@@ -75,10 +55,17 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 	 */
    // test for 
 	// cp[0] = 10 * cptable_head->cp;      /* close enough to infinity */
-  cp[0] = 100000 * cptable_head->cp;
-
-	for (cplist = cptable_head, i = 1; i < rp.num_unique_cp;cplist = cplist->forward, i++)
+  cp[0] = 10000 * cptable_head->cp;
+	for (cplist = cptable_head, i = 1; i < rp.num_unique_cp;cplist = cplist->forward, i++) {  
+    //Rprintf("old cp[%d] = %f\n", i, cplist->cp);
 		cp[i] = sqrt(cplist->cp * (cplist->forward)->cp);
+    //Rprintf("ge", i, cp[i]);
+    cp[i] = (n_xval - 1) * 1.0 / n_xval * cp[i];
+    //Rprintf("cp[%d] = %f\n", i, cp[i]);
+	}
+  rp.alpha *= (n_xval - 1) * 1.0 / n_xval;
+ // Rprintf("rp.alpha = %f\n", rp.alpha);
+  
 
 	/* why we need to concern about wt> */
 	total_wt = 0;
@@ -134,23 +121,15 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 				k++;
 			}
 		}
-
-		/* at this point k = #obs in the xval group */
-		/* rescale the cp */
-    // Questions about rescale the cp: 
     
-		//for (j = 0; j < rp.num_unique_cp; j++)
-			//cp[j] *= temp / old_wt;
-      if (done == 0) {
-        for (j = 0; j < rp.num_unique_cp; j++)
-          cp[j] *= temp1 / rp.n;
-        done = 1;
-        rp.alpha *= temp1 / rp.n;
-      }
-			//cp[j] *= temp1 / rp.n;
-		// rp.alpha *= temp / old_wt;
-		//rp.alpha *= temp1 / rp.n;
-		old_wt = temp;
+    //for (j = 0; j < rp.num_unique_cp; j++) {
+    //  cp[j] *= temp1 / rp.n;
+    //  Rprintf("after: cp[%d] = %f\n", j, cp[j]);
+    //}
+       
+    //rp.alpha *= temp1 / rp.n;
+    // we choose not to rescale the cp in cross validation:
+    old_wt = temp;
 
 
 		/*
@@ -162,10 +141,12 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 		//(*rp_eval) (k, rp.ytemp, xtree->response_est, &(xtree->risk), rp.wtemp);
     (*rp_eval) (k, rp.ytemp, xtree->response_est, &(xtree->risk), rp.wtemp, rp.max_y);
 		xtree->complexity = xtree->risk;
+    //Rprintf("xtree->complexity = %f\n", xtree->complexity);
 		//partition(1, xtree, &temp, 0, k);
-   
+   //question: why change cp after partition:
     partition(1, xtree, &temp, 0, k, parms);
-
+    
+    //Rprintf("now, xtree->complexity = %f\n", xtree->complexity);
 		//the complexity should be min(me, any-node-above-me). This routine fixes that.
 		fix_cp(xtree, xtree->complexity);
 
@@ -177,20 +158,22 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
       j = rp.sorts[0][i]; // left-out samples for testing
 			//rundown(xtree, j, cp, xpred, xtemp); 
       // for testing only
-      //Rprintf("validation %d ", j);
+      //Rprintf("validation %d ", j+1);
      // Rprintf("x1 variable %f ", rp.xdata[0][j]);
       
       if (p < 0) {
+       // Rprintf("--matching: ");
         //matching method:
         neighbor = findNeighbor(j, k); 
         
-       // Rprintf("and its neighbor %d ", neighbor);
+        //Rprintf("its neighbor %d\n", neighbor+1);
         rundown3(xtree, j, neighbor, cp, xpred, xpred2, xtemp);
-        //Rprintf("the error is %f\n", xtemp[]);
+        // Rprintf("the error is %f\n", xtemp[]);
         
        
       } else {
         // TOT method:
+        Rprintf("--TOT: ");
         rundown(xtree, j, cp, xpred, xtemp, p);
       }
      
@@ -207,6 +190,7 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 				cplist->xrisk += xtemp[jj];
 				//cplist->xstd += xtemp[jj] * xtemp[jj] * rp.wt[j];
         cplist->xstd += xtemp[jj] * xtemp[jj];
+        
 #if DEBUG > 1
 				if (debug > 1)
 					Rprintf("  cp=%f, pred=%f, xtemp=%f\n",
@@ -217,7 +201,8 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
       // debug only:
       round ++;
 		}
-    Rprintf("%d cv round!\n", round);
+    //Rprintf("%d cv round!\n", round);
+    //Rprintf("count = %d\n", count);
 		free_tree(xtree, 1);    // Calloc-ed
 		R_CheckUserInterrupt();
 	}
