@@ -34,9 +34,8 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 	alphasave = rp.alpha;
   
   // only for debugging
-  int round = 0;
-  int done = 0;
-  int count = 0;
+  
+  int cv_count = 0;
   //Rprintf("n_xval = %d\n", n_xval);
 
 	/*
@@ -59,10 +58,12 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 	for (cplist = cptable_head, i = 1; i < rp.num_unique_cp;cplist = cplist->forward, i++) {  
     //Rprintf("old cp[%d] = %f\n", i, cplist->cp);
 		cp[i] = sqrt(cplist->cp * (cplist->forward)->cp);
-    //Rprintf("ge", i, cp[i]);
+    //Rprintf("geometric cp[%d] = %f\n", i, cp[i]);
+    //rescale the cp here:
     cp[i] = (n_xval - 1) * 1.0 / n_xval * cp[i];
-    //Rprintf("cp[%d] = %f\n", i, cp[i]);
+    //Rprintf("scaled cp[%d] = %f\n", i, cp[i]);
 	}
+   //rescale alpha:
   rp.alpha *= (n_xval - 1) * 1.0 / n_xval;
  // Rprintf("rp.alpha = %f\n", rp.alpha);
   
@@ -105,12 +106,14 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 		 * the tail, unused end of rp.sorts[0][i];
 		 */
 		last = k;
+
 		k = 0;
 		temp = 0;
 		temp1 = 0;
 		for (i = 0; i < rp.n; i++) {
 			rp.which[i] = 1;    /* everyone starts in group 1 */
 			if (x_grp[i] == xgroup + 1) {
+        //Rprintf("validation data is %d\n", i + 1);
 				rp.sorts[0][last] = i;
 				last++;
 			} else {
@@ -121,6 +124,7 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 				k++;
 			}
 		}
+  
     
     //for (j = 0; j < rp.num_unique_cp; j++) {
     //  cp[j] *= temp1 / rp.n;
@@ -139,18 +143,20 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 		xtree->num_obs = k;
 		(*rp_init) (k, rp.ytemp, maxcat, errmsg, parms, &temp, 2, rp.wtemp);
 		//(*rp_eval) (k, rp.ytemp, xtree->response_est, &(xtree->risk), rp.wtemp);
-    (*rp_eval) (k, rp.ytemp, xtree->response_est, &(xtree->risk), rp.wtemp, rp.max_y);
+        (*rp_eval) (k, rp.ytemp, xtree->response_est, &(xtree->risk), rp.wtemp, rp.max_y);
 		xtree->complexity = xtree->risk;
     //Rprintf("xtree->complexity = %f\n", xtree->complexity);
 		//partition(1, xtree, &temp, 0, k);
-   //question: why change cp after partition:
+
     partition(1, xtree, &temp, 0, k, parms);
     
     //Rprintf("now, xtree->complexity = %f\n", xtree->complexity);
 		//the complexity should be min(me, any-node-above-me). This routine fixes that.
 		fix_cp(xtree, xtree->complexity);
-
-		/*
+    //Rprintf("after fixation, xtree->complexity = %f\n", xtree->complexity);
+    //Rprintf("cv_count = %d\n\n", ++cv_count);
+		
+    /*
 		 * run the extra data down the new tree
 		 */
      
@@ -165,6 +171,7 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
        // Rprintf("--matching: ");
         //matching method:
         neighbor = findNeighbor(j, k); 
+        //Rprintf("k = %d.\n", k);
         
         //Rprintf("its neighbor %d\n", neighbor+1);
         rundown3(xtree, j, neighbor, cp, xpred, xpred2, xtemp);
@@ -173,7 +180,7 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
        
       } else {
         // TOT method:
-        Rprintf("--TOT: ");
+        //Rprintf("--TOT: ");
         rundown(xtree, j, cp, xpred, xtemp, p);
       }
      
@@ -192,14 +199,14 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
         cplist->xstd += xtemp[jj] * xtemp[jj];
         
 #if DEBUG > 1
-				if (debug > 1)
+			//	if (debug > 1)
 					Rprintf("  cp=%f, pred=%f, xtemp=%f\n",
-							cp[jj] / old_wt, xpred[jj], xtemp[jj]);
+							cp[jj] , xpred[jj], xtemp[jj]);
 #endif
 				cplist = cplist->forward;
 			}
       // debug only:
-      round ++;
+      //round ++;
 		}
     //Rprintf("%d cv round!\n", round);
     //Rprintf("count = %d\n", count);

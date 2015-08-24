@@ -153,9 +153,10 @@ rpart <-
         xgroups[treat_idx] <- sample(rep(1L:xval, length = length(treat_idx)), length(treat_idx), replace = F)  
         # for debug:
         #xgroups <- c(9, 4, 5, 2, 6, 1, 8, 7, 3, 10, 1, 2, 7, 3, 5, 10, 4, 8, 9, 6)
-       # print("xgroups = ")
-        # print(xgroups)
-        #xgroups <- sample(rep(1L:xval, length = nobs), nobs, replace = FALSE)
+        #xgroups <- c(8, 3, 5, 2, 6, 6, 7, 4, 9, 1, 9, 2, 7, 4, 10, 1, 8, 3, 5, 
+         #            10, 8, 1, 7, 6, 9, 8, 2, 4, 6, 5, 4, 2, 3, 7, 5,9, 3, 10, 10, 1) 
+        #print("xgroups = ")
+        #print(xgroups)
     } else if (length(xval) == nobs) {
 	xgroups <- xval
 	xval <- length(unique(xgroups))
@@ -196,7 +197,7 @@ rpart <-
     storage.mode(wt) <- "double"
     #temp <- as.double(unlist(init$parms))
     temp <- as.integer(init$parms)
-    if (!length(temp)) temp <- 0    # if parms is NULL pass a dummy
+    if (!length(temp)) temp <- 1    # if parms is NULL pass a dummy
     rpfit <- .Call(C_rpart,
                    ncat = as.integer(cats * !isord),
                    method = as.integer(method.int),

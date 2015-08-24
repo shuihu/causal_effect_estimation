@@ -230,7 +230,7 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
     tree->complexity = tree->risk;
     rp.alpha = rp.complexity * tree->risk;
     // for debug only:
-   // Rprintf("The risk is %f\n", tree->complexity);
+    //Rprintf("The risk is %f\n", tree->complexity);
     //Rprintf("rp.alpha = %f\n", rp.alpha);
 
     /*
@@ -238,6 +238,7 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
      */
     //partition(1, tree, &temp, 0, n);
     partition(1, tree, &temp, 0, n, parms);
+    
     CpTable cptable = (CpTable) ALLOC(1, sizeof(cpTable));
     cptable->cp = tree->complexity;
     cptable->risk = tree->risk;
@@ -252,7 +253,6 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
       make_cp_list(tree, tree->complexity, cptable);
 	    make_cp_table(tree, tree->complexity, 0);
 	if (xvals > 1) {
-	    //xval(xvals, cptable, xgrp, maxcat, &errmsg, parms, savesort);
       xval(xvals, cptable, xgrp, maxcat, &errmsg, parms, p, savesort);
 	}
     }
@@ -272,9 +272,9 @@ rpart(SEXP ncat2, SEXP method2, SEXP opt2,
 	dptr[i++] = cp->risk * scale;
  
 	if (xvals > 1) {
+      
       //Rprintf("cp->xrisk = %f, cp->std = %f\n", cp->xrisk, cp->xstd);
-	    //dptr[i++] = cp->xrisk * scale;
-      dptr[i++] = cp->xrisk * scale ;
+	    dptr[i++] = cp->xrisk * scale ;
 	    dptr[i++] = cp->xstd * scale ;
 	}
     }

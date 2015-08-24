@@ -65,7 +65,7 @@ anovass(int n, double *y[], double *value, double *risk, double *wt, double max_
     //*risk = 4 * n * MAX * MAX - effect * effect * n;
     //*risk = n * MAX * MAX - effect * effect * n;
     //max_y = MAX;
-    *risk = n * max_y * max_y - n * effect * effect ;
+    *risk = 4 * n * max_y * max_y - n * effect * effect ;
 }
 
 /*

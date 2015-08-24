@@ -20,14 +20,14 @@ rundown2(pNode tree, int obs, double *cp, double *xpred, int nresp)
      *   predictor.
      */
     for (i = 0; i < rp.num_unique_cp; i++) {
-	while (cp[i] < tree->complexity) {
-	    tree = branch(tree, obs);
-	    if (tree == 0)
-		goto oops;
-	    otree = tree;
-	}
-	for (j = 0; j < nresp; j++)
-	    xpred[k++] = tree->response_est[j];
+      while (cp[i] < tree->complexity) {
+        tree = branch(tree, obs);
+	      if (tree == 0)
+		      goto oops;
+	      otree = tree;
+      }
+	    for (j = 0; j < nresp; j++)
+	      xpred[k++] = tree->response_est[j];
     }
 
     return;
