@@ -20,8 +20,10 @@ rundown2(pNode tree, int obs, double *cp, double *xpred, int nresp)
      *   predictor.
      */
     for (i = 0; i < rp.num_unique_cp; i++) {
+      //Rprintf("cp[%d] = %f, old_tree->compleixity = %f\n", i, cp[i], tree->complexity);
       while (cp[i] < tree->complexity) {
         tree = branch(tree, obs);
+        //Rprintf("tree->complexity = %f, tree->response = %f\n", tree->complexity,tree->response_est[0]);
 	      if (tree == 0)
 		      goto oops;
 	      otree = tree;

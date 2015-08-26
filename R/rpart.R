@@ -158,6 +158,7 @@ rpart <-
         #print("xgroups = ")
         #print(xgroups)
     } else if (length(xval) == nobs) {
+      ## pass xgroups by xval 
 	xgroups <- xval
 	xval <- length(unique(xgroups))
     } else {

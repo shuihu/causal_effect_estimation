@@ -59,7 +59,7 @@ xpred.rpart <- function(fit, xval = 10L, cp, return.all = FALSE)
     controls <- fit$control
     if (missing(cp)) {
       cp <- fit$cptable[, 1L]
-	    cp <- sqrt(cp * c(1000000, cp[-length(cp)]))
+	    cp <- sqrt(cp * c(10, cp[-length(cp)]))
 	    cp[1L] <- (1 + fit$cptable[1L, 1L])/2
     }
 
@@ -98,8 +98,8 @@ xpred.rpart <- function(fit, xval = 10L, cp, return.all = FALSE)
 
     parms <- fit$parms
     # debug:
-    print("parms =")
-    print(parms)
+    #print("parms =")
+    #print(parms)
     
     if (method == "user") {
 	    mlist <- fit$functions

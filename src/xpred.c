@@ -204,9 +204,13 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
     for (i = 0; i < ncp; i++) {
       cp[i] *= toprisk;       /* scale to internal units */
       // rescale the cp:
-      cp[i] *= (xvals - 1) * 1.0 / xvals;      
+      cp[i] *= (xvals - 1) * 1.0 / xvals; 
+      //Rprintf("cp[%d] = %f\n", i, cp[i]);
+      
     }
     rp.alpha *= (xvals - 1) * 1.0 / xvals;
+    
+    //Rprintf("rp.alpha = %f\n", rp.alpha);
 
     /*
      *        allocate the output vector
@@ -289,13 +293,17 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
 	    //partition(1, xtree, &temp, 0, k);
       partition(1, xtree, &temp, 0, k, parms);
 	    fix_cp(xtree, xtree->complexity);
-
-	//print_tree(xtree, 1, 0, 0, 0);        /* debug line */
+     // Rprintf("%d th xtree\n", xgroup + 1);
+	   // print_tree(xtree, 5);        /* debug line */
+      //Rprintf("end.\n");
+      
 	/*
 	 * run the extra data down the new tree
 	 */
 	  for (i = k; i < rp.n; i++) {
       j = rp.sorts[0][i];
+      // need to be tested:
+      //Rprintf("%d obs:\n", j + 1);
 	    rundown2(xtree, j, cp, (predict + j * ncp * nresp), nresp);
 	  }
 

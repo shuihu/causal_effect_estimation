@@ -18,7 +18,7 @@ rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *x
   pNode tree2 = tree; // record the root of the tree
   pNode otree2 = tree;
   double temp;
-  Rprintf("xtree->complexity = %f\n", tree->complexity);
+  //Rprintf("xtree->complexity = %f\n", tree->complexity);
    
   for (i = 0; i < rp.num_unique_cp; i++) {
     
