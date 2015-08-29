@@ -23,6 +23,16 @@ sonshelper <- function(parent, leaf, count, maxdepth) {
   } 
 }
 
+
+#' Estimate the causal effects using honest tree model.
+#' 
+#' @param object A tree-structured fit object.
+#' @param formula A regression formula.
+#' @param data New observations.
+#' @param weights The treatment status of new observations
+#' @return The estimated causal effects of \code{data}.
+#' Notice here when the leaf contains only treated or control cases, the function will trace back to the leaf's parent mnode recursively until the parent can be used to compute causal effect.
+#' 
 ## estimate function for honest causal tree:
 estimate.rpart <- function(object, formula, data, weights, na.action = na.pass)
 {
