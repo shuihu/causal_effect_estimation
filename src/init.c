@@ -8,6 +8,9 @@ SEXP rpartexp2(SEXP dtimes, SEXP seps);
 SEXP pred_rpart(SEXP dimx, SEXP nnode, SEXP nsplit, SEXP dimc,
 		SEXP nnum, SEXP nodes2, SEXP vnum, SEXP split2,
 		SEXP csplit2, SEXP usesur, SEXP xdata2, SEXP xmiss2);
+SEXP estimate_rpart(SEXP dimx, SEXP nnode, SEXP nsplit, SEXP dimc,
+  	SEXP nnum, SEXP nodes2, SEXP vnum, SEXP split2,
+		SEXP csplit2, SEXP usesur, SEXP xdata2, SEXP xmiss2);
 
 static const R_CallMethodDef CallEntries[] = {
     {"init_rpcallback", (DL_FUNC) &init_rpcallback, 5},
@@ -17,6 +20,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"xpred", (DL_FUNC) &xpred, 15},
     {"rpartexp2", (DL_FUNC) &rpartexp2, 2},
     {"pred_rpart", (DL_FUNC) &pred_rpart, 12},
+    {"estimate_rpart", (DL_FUNC) &estimate_rpart, 12},
     {NULL, NULL, 0}
 };
 

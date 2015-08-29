@@ -1,7 +1,8 @@
 useDynLib(rpart, .registration = TRUE, .fixes = "C_")
 
 export(meanvar, na.rpart, path.rpart, plotcp, post, printcp, prune,
-       prune.rpart, rpart, rpart.control, rsq.rpart, snip.rpart, xpred.rpart)
+       prune.rpart, rpart, rpart.control, rsq.rpart, snip.rpart, xpred.rpart, 
+       estimate.rpart)
 export(rpart.exp)  # needed for one of the tests
 
 importFrom(grDevices, dev.cur, dev.off)

@@ -3,7 +3,6 @@ predict.rpart <- function(object, newdata,
          na.action = na.pass, ...)
 {
     if (!inherits(object, "rpart")) stop("Not a legitimate \"rpart\" object")
-
     mtype <- missing(type)
     type <- match.arg(type)
     where <- if (missing(newdata)) object$where
