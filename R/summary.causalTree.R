@@ -1,7 +1,7 @@
 summary.causalTree <-
     function(object, cp = 0, digits = getOption("digits"), file, ...)
 {
-    if (!inherits(object, "causalTree")) stop("Not a legitimate \"causalTree\" object")
+    if (!inherits(object, "rpart")) stop("Not a legitimate \"rpart\" object")
 
     ## rename it to "x" to save typing
     x <- object

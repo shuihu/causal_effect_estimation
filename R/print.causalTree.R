@@ -1,7 +1,7 @@
 print.causalTree <- function(x, minlength = 0L, spaces = 2L, cp,
                digits = getOption("digits"), ...)
 {
-    if (!inherits(x, "causalTree")) stop("Not a legitimate \"causalTree\" object")
+    if (!inherits(x, "rpart")) stop("Not a legitimate \"rpart\" object")
 
     if (!missing(cp)) x <- prune.causalTree(x, cp = cp)
     frame <- x$frame

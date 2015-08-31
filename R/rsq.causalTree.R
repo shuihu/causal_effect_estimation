@@ -4,7 +4,7 @@
 rsq.causalTree <- function(x)
 {
 
-    if (!inherits(x, "causalTree")) stop("Not a legitimate \"causalTree\" object")
+    if (!inherits(x, "rpart")) stop("Not a legitimate \"rpart\" object")
 
     p.causalTree <- printcp(x)
     xstd <- p.causalTree[, 5L]

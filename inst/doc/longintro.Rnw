@@ -798,7 +798,7 @@ of this type (we hope).
 \subsection{Example: Stage C prostate cancer (cont.)}
 Let us return to the stage C prostate cancer data of the
 earlier example.
-For a more detailed listing of the causalTree object, we use the \Co{summary}
+For a more detailed listing of the rpart object, we use the \Co{summary}
 function. It includes the information from the CP table (not repeated below),
 plus information about each node.  It is easy to print a
 sub tree based on a different cp value using the \Co{cp} option.

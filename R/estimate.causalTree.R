@@ -36,7 +36,7 @@ sonshelper <- function(parent, leaf, count, maxdepth) {
 ## estimate function for honest causal tree:
 estimate.causalTree <- function(object, formula, data, weights, na.action = na.pass)
 {
-  if (!inherits(object, "causalTree")) stop("Not a legitimate \"causalTree\" object")
+  if (!inherits(object, "rpart")) stop("Not a legitimate \"rpart\" object")
   Call <- match.call()
   indx <- match(c("formula", "data", "weights"),
                 names(Call), nomatch = 0L)

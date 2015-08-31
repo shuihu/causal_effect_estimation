@@ -1,4 +1,4 @@
-\name{causalTree.object}
+\name{rpart.object}
 \alias{causalTree.object}
 \title{
   Recursive Partitioning and Regression Trees Object 
