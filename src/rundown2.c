@@ -4,8 +4,8 @@
  * (A subset of rundown.c, which also returns the prediction error).
  */
 #include "node.h"
-#include "rpart.h"
-#include "rpartproto.h"
+#include "causalTree.h"
+#include "causalTreeproto.h"
 
 void
 rundown2(pNode tree, int obs, double *cp, double *xpred, int nresp)
@@ -19,7 +19,7 @@ rundown2(pNode tree, int obs, double *cp, double *xpred, int nresp)
      *   not have collapsed, but this split will have, so this is my
      *   predictor.
      */
-    for (i = 0; i < rp.num_unique_cp; i++) {
+    for (i = 0; i < ct.num_unique_cp; i++) {
       //Rprintf("cp[%d] = %f, old_tree->compleixity = %f\n", i, cp[i], tree->complexity);
       while (cp[i] < tree->complexity) {
         tree = branch(tree, obs);
@@ -35,8 +35,8 @@ rundown2(pNode tree, int obs, double *cp, double *xpred, int nresp)
     return;
 
 oops:;
-    if (rp.usesurrogate < 2) {  /* must have hit a missing value */
-	for (; i < rp.num_unique_cp; i++)
+    if (ct.usesurrogate < 2) {  /* must have hit a missing value */
+	for (; i < ct.num_unique_cp; i++)
 	    for (j = 0; j < nresp; j++)
 		xpred[k++] = otree->response_est[j];
 	return;

@@ -92,14 +92,14 @@ stemp <- function(y, wt, x, parms, continuous)
 ###################################################
 ### code chunk number 6: usercode.Rnw:327-342
 ###################################################
-library(rpart)
+library(causalTree)
 mystate <- data.frame(state.x77, region=state.region)
 names(mystate) <- casefold(names(mystate)) #remove mixed case
 ulist <- list(eval = etemp, split = stemp, init = itemp)
-fit1 <- rpart(murder ~ population + illiteracy + income + life.exp +
+fit1 <- causalTree(murder ~ population + illiteracy + income + life.exp +
               hs.grad + frost + region, data = mystate,
               method = ulist, minsplit = 10)
-fit2 <- rpart(murder ~ population + illiteracy + income + life.exp +
+fit2 <- causalTree(murder ~ population + illiteracy + income + life.exp +
               hs.grad + frost + region, data = mystate,
               method = 'anova', minsplit = 10, xval = 0)
 all.equal(fit1$frame, fit2$frame)
@@ -113,10 +113,10 @@ all.equal(fit1$cptable, fit2$cptable)
 ### code chunk number 7: usercode.Rnw:358-369
 ###################################################
 xgroup <- rep(1:10, length = nrow(mystate))
-xfit <- xpred.rpart(fit1, xgroup)
+xfit <- xpred.causalTree(fit1, xgroup)
 xerror <- colMeans((xfit - mystate$murder)^2)
 
-fit2b <-  rpart(murder ~ population + illiteracy + income + life.exp +
+fit2b <-  causalTree(murder ~ population + illiteracy + income + life.exp +
                 hs.grad + frost + region, data = mystate,
                 method = 'anova', minsplit = 10, xval = xgroup)
 topnode.error <- (fit2b$frame$dev/fit2b$frame$wt)[1]
@@ -188,8 +188,8 @@ logsplit <- function(y, wt, x, parms, continuous)
 	# First, find out what order to put the categories in, which
 	#  will be the order of the coefficients in this model
 	tfit <- glm(y[,1] ~ factor(x) + offset(y[,2]) - 1, binomial, weight = wt)
-	ngrp <- length(tfit$coef)
-	direction <- rank(rank(tfit$coef) + runif(ngrp, 0, 0.1)) #break ties
+	ngct <- length(tfit$coef)
+	direction <- rank(rank(tfit$coef) + runif(ngct, 0, 0.1)) #break ties
         # breaking ties -- if 2 groups have exactly the same p-hat, it
         #  does not matter which order I consider them in.  And the calling
         #  routine wants an ordering vector.

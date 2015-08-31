@@ -4,16 +4,16 @@
   Displays CP table for Fitted Rpart Object 
 }
 \description{
-  Displays the \code{cp} table for fitted \code{rpart} object.
+  Displays the \code{cp} table for fitted \code{causalTree} object.
 }
 \usage{
 printcp(x, digits = getOption("digits") - 2)
 }
 \arguments{
 \item{x}{
-fitted model object of class \code{"rpart"}.  This is assumed to be the result 
+fitted model object of class \code{"causalTree"}.  This is assumed to be the result 
 of some function that produces an object with the same named 
-components as that returned by the \code{rpart} function. 
+components as that returned by the \code{causalTree} function. 
 }
 \item{digits}{
   the number of digits of numbers to print.
@@ -22,14 +22,14 @@ components as that returned by the \code{rpart} function.
 Prints a table of optimal prunings based on a complexity parameter. 
 }
 \seealso{
-\code{\link{summary.rpart}},  \code{\link{rpart.object}}   
+\code{\link{summary.causalTree}},  \code{\link{causalTree.object}}   
 }
 \examples{
-z.auto <- rpart(Mileage ~ Weight, car.test.frame)
+z.auto <- causalTree(Mileage ~ Weight, car.test.frame)
 printcp(z.auto)
 \dontrun{
 Regression tree:
-rpart(formula = Mileage ~ Weight, data = car.test.frame)
+causalTree(formula = Mileage ~ Weight, data = car.test.frame)
 
 Variables actually used in tree construction:
 [1] Weight

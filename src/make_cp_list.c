@@ -14,7 +14,7 @@
  * be removed when its parent collapses. So this routine also adjusts each
  * C.P. to = minimum(my C.P., parent's C.P.).
  *
- *   This routine is called at the top level by rpart, after rpart has
+ *   This routine is called at the top level by causalTree, after causalTree has
  * initialized the first member of the linked cp-list, set its number of
  * splits to zero, and its risk to that for no splits at all.  This routine
  * allocates and links in the rest of the cp-list.  The make_cp_table
@@ -26,9 +26,9 @@
  *   When it comes time to cross-validate, we fill in xrisk and xstd
  */
 #include <math.h>
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 void
 make_cp_list(pNode me, double parent, CpTable cptable_head)
@@ -39,8 +39,8 @@ make_cp_list(pNode me, double parent, CpTable cptable_head)
     if (me->complexity > parent)
       me->complexity = parent;
     me_cp = me->complexity;
-    if (me_cp < rp.alpha)
-	    me_cp = rp.alpha;       /* table should go no lower */
+    if (me_cp < ct.alpha)
+	    me_cp = ct.alpha;       /* table should go no lower */
     if (me->leftson) {
       make_cp_list(me->leftson, me_cp, cptable_head);
 	    make_cp_list(me->rightson, me_cp, cptable_head);
@@ -69,7 +69,7 @@ make_cp_list(pNode me, double parent, CpTable cptable_head)
 	else
 	    cptable_tail = cplist;
 	cptemp->forward = cplist;
-	rp.num_unique_cp++;
+	ct.num_unique_cp++;
 	return;
     }
 }

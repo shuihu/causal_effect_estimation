@@ -7,7 +7,7 @@
 
 double
 //anovapred(double *y, double wt, double *yhat)
-anovapred(double *y, double wt, double *yhat, double p) // pass in rp.which
+anovapred(double *y, double wt, double *yhat, double p) // pass in ct.which
 {
     double temp;
     if (wt == 1)  temp = y[0] / p;

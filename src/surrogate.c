@@ -12,9 +12,9 @@
  * Uses:        The global vector tempvec (integer) as a temporary, assumed
  *                to be of length n.
  */
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 void
 surrogate(pNode me, int n1, int n2)
@@ -34,9 +34,9 @@ surrogate(pNode me, int n1, int n2)
     int ncat;
     double adj_agree;
 
-    tempy = rp.tempvec;
-    sorts = rp.sorts;
-    xdata = rp.xdata;
+    tempy = ct.tempvec;
+    sorts = ct.sorts;
+    xdata = ct.xdata;
     /*
      * First construct, in tempy, the "y" variable for this calculation.
      * It will be LEFT:goes left, 0:missing, RIGHT:goes right.
@@ -44,7 +44,7 @@ surrogate(pNode me, int n1, int n2)
      *  last surrogate (or to the right, if larger).
      */
     var = (me->primary)->var_num;
-    if (rp.numcat[var] == 0) {  /* continuous variable */
+    if (ct.numcat[var] == 0) {  /* continuous variable */
 	split = (me->primary)->spoint;
 	extra = (me->primary)->csplit[0];
 	for (i = n1; i < n2; i++) {
@@ -74,10 +74,10 @@ surrogate(pNode me, int n1, int n2)
 	    j = -(1 + j);
 	switch (tempy[j]) {
 	case LEFT:
-	    lcount += rp.wt[j];
+	    lcount += ct.wt[j];
 	    break;
 	case RIGHT:
-	    rcount += rp.wt[j];
+	    rcount += ct.wt[j];
 	    break;
 	default:
 	    break;
@@ -97,30 +97,30 @@ surrogate(pNode me, int n1, int n2)
      * Now walk through the variables
      */
     me->surrogate = (pSplit) NULL;
-    for (i = 0; i < rp.nvar; i++) {
+    for (i = 0; i < ct.nvar; i++) {
 	if (var == i)
 	    continue;
-	ncat = rp.numcat[i];
+	ncat = ct.numcat[i];
 
 	choose_surg(n1, n2, tempy, xdata[i], sorts[i], ncat,
-		    &improve, &split, rp.csplit, lcount, rcount, &adj_agree);
+		    &improve, &split, ct.csplit, lcount, rcount, &adj_agree);
 
 	if (adj_agree <= 1e-10)    /* was 0 */
 	    continue;           /* no better than default */
 
 	/* sort it onto the list of surrogates */
-	ss = insert_split(&(me->surrogate), ncat, improve, rp.maxsur);
+	ss = insert_split(&(me->surrogate), ncat, improve, ct.maxsur);
 	if (ss) {
 	    ss->improve = improve;
 	    ss->var_num = i;
 	    ss->count = 0;      /* corrected by nodesplit() */
 	    ss->adj = adj_agree;
-	    if (rp.numcat[i] == 0) {
+	    if (ct.numcat[i] == 0) {
 		ss->spoint = split;
-		ss->csplit[0] = rp.csplit[0];
+		ss->csplit[0] = ct.csplit[0];
 	    } else
-		for (k = 0; k < rp.numcat[i]; k++)
-		    ss->csplit[k] = rp.csplit[k];
+		for (k = 0; k < ct.numcat[i]; k++)
+		    ss->csplit[k] = ct.csplit[k];
 	}
     }
 }

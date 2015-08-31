@@ -1,7 +1,7 @@
 /*
  * print out the tree, in all it's glory
  *
- * This routine exists in the sources only for debugging purposes -
+ * This routine exists in the sources only for debugging puctoses -
  *   you will see occasional commented out calls to it in the code
  *
  * It makes for the nicest printout if the tree is printed out by depth,
@@ -14,7 +14,7 @@
  */
 #include <stdio.h>
 #include "node.h"
-#include "rpart.h"
+#include "causalTree.h"
 
 static void printme(pNode me, int id);
 static void print_tree2(pNode me, int id, int mydepth, int target);
@@ -77,7 +77,7 @@ printme(pNode me, int id)
     Rprintf("  Primary splits:\n");
     for (ss = me->primary; ss; ss = ss->nextsplit) {
 	j = ss->var_num;
-	if (rp.numcat[j] == 0) {
+	if (ct.numcat[j] == 0) {
 	    if (ss->csplit[0] == LEFT)
 		Rprintf
 		    ("\tvar%d < %5g to the left, improve=%5.3f,  (%d missing)\n",
@@ -88,7 +88,7 @@ printme(pNode me, int id)
 		     j, ss->spoint, ss->improve, me->num_obs - ss->count);
 	} else {
 	    Rprintf("\tvar%d splits as ", j);
-	    for (k = 0; k < rp.numcat[j]; k++) {
+	    for (k = 0; k < ct.numcat[j]; k++) {
 		switch (ss->csplit[k]) {
 		case LEFT:
 		    Rprintf("L");
@@ -100,7 +100,7 @@ printme(pNode me, int id)
 		    Rprintf("-");
 		}
 	    }
-	    if (rp.numcat[j] < 7)
+	    if (ct.numcat[j] < 7)
 		Rprintf(",\timprove=%5.3f, (%d missing)\n",
 			ss->improve, (me->num_obs - ss->count));
 	    else
@@ -116,7 +116,7 @@ printme(pNode me, int id)
 	Rprintf("  Surrogate splits:\n");
     for (ss = me->surrogate; ss; ss = ss->nextsplit) {
 	j = ss->var_num;
-	if (rp.numcat[j] == 0) {
+	if (ct.numcat[j] == 0) {
 	    if (ss->csplit[0] == LEFT)
 		Rprintf
 		    ("\tvar%d < %5g to the left, agree=%5.3f, (%d split)\n",
@@ -127,7 +127,7 @@ printme(pNode me, int id)
 		     j, ss->spoint, ss->improve, ss->count);
 	} else {
 	    Rprintf("\tvar%d splits as ", j);
-	    for (k = 0; k < rp.numcat[j]; k++) {
+	    for (k = 0; k < ct.numcat[j]; k++) {
 		switch (ss->csplit[k]) {
 		case LEFT:
 		    Rprintf("L");
@@ -139,7 +139,7 @@ printme(pNode me, int id)
 		    Rprintf("-");
 		}
 	    }
-	    if (rp.numcat[j] < 7)
+	    if (ct.numcat[j] < 7)
 		Rprintf(",\tagree=%5.3f, (%d split)\n",
 			ss->improve, ss->count);
 	    else

@@ -7,7 +7,7 @@ options(continue = "  ", width = 60)
 options(SweaveHooks=list(fig=function() par(mar = c(4.1, 4.1, 0.1, 1.1))))
 pdf.options(pointsize = 10)
 par(xpd = NA)  #stop clipping
-library(rpart)
+library(causalTree)
 
 
 ###################################################
@@ -29,7 +29,7 @@ legend(.3, .2, c("Gini", "Information", "rescaled Gini"),
 ###################################################
 getOption("SweaveHooks")[["fig"]]()
 progstat <- factor(stagec$pgstat, levels = 0:1, labels = c("No", "Prog"))
-cfit  <- rpart(progstat ~  age + eet + g2 + grade + gleason + ploidy,
+cfit  <- causalTree(progstat ~  age + eet + g2 + grade + gleason + ploidy,
                data = stagec, method = 'class')
 print(cfit)
 par(mar = rep(0.1, 4))
@@ -76,8 +76,8 @@ temp1 <- ifelse(lights[y+1, ] == 1, temp1, 1-temp1)
 temp2 <- matrix(rbinom(n*17, 1, 0.5), n, 17) # Random lights
 x <- cbind(temp1, temp2)
 
-dfit <- rpart(y ~ x, method='class',
-              control = rpart.control(xval = 10, minbucket = 2, cp = 0))
+dfit <- causalTree(y ~ x, method='class',
+              control = causalTree.control(xval = 10, minbucket = 2, cp = 0))
 printcp(dfit)
 
 fit9 <- prune(dfit, cp = 0.02)
@@ -98,9 +98,9 @@ summary(cfit, cp = 0.06)
 ### code chunk number 8: cars
 ###################################################
 getOption("SweaveHooks")[["fig"]]()
-fit1 <- rpart(Reliability ~ Price + Country + Mileage + Type,
+fit1 <- causalTree(Reliability ~ Price + Country + Mileage + Type,
                 data = cu.summary, parms = list(split = 'gini'))
-fit2 <- rpart(Reliability ~ Price + Country + Mileage + Type,
+fit2 <- causalTree(Reliability ~ Price + Country + Mileage + Type,
                 data = cu.summary, parms = list(split = 'information'))
 
 par(mfrow = c(1,2), mar = rep(0.1, 4))
@@ -117,7 +117,7 @@ summary(fit1, cp = 0.06)
 ###################################################
 ### code chunk number 10: longintro.Rnw:1004-1008
 ###################################################
-fit3 <- rpart(Reliability ~ Price + Country + Mileage + Type,
+fit3 <- causalTree(Reliability ~ Price + Country + Mileage + Type,
                 data=cu.summary, parms=list(split='information'),
               maxdepth=2)
 summary(fit3)
@@ -128,11 +128,11 @@ summary(fit3)
 ###################################################
 getOption("SweaveHooks")[["fig"]]()
 lmat <- matrix(c(0,3, 4,0), nrow = 2, ncol = 2, byrow = FALSE)
-fit1 <- rpart(Kyphosis ~  Age + Number + Start, data = kyphosis)
+fit1 <- causalTree(Kyphosis ~  Age + Number + Start, data = kyphosis)
 
-fit2 <- rpart(Kyphosis ~  Age + Number + Start, data = kyphosis,
+fit2 <- causalTree(Kyphosis ~  Age + Number + Start, data = kyphosis,
               parms = list(prior = c(0.65, 0.35)))
-fit3 <- rpart(Kyphosis ~  Age + Number + Start, data = kyphosis,
+fit3 <- causalTree(Kyphosis ~  Age + Number + Start, data = kyphosis,
               parms = list(loss = lmat))
 
 par(mfrow = c(1, 3), mar = rep(0.1, 4))
@@ -145,7 +145,7 @@ plot(fit3);  text(fit3, use.n = TRUE, all = TRUE, cex = 0.8)
 ### code chunk number 12: longintro.Rnw:1211-1215
 ###################################################
 cars <- car90[, -match(c("Rim", "Tires", "Model2"), names(car90))]
-carfit <- rpart(Price/1000 ~ ., data=cars)
+carfit <- causalTree(Price/1000 ~ ., data=cars)
 carfit
 printcp(carfit)
 
@@ -167,7 +167,7 @@ summary(carfit, cp = 0.1)
 ###################################################
 getOption("SweaveHooks")[["fig"]]()
 par(mfrow=c(1,2))
-rsq.rpart(carfit)
+rsq.causalTree(carfit)
 par(mfrow=c(1,1))
 
 
@@ -185,7 +185,7 @@ abline(h = 0, lty = 2)
 ###################################################
 ### code chunk number 17: longintro.Rnw:1316-1322
 ###################################################
-cfit2 <- rpart(pgstat ~ age + eet + g2 + grade + gleason + ploidy,
+cfit2 <- causalTree(pgstat ~ age + eet + g2 + grade + gleason + ploidy,
                data = stagec)
 
 printcp(cfit2)
@@ -196,9 +196,9 @@ print(cfit2, cp = 0.03)
 ###################################################
 ### code chunk number 18: longintro.Rnw:1492-1496
 ###################################################
-sfit <- rpart(skips ~ Opening + Solder + Mask + PadType + Panel,
+sfit <- causalTree(skips ~ Opening + Solder + Mask + PadType + Panel,
               data = solder, method = 'poisson',
-              control = rpart.control(cp = 0.05, maxcompete = 2))
+              control = causalTree.control(cp = 0.05, maxcompete = 2))
 sfit
 
 
@@ -234,7 +234,7 @@ newtime <- predict(temp, type = 'expected')
 ###################################################
 getOption("SweaveHooks")[["fig"]]()
 require(survival)
-pfit <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2 + grade +
+pfit <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2 + grade +
                gleason + ploidy, data = stagec)
 print(pfit)
 
@@ -248,7 +248,7 @@ text(pfit2, use.n = TRUE)
 ### code chunk number 23: exp4
 ###################################################
 getOption("SweaveHooks")[["fig"]]()
-temp <- snip.rpart(pfit2, 6)
+temp <- snip.causalTree(pfit2, 6)
 km <- survfit(Surv(pgtime, pgstat) ~ temp$where, stagec)
 plot(km, lty = 1:4, mark.time = FALSE,
      xlab = "Years", ylab = "Progression")
@@ -259,8 +259,8 @@ legend(10, 0.3, paste('node', c(4,5,6,7)), lty = 1:4)
 ### code chunk number 24: plots1
 ###################################################
 getOption("SweaveHooks")[["fig"]]()
-fit <- rpart(pgstat ~  age + eet + g2 + grade + gleason + ploidy,
-             stagec, control = rpart.control(cp = 0.025))
+fit <- causalTree(pgstat ~  age + eet + g2 + grade + gleason + ploidy,
+             stagec, control = causalTree.control(cp = 0.025))
 par(mar = rep(0.2, 4))
 plot(fit)
 text(fit)
@@ -305,11 +305,11 @@ text(fit, all = TRUE, use.n = TRUE, fancy = TRUE, cex= 0.9)
 ###################################################
 ### code chunk number 29: longintro.Rnw:1780-1788
 ###################################################
-carfit <- rpart(Price/1000 ~ ., cars)
+carfit <- causalTree(Price/1000 ~ ., cars)
 carfit$cptable
 
 price2 <-  cars$Price[!is.na(cars$Price)]/1000
-temp <- xpred.rpart(carfit)
+temp <- xpred.causalTree(carfit)
 errmat <- price2 - temp
 abserr <- colMeans(abs(errmat))
 rbind(abserr, relative=abserr/mean(abs(price2-mean(price2))))

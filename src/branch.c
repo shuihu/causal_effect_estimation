@@ -9,12 +9,12 @@
  *           split is missing.
  *
  * This is the one routine that accesses the tree by observation number,
- *  without the mediation of the rp.sorts array.  For missing value
+ *  without the mediation of the ct.sorts array.  For missing value
  *  information it thus has to look at X directly using a macro.
  */
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 pNode
 branch(pNode tree, int obs)
@@ -28,7 +28,7 @@ branch(pNode tree, int obs)
     if (!tree->leftson) return NULL;
 
     me = tree;
-    xdata = rp.xdata;
+    xdata = ct.xdata;
 
    /*
     * choose left or right son
@@ -37,7 +37,7 @@ branch(pNode tree, int obs)
     tsplit = me->primary;
     j = tsplit->var_num;
     if (R_FINITE(xdata[j][obs])) {
-	if (rp.numcat[j] == 0) {        /* continuous */
+	if (ct.numcat[j] == 0) {        /* continuous */
 	    dir = (xdata[j][obs] < tsplit->spoint) ?
 		tsplit->csplit[0] : -tsplit->csplit[0];
 	    goto down;
@@ -49,7 +49,7 @@ branch(pNode tree, int obs)
 		goto down;
 	}
     }
-    if (rp.usesurrogate == 0)
+    if (ct.usesurrogate == 0)
 	return NULL;
    /*
     * use the surrogates
@@ -57,8 +57,8 @@ branch(pNode tree, int obs)
     for (tsplit = me->surrogate; tsplit; tsplit = tsplit->nextsplit) {
 	j = tsplit->var_num;
 	if (R_FINITE(xdata[j][obs])) {  /* not missing */
-	    if (rp.numcat[j] == 0) {
-		dir = (rp.xdata[j][obs] < tsplit->spoint) ?
+	    if (ct.numcat[j] == 0) {
+		dir = (ct.xdata[j][obs] < tsplit->spoint) ?
 		    tsplit->csplit[0] : -tsplit->csplit[0];
 		goto down;
 	    } else {
@@ -72,7 +72,7 @@ branch(pNode tree, int obs)
     }
 
 
-    if (rp.usesurrogate < 2)
+    if (ct.usesurrogate < 2)
 	return NULL;
     /*
      * split it by default

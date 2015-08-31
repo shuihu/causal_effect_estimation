@@ -1,5 +1,4 @@
-Package: rpart
-Priority: recommended
+Package: causalTree
 Version: 4.1-9
 Date: 2015-02-24
 Authors@R: c(person("Terry", "Therneau", role = "aut",
