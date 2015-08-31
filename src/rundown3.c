@@ -4,9 +4,9 @@
  *
  */
 #include <math.h>
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 void
 rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *xpred2, double *xtemp)
@@ -20,15 +20,15 @@ rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *x
   double temp;
   //Rprintf("xtree->complexity = %f\n", tree->complexity);
    
-  for (i = 0; i < rp.num_unique_cp; i++) {
+  for (i = 0; i < ct.num_unique_cp; i++) {
     
     while (cp[i] < tree->complexity) {
       tree = branch(tree, obs);
       //Rprintf("cp[%d] = %f, tree->complexity = %f, ",i, cp[i], tree->complexity);
       //Rprintf("obs %d:%f -> ", obs+1, tree->response_est[0]);
       //if (tree == 0) {       
-      //  if (rp.usesurrogate < 2) {  /* must have hit a missing value */
-      //    for (; i < rp.num_unique_cp; i++)
+      //  if (ct.usesurrogate < 2) {  /* must have hit a missing value */
+      //    for (; i < ct.num_unique_cp; i++)
 	    //       xpred[i] = otree->response_est[0];
       //  } else
       //    goto oops;
@@ -45,8 +45,8 @@ rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *x
       //Rprintf("obs %d: %f -> ", neighbor+1, tree2->response_est[0]);
       // This part is only to deal with missing values
       //if (tree2 == 0) { 
-      //  if (rp.usesurrogate < 2) {  /* must have hit a missing value */
-      //    for (; i < rp.num_unique_cp; i++)
+      //  if (ct.usesurrogate < 2) {  /* must have hit a missing value */
+      //    for (; i < ct.num_unique_cp; i++)
       //      xpred2[i] = otree2->response_est[0];
       //  } else
       //    goto oops;  
@@ -60,10 +60,10 @@ rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *x
     
     
     // matching function:
-    temp = (2 * rp.wt[obs2] - 1) * (*rp.ydata[obs2] - *rp.ydata[neighbor2]);
+    temp = (2 * ct.wt[obs2] - 1) * (*ct.ydata[obs2] - *ct.ydata[neighbor2]);
     //Rprintf("neighbor2 = %d\n", neighbor2);
-    //Rprintf("rp.wt[%d] = %f, rp.ydata[%d] = %f, rp.ydata[%d] = %f\n", obs2, rp.wt[obs2], 
-    //  obs2, *rp.ydata[obs2], neighbor2, *rp.ydata[neighbor2]);
+    //Rprintf("ct.wt[%d] = %f, ct.ydata[%d] = %f, ct.ydata[%d] = %f\n", obs2, ct.wt[obs2], 
+    //  obs2, *ct.ydata[obs2], neighbor2, *ct.ydata[neighbor2]);
     
     xtemp[i] = (temp - 0.5 * (xpred[i] + xpred2[i])) * (temp - 0.5 * (xpred[i] + xpred2[i]));
     //Rprintf("temp = %f, the error is %f\n", temp, xtemp[i]);

@@ -1,0 +1,531 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: causalTree 4.1-7\n"
+"Report-Msgid-Bugs-To: bugs@r-project.org\n"
+"POT-Creation-Date: 2014-03-18 13:59\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Łukasz Daniel <lukasz.daniel@gmail.com>\n"
+"Language-Team: Łukasz Daniel <lukasz.daniel@gmail.com>\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"na-Revision-Date: 2012-05-29 07:55+0100\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+"X-Poedit-SourceCharset: iso-8859-1\n"
+"X-Generator: Poedit 1.6.4\n"
+"X-Poedit-Bookmarks: -1,6,-1,-1,-1,-1,-1,-1,-1,-1\n"
+
+# causalTree/R/formatg.R: 6
+# stop("'x' must be a numeric vector")
+msgid "'x' must be a numeric vector"
+msgstr "'x' musi być wektorem liczbowym"
+
+# causalTree/R/text.causalTree.R: 11
+# stop("Not a legitimate \"causalTree\" object")
+# causalTree/R/rsq.causalTree.R: 7
+# stop("Not a legitimate \"causalTree\" object")
+msgid "Not a legitimate \"causalTree\" object"
+msgstr "argument nie jest obiektem klasy \"causalTree\""
+
+# causalTree/R/meanvar.causalTree.R: 7
+# stop("Plot is not useful for classification or poisson trees")
+msgid "Plot not useful for classification or poisson trees"
+msgstr "Wykres jest nieprzydatny dla drzew klasyfikacyjnych lub poissonowskich"
+
+# causalTree/R/plot.causalTree.R: 5
+# stop("fit is not a tree, just a root")
+# causalTree/R/text.causalTree.R: 12
+# stop("fit is not a tree, just a root")
+msgid "fit is not a tree, just a root"
+msgstr "dopasowanie nie jest drzewem tylko korzeniem"
+
+# causalTree/R/plotcp.R: 11
+# stop("'cptable' component does not contain cross-validation results")
+msgid "'cptable' does not contain cross-validation results"
+msgstr "komponent 'cptable' nie zawiera wyników krzyżowej walidacji"
+
+# causalTree/R/pred.causalTree.R: 15
+# stop("Tree has variables not found in new data")
+msgid "Tree has variables not found in new data"
+msgstr "Drzewo posiada zmienne nie znalezione w nowych danych"
+
+# causalTree/R/predict.causalTree.R: 31
+# stop("type 'class' is only appropriate for classification")
+msgid "type 'class' is only appropriate for classification"
+msgstr "typ 'class' jest odpowiedni jedynie dla klasyfikacji"
+
+# causalTree/R/predict.causalTree.R: 37
+# stop("Invalid prediction for \"causalTree\" object")
+msgid "Invalid prediction for \"causalTree\" object"
+msgstr "Niepoprawna predykcja dla obiektu klasy \"causalTree\""
+
+msgid "'x' must be an \"causalTree\" object"
+msgstr "argument 'x' musi być obiektem klasy \"causalTree\""
+
+# causalTree/R/residuals.causalTree.R: 12
+# stop("Invalid type of residual")
+msgid "Invalid type of residual"
+msgstr "Niepoprawny typ reszty"
+
+# causalTree/R/roc.causalTree.R: 5
+# stop("'object' argument is not an object of class \"causalTree\" or endpoint is not a 2 level-factor")
+msgid "Not legitimate \"causalTree\" tree and endpoint not a 2 level-factor"
+msgstr ""
+"argument 'object' nie jest obiektem klasy \"causalTree\" lub punkt końcowy nie "
+"jest czynnikiem dwupoziomowym"
+
+# causalTree/R/causalTree.R: 15
+# stop("a 'formula' argument is required")
+msgid "a 'formula' argument is required"
+msgstr "argument 'formula' jest wymagany"
+
+# causalTree/R/causalTree.R: 24
+# stop("Trees cannot handle interaction terms")
+msgid "Trees cannot handle interaction terms"
+msgstr "Drzewa nie mogą obsłużyć członów oddziaływania"
+
+# causalTree/R/causalTree.R: 28
+# stop("negative weights not allowed")
+msgid "negative weights not allowed"
+msgstr "ujemne wagi nie są dozwolone"
+
+# causalTree/R/causalTree.R: 59
+# stop("Invalid method")
+msgid "Invalid method"
+msgstr "Niepoprawna metoda"
+
+# causalTree/R/causalTree.R: 96
+# stop(gettextf("Argument %s not matched", names(extraArgs)[indx == 0L]), domain = "R-causalTree")
+msgid "Argument %s not matched"
+msgstr "Argument %s nie został dopasowany"
+
+# causalTree/R/xpred.causalTree.R: 81
+# stop("Wrong length for 'xval'")
+# causalTree/R/xpred.causalTree.R: 82
+# stop("Wrong length for 'xval'")
+# causalTree/R/causalTree.R: 121
+# stop("Wrong length for 'xval'")
+# causalTree/R/causalTree.R: 122
+# stop("Wrong length for 'xval'")
+msgid "Wrong length for 'xval'"
+msgstr "Niepoprawna długość dla 'xval'"
+
+# causalTree/R/causalTree.R: 131
+# stop("Cost vector is the wrong length")
+msgid "Cost vector is the wrong length"
+msgstr "Wektor kosztów ma niepoprawną długość"
+
+# causalTree/R/causalTree.R: 132
+# stop("Cost vector must be positive")
+msgid "Cost vector must be positive"
+msgstr "Wektor kosztów musi być dodatni"
+
+# causalTree/R/causalTree.R: 251
+# stop("Initialization routine is missing the 'summary' function")
+msgid "Initialization routine is missing the 'summary' function"
+msgstr "Brak procedury inicjalizacji w funkcji 'summary'"
+
+# causalTree/R/snip.causalTree.mouse.R: 9
+# stop("no information available on parameters from previous call to plot()")
+# causalTree/R/causalTreeco.R: 7
+# stop("no information available on parameters from previous call to plot()")
+msgid "no information available on parameters from previous call to plot()"
+msgstr ""
+"brak dostępnej informacji na temat parametrów z poprzedniego wywołania "
+"'plot()'"
+
+# causalTree/R/causalTree.class.R: 3
+# stop("No offset allowed in classification models")
+msgid "No offset allowed in classification models"
+msgstr "Brak dozwolonego przesunięcia w modelach klasyfikacyjnych"
+
+# causalTree/R/causalTree.class.R: 14
+# stop("The parms list must have names")
+msgid "The parms list must have names"
+msgstr "Lista parametrów musi mieć nazwy"
+
+# causalTree/R/causalTree.exp.R: 116
+# stop(gettextf("'parms' component not matched: %s", names(parms)[indx == 0L]), domain = "R-causalTree")
+# causalTree/R/causalTree.class.R: 17
+# stop(gettextf("'parms' component not matched: %s", names(parms)[temp == 0L]), domain = "R-causalTree")
+# causalTree/R/causalTree.poisson.R: 21
+# stop(gettextf("'parms' component not matched: %s", names(parms)[indx == 0L]), domain = "R-causalTree")
+msgid "'parms' component not matched: %s"
+msgstr "komponent 'parms' nie został dopasowany: %s"
+
+# causalTree/R/causalTree.class.R: 23
+# stop("Priors must sum to 1")
+msgid "Priors must sum to 1"
+msgstr "Prawdopodobieństwa a priori muszą sumować się do 1"
+
+# causalTree/R/causalTree.class.R: 24
+# stop("Priors must be >= 0")
+msgid "Priors must be >= 0"
+msgstr "Prawdopodobieństwa a priori muszą być >= 0"
+
+# causalTree/R/causalTree.class.R: 25
+# stop("Wrong length for priors")
+msgid "Wrong length for priors"
+msgstr "Niepoprawna długość dla prawdopodobieństw a priori"
+
+# causalTree/R/causalTree.class.R: 32
+# stop("Wrong length for loss matrix")
+msgid "Wrong length for loss matrix"
+msgstr "Niepoprawna długość macierzy strat"
+
+# causalTree/R/causalTree.class.R: 35
+# stop("Loss matrix must have zero on diagonals")
+msgid "Loss matrix must have zero on diagonals"
+msgstr "Macierz strat musi mieć zera na diagonali"
+
+# causalTree/R/causalTree.class.R: 37
+# stop("Loss matrix cannot have negative elements")
+msgid "Loss matrix cannot have negative elements"
+msgstr "Macierz strat nie może mieć ujemnych elementów"
+
+# causalTree/R/causalTree.class.R: 39
+# stop("Loss matrix has a row of zeros")
+msgid "Loss matrix has a row of zeros"
+msgstr "Macierz strat ma wiersz zer"
+
+# causalTree/R/causalTree.class.R: 45
+# stop("Invalid splitting rule")
+msgid "Invalid splitting rule"
+msgstr "Niepoprawna reguła rozdzielająca"
+
+# causalTree/R/causalTree.class.R: 49
+# stop("Parameter argument must be a list")
+msgid "Parameter argument must be a list"
+msgstr "Argument parametru musi być listą"
+
+# causalTree/R/causalTree.control.R: 8
+# warning("The value of 'maxcompete' supplied is < 0; the value 0 was used instead")
+msgid "The value of 'maxcompete' supplied is < 0; the value 0 was used instead"
+msgstr "Wartość dostarczonego 'maxcompete' <0; zamiast niej użyto 0"
+
+# causalTree/R/causalTree.control.R: 12
+# warning("The value of 'xval' supplied is < 0; the value 0 was used instead")
+msgid "The value of 'xval' supplied is < 0; the value 0 was used instead"
+msgstr "Dostarczona wartość 'xval' <0; zamiast niej użyto 0"
+
+# causalTree/R/causalTree.control.R: 15
+# stop("Maximum depth is 30")
+msgid "Maximum depth is 30"
+msgstr "Maksymalna głębokość wynosi 30"
+
+# causalTree/R/causalTree.control.R: 16
+# stop("Maximum depth must be at least 1")
+msgid "Maximum depth must be at least 1"
+msgstr "Maksymalna głębokość musi być równa przynajmniej 1"
+
+# causalTree/R/causalTree.control.R: 23
+# warning("The value of 'surrogatestyle' supplied was out of range, the default value of 0 is used instead.")
+msgid ""
+"The value of 'usesurrogate' supplied was out of range, the default value of "
+"2 is used instead."
+msgstr ""
+"Dostarczona wartość 'usesurrogate' była poza zakesem, użyto zamiast niej "
+"domyślnej wartości 2."
+
+# causalTree/R/causalTree.control.R: 23
+# warning("The value of 'surrogatestyle' supplied was out of range, the default value of 0 is used instead.")
+msgid ""
+"The value of 'surrogatestyle' supplied was out of range, the default value "
+"of 0 is used instead."
+msgstr ""
+"Dostarczona wartość 'usesurrogate' była poza zakesem, użyto zamiast niej "
+"domyślnej wartości 0."
+
+# causalTree/R/causalTree.exp.R: 15
+# stop("'y' argument must be an object of class \"survival\" - use the 'Surv()' function")
+msgid "Response must be a 'survival' object - use the 'Surv()' function"
+msgstr "argument 'y' musi być obiektem \"survival\"- użyj funkcji 'Surv()'"
+
+# causalTree/R/causalTree.exp.R: 21
+# stop("Observation time must be > 0")
+# causalTree/R/causalTree.poisson.R: 11
+# stop("Observation time must be > 0")
+msgid "Observation time must be > 0"
+msgstr "Czas obserwacji musi być > 0"
+
+# causalTree/R/causalTree.exp.R: 22
+# stop("No deaths in data set")
+msgid "No deaths in data set"
+msgstr "Brak śmierci w zbiorze danych"
+
+# causalTree/R/causalTree.exp.R: 112
+# stop("You must input a named list for parms")
+# causalTree/R/causalTree.poisson.R: 17
+# stop("You must input a named list for parms")
+msgid "You must input a named list for parms"
+msgstr "Musisz wprowadzić nazwaną listę do parametrów"
+
+# causalTree/R/causalTree.exp.R: 121
+# stop("Invalid error method for Poisson")
+# causalTree/R/causalTree.poisson.R: 26
+# stop("Invalid error method for Poisson")
+msgid "Invalid error method for Poisson"
+msgstr "Niepoprawna metoda błędu dla Poissona"
+
+# causalTree/R/causalTree.exp.R: 126
+# stop("Invalid shrinkage value")
+# causalTree/R/causalTree.poisson.R: 32
+# stop("Invalid shrinkage value")
+msgid "Invalid shrinkage value"
+msgstr "Niepoprawna wartość zawężenia"
+
+# causalTree/R/causalTree.poisson.R: 5
+# stop("response must be a 2 column matrix or a vector")
+msgid "response must be a 2 column matrix or a vector"
+msgstr "Zmienna zależna musi być 2-kolumnową macierzą lub wektorem"
+
+# causalTree/R/causalTree.poisson.R: 12
+# stop("Number of events must be >= 0")
+msgid "Number of events must be >= 0"
+msgstr "Liczba zdarzeń musi być >= 0"
+
+# causalTree/R/causalTreecallback.R: 7
+# stop("User written methods must have 3 functions")
+msgid "User written methods must have 3 functions"
+msgstr "Metody użytkownika muszą mieć 3 funkcje"
+
+# causalTree/R/causalTreecallback.R: 13
+# stop("User written method does not contain an 'eval' function")
+msgid "User written method does not contain an 'init' function"
+msgstr "Metoda użytkownika nie zawiera funkcji 'init()'"
+
+# causalTree/R/causalTreecallback.R: 11
+# stop("User written method does not contain a 'split' function")
+msgid "User written method does not contain a 'split' function"
+msgstr "Metoda użytkownika nie zawiera funkcji 'split()'"
+
+# causalTree/R/causalTreecallback.R: 13
+# stop("User written method does not contain an 'eval' function")
+msgid "User written method does not contain an 'eval' function"
+msgstr "Metoda użytkownika nie zawiera funkcji 'eval()'"
+
+# causalTree/R/causalTreecallback.R: 36
+# stop("User 'eval' function returned invalid label")
+# causalTree/R/causalTreecallback.R: 65
+# stop("User 'eval' function returned invalid label")
+msgid "User 'eval' function returned invalid label"
+msgstr "Funkcja użytkownika 'eval' zwróciła niepoprawną etykietę"
+
+# causalTree/R/causalTreecallback.R: 38
+# stop("User 'eval' function returned invalid deviance")
+# causalTree/R/causalTreecallback.R: 67
+# stop("User 'eval' function returned invalid deviance")
+msgid "User 'eval' function returned invalid deviance"
+msgstr "Funkcja użytkownika 'eval' zwróciła niepoprawne odchylenie"
+
+# causalTree/R/causalTreecallback.R: 49
+# stop("Invalid return from categorical 'split' function")
+# causalTree/R/causalTreecallback.R: 79
+# stop("Invalid return from categorical 'split' function")
+msgid "Invalid return from categorical 'split' function"
+msgstr "Niepoprawny wynik z kategorycznej funkcji 'split'"
+
+# causalTree/R/causalTreecallback.R: 54
+# stop("User 'split' function returned invalid goodness")
+# causalTree/R/causalTreecallback.R: 85
+# stop("User 'split' function returned invalid goodness")
+msgid "User 'split' function returned invalid goodness"
+msgstr "Funkcja użytkownika 'split' zwróciła niepoprawną dobroć"
+
+# causalTree/R/causalTreecallback.R: 56
+# stop("User 'split' function returned invalid direction")
+# causalTree/R/causalTreecallback.R: 87
+# stop("User 'split' function returned invalid direction")
+msgid "User 'split' function returned invalid direction"
+msgstr "Funkcja użytkownika 'split' zwróciła niepoprawny kierunek"
+
+# causalTree/R/rsq.causalTree.R: 17
+# warning("may not be applicable for this method")
+msgid "may not be applicable for this method"
+msgstr "może nie mieć zastosowania dla tego modelu"
+
+# causalTree/R/snip.causalTree.R: 6
+# stop("Not an \"causalTree\" object")
+msgid "Not an \"causalTree\" object"
+msgstr "argument 'x' nie jest obiektem klasy \"causalTree\""
+
+# causalTree/R/snip.causalTree.R: 20
+# warning(gettextf("Nodes %s are not in this tree", toss[toss.idx == 0L]),
+#                 domain = "R-causalTree")
+msgid "Nodes %s are not in this tree"
+msgstr "Węzły %s nie są w tym drzewie"
+
+# causalTree/R/text.causalTree.R: 15
+# warning("argument 'label' is no longer used")
+msgid "argument 'label' is no longer used"
+msgstr "argument 'label' jest aktualnie nieużyty"
+
+# causalTree/R/xpred.causalTree.R: 7
+# stop("Invalid fit object")
+msgid "Invalid fit object"
+msgstr "niepoprawny obiekt dopasowania"
+
+# causalTree/R/zzz.R: 25
+# warning(sprintf(gettext("supplied nodes %s are not in this tree", domain = "R-causalTree"), paste(bad, collapse = ", ")), domain = NA)
+msgid "supplied nodes %s are not in this tree"
+msgstr "dostarczone węzły %s nie są w tym drzewie"
+
+# causalTree/R/zzz.R: 28
+# warning(sprintf(gettext("supplied nodes %s are leaves", domain = "R-causalTree"), paste(good[leaves], collapse = ", ")), domain = NA)
+msgid "supplied nodes %s are leaves"
+msgstr "dostarczone węzły %s są liśćmi"
+
+# causalTree/R/labels.causalTree.R: 66
+# warning("more than 52 levels in a predicting factor, truncated for printout", domain = "R-causalTree")
+#~ msgid "more than 52 levels in a predicting factor, truncated for printout"
+#~ msgstr ""
+#~ "więcej niż 52 poziomów w czynniku przewidującym, przycięto na potrzeby "
+#~ "wyświetlenia"
+
+# causalTree/man/meanvar.causalTree.Rd: 15
+# gettext("ave(y)")
+# causalTree/R/meanvar.causalTree.R: 1
+# gettext("ave(y)")
+#~ msgid "ave(y)"
+#~ msgstr "średnie(y)"
+
+#~ msgid "ave(deviance)"
+#~ msgstr "średnie(odchylenie)"
+
+# causalTree/R/plot.causalTree.R: 4
+# stop("'x' argument is not an object of class \"causalTree\"")
+# causalTree/R/plotcp.R: 7
+# stop("'x' argument is not an object of class \"causalTree\"")
+# causalTree/R/print.causalTree.R: 4
+# stop("'x' argument is not an object of class \"causalTree\"")
+#~ msgid "'%s' argument is not an object of class %s"
+#~ msgstr "argument '%s' nie jest obiektem klasy %s"
+
+# causalTree/R/path.causalTree.R: 18
+# gettext("node number: ", domain = "R-causalTree")
+# causalTree/R/path.causalTree.R: 28
+# gettext("node number: ", domain = "R-causalTree")
+#~ msgid "node number:"
+#~ msgstr "numer węzła:"
+
+# causalTree/R/plotcp.R: 21
+# gettext("X-val Relative Error", domain = "R-causalTree")
+#~ msgid "X-val Relative Error"
+#~ msgstr "Błąd względny wartości X"
+
+# causalTree/R/plotcp.R: 29
+# gettext("size of tree", domain = "R-causalTree")
+#~ msgid "size of tree"
+#~ msgstr "rozmiar drzewa"
+
+# causalTree/R/plotcp.R: 33
+# gettext("number of splits", domain = "R-causalTree")
+#~ msgid "number of splits"
+#~ msgstr "liczba rozgałęzień"
+
+# causalTree/R/post.causalTree.R: 22
+# gettextf("Endpoint = %s", paste(temp, collapse = " "), domain = "R-causalTree")
+#~ msgid "Endpoint = %s"
+#~ msgstr "Koniec = %s"
+
+#~ msgid "Regression tree:"
+#~ msgstr "Drzewo regresyjne:"
+
+#~ msgid "Classification tree:"
+#~ msgstr "Drzewo klasyfikacyjne:"
+
+#~ msgid "Rates regression tree:"
+#~ msgstr "Drzewo regresyjne szybkości:"
+
+#~ msgid "Survival regression tree:"
+#~ msgstr "Drzewo regresyjne przeżycia:"
+
+# causalTree/R/printcp.R: 21
+# gettext("Variables actually used in tree construction:\n", domain = "R-causalTree")
+#~ msgid "Variables actually used in tree construction:"
+#~ msgstr "Zmienne uzyte w konstrukcji drzewa:"
+
+# causalTree/R/printcp.R: 27
+# gettext("Root node error: ", domain = "R-causalTree")
+#~ msgid "Root node error:"
+#~ msgstr "Błąd głównego węzła:"
+
+# causalTree/R/roc.causalTree.R: 62
+# gettext("Sensitivity", domain = "R-causalTree")
+# causalTree/R/roc.causalTree.R: 66
+# gettext("Sensitivity", domain = "R-causalTree")
+#~ msgid "Sensitivity"
+#~ msgstr "Czułość"
+
+#~ msgid "1-Specificity"
+#~ msgstr "1-Specyficzność"
+
+#~ msgid "Specificity"
+#~ msgstr "Specyficzność"
+
+# causalTree/R/causalTree.anova.R: 6
+# gettextf("  mean=%s, MSE=%s", formatg(yval, digits), formatg(dev/wt, digits), domain = "R-causalTree")
+#~ msgid "mean=%s, MSE=%s"
+#~ msgstr "średnia=%s, błąd standardowy  średniej=%s"
+
+# causalTree/R/causalTree.branch.R: 10
+# stop("no information available on parameters from previous call to 'plot()'")
+#~ msgid ""
+#~ "no information available on parameters from previous call to 'plot()'"
+#~ msgstr ""
+#~ "brak dostępnej informacji na temat parametrów z poprzedniego wywołania "
+#~ "'plot()'"
+
+# causalTree/R/causalTree.control.R: 19
+# warning("The value of 'usesurrogate' supplied was out of range, the default value of 2 is used instead.")
+#~ msgid ""
+#~ "The value of '%s' supplied was out of range, the default value of %d is "
+#~ "used instead"
+#~ msgstr ""
+#~ "Dostarczona wartość '%s' była poza zakesem, użyto zamiast niej domyślnej "
+#~ "wartości %d"
+
+# causalTree/R/causalTreecallback.R: 9
+# stop("User written method does not contain an 'init' function")
+#~ msgid "User written method does not contain an %s function"
+#~ msgstr "Metoda użytkownika nie zawiera funkcji '%s'"
+
+#~ msgid "Variable importance"
+#~ msgstr "Istotność zmiennej"
+
+# causalTree/R/meanvar.causalTree.R: 5
+# stop("'tree' argument is not an object of class \"causalTree\"")
+# causalTree/R/path.causalTree.R: 6
+# stop("'tree' argument is not an object of class \"causalTree\"")
+#~ msgid "'tree' argument is not an object of class \"causalTree\""
+#~ msgstr "argument 'tree' nie jest obiektem klasy \"causalTree\""
+
+# causalTree/R/summary.causalTree.R: 4
+# stop("'object' argument is not an object of class \"causalTree\"")
+# causalTree/R/predict.causalTree.R: 5
+# stop("'object' argument is not an object of class \"causalTree\"")
+#~ msgid "'object' argument is not an object of class \"causalTree\""
+#~ msgstr "argument 'object' nie jest obiektem klasy \"causalTree\""
+
+# causalTree/R/printcp.R: 4
+# stop ("'x' argument must be an object of class \"causalTree\"")
+#~ msgid "'x' argument must be an object of class \"causalTree\""
+#~ msgstr "argument 'x' nie jest obiektem klasy \"causalTree\""
+
+# causalTree/R/residuals.causalTree.R: 5
+# stop("'object' argument is not an object of classe \"causalTree\"")
+#~ msgid "'object' argument is not an object of classe \"causalTree\""
+#~ msgstr "argument 'object' nie jest obiektem klasy \"causalTree\""
+
+#, fuzzy
+#~ msgid "x does not appear to be an \"causalTree\" object"
+#~ msgstr "'x' nie wygląda na obiekt 'causalTree'"
+
+#~ msgid "'x' not converted"
+#~ msgstr "'x' nie został przekształcony"
+
+#, fuzzy
+#~ msgid "'fit' must be an \"causalTree\" object"
+#~ msgstr "'x' musi być obiektem \"causalTree\""

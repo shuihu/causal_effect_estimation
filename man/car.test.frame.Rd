@@ -64,7 +64,7 @@ the net horsepower of the vehicle.
   \code{\link{cu.summary}}
 }
 \examples{
-z.auto <- rpart(Mileage ~ Weight, car.test.frame)
+z.auto <- causalTree(Mileage ~ Weight, car.test.frame)
 summary(z.auto)
 }
 \keyword{datasets}

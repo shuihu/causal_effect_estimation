@@ -2,7 +2,7 @@
  *  The functions for poisson based regression
  */
 #include <math.h>
-#include "rpart.h"
+#include "causalTree.h"
 
 static double exp_alpha, exp_beta;
 static double *death, *wtime, *rate;

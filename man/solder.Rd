@@ -45,7 +45,7 @@ a numeric vector giving the number of visible solder skips.
   Pacific Grove, CA.
 }
 \examples{
-fit <- rpart(skips ~ Opening + Solder + Mask + PadType + Panel,
+fit <- causalTree(skips ~ Opening + Solder + Mask + PadType + Panel,
              data = solder, method = "anova")
 summary(residuals(fit))
 plot(predict(fit), residuals(fit))

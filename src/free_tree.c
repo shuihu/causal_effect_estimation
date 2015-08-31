@@ -1,9 +1,9 @@
 /*
  * free up all of the memory associated with a tree
  */
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 static void
 free_split(pSplit spl)

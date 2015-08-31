@@ -3,9 +3,9 @@
  *    for several CP values at once.
  *
  */
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 void
 //rundown(pNode tree, int obs, double *cp, double *xpred, double *xtemp)
@@ -23,7 +23,7 @@ rundown(pNode tree, int obs, double *cp, double *xpred, double *xtemp, double p)
      *   not have collapsed, but this split will have, so this is my
      *   predictor.
      */
-    for (i = 0; i < rp.num_unique_cp; i++) {
+    for (i = 0; i < ct.num_unique_cp; i++) {
       while (cp[i] < tree->complexity) {
 	    tree = branch(tree, obs);
 	    if (tree == 0)
@@ -34,20 +34,20 @@ rundown(pNode tree, int obs, double *cp, double *xpred, double *xtemp, double p)
   
   //Rprintf("cp = %f, %d's prediction value: %f, ",cp[i], obs2, xpred[i]);
   // error functions where we need to change:
- // xtemp[i] = (*rp_error) (rp.ydata[obs2], tree->response_est);
+ // xtemp[i] = (*ct_error) (ct.ydata[obs2], tree->response_est);
  
-	xtemp[i] = (*rp_error) (rp.ydata[obs2], rp.wt[obs2], tree->response_est, p);
+	xtemp[i] = (*ct_error) (ct.ydata[obs2], ct.wt[obs2], tree->response_est, p);
   //Rprintf("error: %f\n", xtemp[i]);
     }
 
     return;
 
 oops:;
-    if (rp.usesurrogate < 2) {  /* must have hit a missing value */
-	for (; i < rp.num_unique_cp; i++)
+    if (ct.usesurrogate < 2) {  /* must have hit a missing value */
+	for (; i < ct.num_unique_cp; i++)
 	    xpred[i] = otree->response_est[0];
-  // xtemp[i] = (*rp_error) (rp.ydata[obs2], otree->response_est);
-	xtemp[i] = (*rp_error) (rp.ydata[obs2], rp.wt[obs2], otree->response_est, p);
+  // xtemp[i] = (*ct_error) (ct.ydata[obs2], otree->response_est);
+	xtemp[i] = (*ct_error) (ct.ydata[obs2], ct.wt[obs2], otree->response_est, p);
 	Rprintf("oops number %d.\n", opnumber++);
   return;
     }

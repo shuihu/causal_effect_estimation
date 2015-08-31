@@ -9,9 +9,9 @@
  *            to the right.  Beware-  for certain settings of the
  *            usesurrogate option, some obs go neither left nor right
  */
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 #include <stdio.h>
 
 void
@@ -32,9 +32,9 @@ nodesplit(pNode me, int nodenum, int n1, int n2, int *nnleft, int *nnright)
     int nleft, nright;
     //int           dummy;      /* debugging */
 
-    which = rp.which;
-    sorts = rp.sorts;
-    xdata = rp.xdata;
+    which = ct.which;
+    sorts = ct.sorts;
+    xdata = ct.xdata;
     leftson = 2 * nodenum;      /* the label that will go with the left son */
     rightson = leftson + 1;
 
@@ -48,7 +48,7 @@ nodesplit(pNode me, int nodenum, int n1, int n2, int *nnleft, int *nnright)
     nleft = 0;
     nright = 0;
 
-    if (rp.numcat[pvar] > 0) {  /* categorical primary variable */
+    if (ct.numcat[pvar] > 0) {  /* categorical primary variable */
 	index = tsplit->csplit;
 	for (i = n1; i < n2; i++) {
 	    j = sorts[pvar][i];
@@ -95,9 +95,9 @@ nodesplit(pNode me, int nodenum, int n1, int n2, int *nnleft, int *nnright)
      *   be split.  So it is more efficient to make one 1:n pass,
      *   with multiple runs through the surrogate list.
      */
-    if (someleft > 0 && rp.usesurrogate > 0) {
+    if (someleft > 0 && ct.usesurrogate > 0) {
 	for (i = n1; i < n2; i++) {
-	    j = rp.sorts[pvar][i];
+	    j = ct.sorts[pvar][i];
 	    if (j >= 0)
 		continue;       /* already split */
 
@@ -108,7 +108,7 @@ nodesplit(pNode me, int nodenum, int n1, int n2, int *nnleft, int *nnright)
 		    continue;
 		/* surrogate not missing - process it */
 
-		if (rp.numcat[var] > 0) {       /* categorical surrogate */
+		if (ct.numcat[var] > 0) {       /* categorical surrogate */
 		    index = tsplit->csplit;
 		    k = (int) xdata[var][j];    /* the value of the surrogate  */
 		    /*
@@ -154,7 +154,7 @@ nodesplit(pNode me, int nodenum, int n1, int n2, int *nnleft, int *nnright)
 	    }
 	}
     }
-    if (someleft > 0 && rp.usesurrogate == 2) {
+    if (someleft > 0 && ct.usesurrogate == 2) {
 	/* all surrogates missing, use the default */
 	i = me->lastsurrogate;
 	if (i) {           /* 50-50 splits are possible - there is no
@@ -214,8 +214,8 @@ nodesplit(pNode me, int nodenum, int n1, int n2, int *nnleft, int *nnright)
      *   portion of "sorts" would remain unchanged.  It's not worth
      *   the bother of checking, however.
      */
-    for (k = 0; k < rp.nvar; k++) {
-	sindex = rp.sorts[k];   /* point to variable k */
+    for (k = 0; k < ct.nvar; k++) {
+	sindex = ct.sorts[k];   /* point to variable k */
 	i1 = n1;
 	i2 = i1 + nleft;
 	i3 = i2 + nright;
@@ -227,13 +227,13 @@ nodesplit(pNode me, int nodenum, int n1, int n2, int *nnleft, int *nnright)
 		sindex[i1++] = sindex[i];
 	    else {
 		if (which[j] == rightson)
-		    rp.tempvec[i2++] = sindex[i];
+		    ct.tempvec[i2++] = sindex[i];
 		else
-		    rp.tempvec[i3++] = sindex[i];       /* went nowhere */
+		    ct.tempvec[i3++] = sindex[i];       /* went nowhere */
 	    }
 	}
 	for (i = n1 + nleft; i < n2; i++)
-	    sindex[i] = rp.tempvec[i];
+	    sindex[i] = ct.tempvec[i];
     }
 
     *nnleft = nleft;

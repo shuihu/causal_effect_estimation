@@ -1,9 +1,9 @@
 /*
- * These routines interface via the rpart_callback routine to
+ * These routines interface via the causalTree_callback routine to
  *   provide for user-written split functions
  */
-#include "rpart.h"
-#include "rpartproto.h"
+#include "causalTree.h"
+#include "causalTreeproto.h"
 
 static int n_return;            /* number of return values from the eval fcn */
 static double *uscratch;        /* variously used scratch vector */
@@ -19,7 +19,7 @@ usersplit_init(int n, double *y[], int maxcat, char **error,
 	 *   the length of the return vector
 	 *  the scratch vector needed is of length max(2n, nreturn+1)
 	 */
-	rpart_callback0(&n_return);
+	causalTree_callback0(&n_return);
 
 	uscratch =  (double *) ALLOC(n_return + 1 > 2 * n ? n_return + 1 : 2 *n,
 				     sizeof(double));
@@ -36,7 +36,7 @@ usersplit_eval(int n, double *y[], double *value, double *risk, double *wt)
 {
     int i;
 
-    rpart_callback1(n, y, wt, uscratch);
+    causalTree_callback1(n, y, wt, uscratch);
     *risk = uscratch[0];
     for (i = 0; i < n_return; i++)
 	value[i] = uscratch[i + 1];
@@ -78,7 +78,7 @@ usersplit(int n, double *y[], double *x, int nclass, int edge,
      *  on return uscratch contains the goodness for each split
      *  followed by the 'direction'
      */
-    rpart_callback2(n, nclass, y, wt, x, uscratch);
+    causalTree_callback2(n, nclass, y, wt, x, uscratch);
 
     if (nclass == 0) {
 	/*
@@ -154,7 +154,7 @@ usersplit(int n, double *y[], double *x, int nclass, int edge,
  *  We don't do in-C cross validation for user splits, so there
  *    is no prediction routine.
  *  (Because of the structure of the calls, it's faster to make
- *    use of xpred.rpart for user-written split routines).
+ *    use of xpred.causalTree for user-written split routines).
  */
 double
 usersplit_pred(double *y, double *yhat)

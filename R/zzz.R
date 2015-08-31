@@ -1,4 +1,4 @@
-.onUnload <- function(libpath) library.dynam.unload("rpart", libpath)
+.onUnload <- function(libpath) library.dynam.unload("causalTree", libpath)
 
 .noGenerics <- TRUE
 
@@ -50,4 +50,4 @@ descendants <- function(nodes, include = TRUE)
     desc
 }
 
-rpart_env <- new.env()
+causalTree_env <- new.env()

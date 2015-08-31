@@ -1,8 +1,8 @@
 /*
 * The four routines for anova splitting
 */
-#include "rpart.h"
-#include "rpartproto.h"
+#include "causalTree.h"
+#include "causalTreeproto.h"
 
 static double *mean, *sums, *wtsums;
 static double *wts;
@@ -79,7 +79,7 @@ void
 //anova(int n, double *y[], double *x, int nclass,
 //     int edge, double *improve, double *split, int *csplit,
 //      double myrisk, double *wt)
-// the rp_choose function:
+// the ct_choose function:
 
 anova(int n, double *y[], double *x, int nclass,
     int edge, double *improve, double *split, int *csplit,

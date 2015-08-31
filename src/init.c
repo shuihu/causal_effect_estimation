@@ -1,32 +1,32 @@
-#include "rpart.h"
+#include "causalTree.h"
 #include "R_ext/Rdynload.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
-SEXP init_rpcallback(SEXP rhox, SEXP ny, SEXP nr, SEXP expr1x, SEXP expr2x);
-SEXP rpartexp2(SEXP dtimes, SEXP seps);
-SEXP pred_rpart(SEXP dimx, SEXP nnode, SEXP nsplit, SEXP dimc,
+SEXP init_ctcallback(SEXP rhox, SEXP ny, SEXP nr, SEXP expr1x, SEXP expr2x);
+SEXP causalTreeexp2(SEXP dtimes, SEXP seps);
+SEXP pred_causalTree(SEXP dimx, SEXP nnode, SEXP nsplit, SEXP dimc,
 		SEXP nnum, SEXP nodes2, SEXP vnum, SEXP split2,
 		SEXP csplit2, SEXP usesur, SEXP xdata2, SEXP xmiss2);
-SEXP estimate_rpart(SEXP dimx, SEXP nnode, SEXP nsplit, SEXP dimc,
+SEXP estimate_causalTree(SEXP dimx, SEXP nnode, SEXP nsplit, SEXP dimc,
   	SEXP nnum, SEXP nodes2, SEXP vnum, SEXP split2,
 		SEXP csplit2, SEXP usesur, SEXP xdata2, SEXP xmiss2);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"init_rpcallback", (DL_FUNC) &init_rpcallback, 5},
-    //{"rpart", (DL_FUNC) &rpart, 11},
-    //{"rpart", (DL_FUNC) &rpart, 12},
-    {"rpart", (DL_FUNC) &rpart, 13},
+    {"init_ctcallback", (DL_FUNC) &init_ctcallback, 5},
+    //{"causalTree", (DL_FUNC) &causalTree, 11},
+    //{"causalTree", (DL_FUNC) &causalTree, 12},
+    {"causalTree", (DL_FUNC) &causalTree, 13},
     {"xpred", (DL_FUNC) &xpred, 15},
-    {"rpartexp2", (DL_FUNC) &rpartexp2, 2},
-    {"pred_rpart", (DL_FUNC) &pred_rpart, 12},
-    {"estimate_rpart", (DL_FUNC) &estimate_rpart, 12},
+    {"causalTreeexp2", (DL_FUNC) &causalTreeexp2, 2},
+    {"pred_causalTree", (DL_FUNC) &pred_causalTree, 12},
+    {"estimate_causalTree", (DL_FUNC) &estimate_causalTree, 12},
     {NULL, NULL, 0}
 };
 
 #include <Rversion.h>
 void
-R_init_rpart(DllInfo * dll)
+R_init_causalTree(DllInfo * dll)
 {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);

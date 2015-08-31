@@ -6,14 +6,14 @@ plotcp <- function(x, minline = TRUE, lty = 3, col = 1,
     dots <- list(...)
     if (!inherits(x, "rpart")) stop("Not a legitimate \"rpart\" object")
     upper <- match.arg(upper)
-    p.rpart <- x$cptable
-    if (ncol(p.rpart) < 5L)
+    p.causalTree <- x$cptable
+    if (ncol(p.causalTree) < 5L)
         stop("'cptable' does not contain cross-validation results")
-    xstd <- p.rpart[, 5L]
-    xerror <- p.rpart[, 4L]
-    nsplit <- p.rpart[, 2L]
+    xstd <- p.causalTree[, 5L]
+    xerror <- p.causalTree[, 4L]
+    nsplit <- p.causalTree[, 2L]
     ns <- seq_along(nsplit)
-    cp0 <- p.rpart[, 1L]
+    cp0 <- p.causalTree[, 1L]
     cp <- sqrt(cp0 * c(Inf, cp0[-length(cp0)]))
     if (! "ylim" %in% names(dots))
         dots$ylim <- c(min(xerror - xstd) - 0.1, max(xerror + xstd) + 0.1)

@@ -9,9 +9,9 @@
  * The vector who[n] indexes which observations are in this node, to speed
  *   up the routine.
  */
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 int
 //partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2)
@@ -35,16 +35,16 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
       twt = 0;
 	    k = 0;
 	    for (i = n1; i < n2; i++) {
-	      j = rp.sorts[0][i]; /* any variable would do, use first */
+	      j = ct.sorts[0][i]; /* any variable would do, use first */
 	      if (j < 0)
 		      j = -(1 + j);   /* if missing, value = -(1+ true index) */
-	      rp.wtemp[k] = rp.wt[j];
-	      rp.ytemp[k] = rp.ydata[j];
-	      twt += rp.wt[j];
+	      ct.wtemp[k] = ct.wt[j];
+	      ct.ytemp[k] = ct.ydata[j];
+	      twt += ct.wt[j];
 	      k++;
 	    }
-	    //(*rp_eval) (n, rp.ytemp, me->response_est, &(me->risk), rp.wtemp);
-      (*rp_eval) (n, rp.ytemp, me->response_est, &(me->risk), rp.wtemp, rp.max_y);
+	    //(*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp);
+      (*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp, ct.max_y);
 	    me->num_obs = n;
 	    me->sum_wt = twt;
 	    tempcp = me->risk;
@@ -58,12 +58,12 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
     /*
      * Can I quit now ?
      */
-    // Rprintf("min_split = %d\n", rp.min_split);
-    //Rprintf("rp.maxnode = %d, nodenum = %d\n", rp.maxnode, nodenum);
-    //Rprintf("me->num_obs= %d, rp.min_split =%d\n", me->num_obs , rp.min_split);
+    // Rprintf("min_split = %d\n", ct.min_split);
+    //Rprintf("ct.maxnode = %d, nodenum = %d\n", ct.maxnode, nodenum);
+    //Rprintf("me->num_obs= %d, ct.min_split =%d\n", me->num_obs , ct.min_split);
     //Rprintf("tempcp = %f\n", tempcp);
-    if (me->num_obs < rp.min_split || tempcp <= rp.alpha || nodenum > rp.maxnode) {
-      me->complexity = rp.alpha;
+    if (me->num_obs < ct.min_split || tempcp <= ct.alpha || nodenum > ct.maxnode) {
+      me->complexity = ct.alpha;
   	  *sumrisk = me->risk;
       //Rprintf("quit now!\n");
 	/*
@@ -86,7 +86,7 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
 	/*
 	 * This is rather rare -- but I couldn't find a split worth doing
 	 */
-	    me->complexity = rp.alpha;
+	    me->complexity = ct.alpha;
 	    me->leftson = (pNode) NULL;
 	    me->rightson = (pNode) NULL;
 	    me->primary = (pSplit) NULL;
@@ -97,7 +97,7 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
 #ifdef DEBUG
     print_tree(me, 4);
 #endif
-    if (rp.maxsur > 0)
+    if (ct.maxsur > 0)
 	surrogate(me, n1, n2);
     else
 	me->surrogate = (pSplit) NULL;
@@ -107,7 +107,7 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
      * split the leftson
      */
     me->leftson = (pNode) CALLOC(1, nodesize);
-    (me->leftson)->complexity = tempcp - rp.alpha;
+    (me->leftson)->complexity = tempcp - ct.alpha;
     //Rprintf("me->leftson->complexity = %f\n", (me->leftson)->complexity);
     left_split =
 	//partition(2 * nodenum, me->leftson, &left_risk, n1, n1 + nleft);
@@ -126,7 +126,7 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
 	tempcp = me->complexity;
 
     me->rightson = (pNode) CALLOC(1, nodesize);
-    (me->rightson)->complexity = tempcp - rp.alpha;
+    (me->rightson)->complexity = tempcp - ct.alpha;
     //Rprintf("me->rightson->complexity = %f\n", (me->rightson)->complexity);
     //right_split = partition(1 + 2 * nodenum, me->rightson, &right_risk,
 		//	    n1 + nleft, n1 + nleft + nright);
@@ -178,17 +178,17 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
  //Rprintf("the final cp = %f\n", me->complexity);
   
 
-    if (me->complexity <= rp.alpha) {
+    if (me->complexity <= ct.alpha) {
 	/*
 	 * All was in vain!  This node doesn't split after all.
 	 */
 	free_tree(me, 0);
 	*sumrisk = me->risk;
 	for (i = n1; i < n2; i++) {
-	    j = rp.sorts[0][i];
+	    j = ct.sorts[0][i];
 	    if (j < 0)
 		j = -(1 + j);
-	    rp.which[j] = nodenum;      /* revert to the old nodenumber */
+	    ct.which[j] = nodenum;      /* revert to the old nodenumber */
 	}
 	return 0;               /* return # of splits */
     } else {

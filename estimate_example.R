@@ -1,5 +1,6 @@
-### example for using estimate.rpart 
-### estimate.rpart is to estimate causal effects of test data using honest tree:
+### example for using estimate.causalTree 
+### estimate.causalTree is to estimate causal effects of test data using honest tree:
+library(causalTree)
 library(rpart)
 library(rpart.plot)
 x1 <- rnorm(1000, 0, 1) 
@@ -31,11 +32,11 @@ te1 <- data.frame(x1[501:1000], x2[501:1000], x3[501:1000], x4[501:1000], x5[501
 names(te1) <- c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "y")
 
 ## build and prune tree
-tree1 <- rpart(y~., data = tr1, weights = w, method = "anova",
+tree1 <- causalTree(y~., data = tr1, weights = w, method = "anova",
                cp = 0, parms = 1, minbucket = 1, cv.option = "matching")
 opcp1 <- tree1$cp[which(tree1$cp[,4] == min(tree1$cp[,4])), 1]
 prune1 <- prune(tree1, cp = opcp1)
 rpart.plot(prune1)
 
 ## estimate the test data set:
-est1 <- estimate.rpart(prune1, y~., data = te1, weights = w)
+est1 <- estimate.causalTree(prune1, y~., data = te1, weights = w)

@@ -1,16 +1,16 @@
 /*
  *  For S's usage, convert the linked list data into matrix form
  */
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 
 /* These four preserve from call to call */
 static int ncnt, scnt, ccnt;
 static double cp_scale;
 
 void
-rpmatrix(pNode me, int *numcat, double **dsplit,
+ctmatrix(pNode me, int *numcat, double **dsplit,
 	 int **isplit, int **csplit, double **dnode, int **inode, int id)
 {
     /*
@@ -46,12 +46,12 @@ rpmatrix(pNode me, int *numcat, double **dsplit,
     dnode[0][ncnt] = me->risk;
     dnode[1][ncnt] = me->complexity * cp_scale;
     dnode[2][ncnt] = me->sum_wt;
-    for (i = 0; i < rp.num_resp; i++)
+    for (i = 0; i < ct.num_resp; i++)
 	dnode[3 + i][ncnt] = me->response_est[i];
     inode[0][ncnt] = id;
     inode[4][ncnt] = me->num_obs;
 
-    if (me->complexity <= rp.alpha || me->leftson == 0) {       /* no kids */
+    if (me->complexity <= ct.alpha || me->leftson == 0) {       /* no kids */
 	inode[1][ncnt] = 0;
 	inode[2][ncnt] = 0;
 	inode[3][ncnt] = 0;
@@ -107,9 +107,9 @@ rpmatrix(pNode me, int *numcat, double **dsplit,
 
 	ncnt++;
 
-	rpmatrix(me->leftson, numcat,
+	ctmatrix(me->leftson, numcat,
 		 dsplit, isplit, csplit, dnode, inode, 2 * id);
-	rpmatrix(me->rightson, numcat,
+	ctmatrix(me->rightson, numcat,
 		 dsplit, isplit, csplit, dnode, inode, 2 * id + 1);
     }
 }

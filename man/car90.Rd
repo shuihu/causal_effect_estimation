@@ -22,7 +22,7 @@
     \item{Gear.Ratio}{the overall gear ratio, high gear, for manual transmission}
     \item{Gear2}{the overall gear ratio, high gear, for automatic transmission}
     \item{HP}{net horsepower}
-    \item{HP.revs}{the red line---the maximum safe engine speed in rpm}
+    \item{HP.revs}{the red line---the maximum safe engine speed in ctm}
     \item{Height}{height of car, in inches, as supplied by manufacturer}
     \item{Length}{overall length, in inches, as supplied by manufacturer}
     \item{Luggage}{luggage space}

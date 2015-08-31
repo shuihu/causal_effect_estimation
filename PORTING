@@ -1,0 +1,29 @@
+src/*.{h,c} long -> int
+
+man/*.Rd  convert *.d by Sd2Rd
+
+Don't implement code using naresid, which R does not have.
+F -> FALSE, T -> TRUE
+
+R/labels.causalTree.s	replace call to prlabel by S code.
+R/model.frame.causalTree.s 	deparse calls
+R/na.causalTree.s		as x has no attributes in R, redesign
+R/plot.causalTree.s 		change frame=0 to .GlobalEnv
+R/post.causalTree.s		change `title' trickery
+R/print.causalTree.s		remove nsmall in call to format
+			attr(x, 'ylevels') not 'ylevel'
+R/causalTree.branch.s	get with inherits not frame=0
+R/causalTree.matrix.s	adjust for different terms structure
+R/causalTree.s		single -> double
+			sys.parent() -> sys.frame(sys.parent())
+R/causalTreeco.s		remove frame=0 several times
+R/snip.causalTree.mouse.s	drop frame=0
+R/summary.causalTree.s	remove justify="left" in format
+			remove comma in paste(... ,,collapse ...)
+			attr(x, 'ylevels') not 'ylevel'
+R/text.causalTree.s		text.default prints "NA", so remove these
+			remove density=0 in calls to polygon
+R/xpred.causalTree.s		single -> double
+			sys.parent() -> sys.frame(sys.parent())
+R/zzz.R			a few missing functions.
+

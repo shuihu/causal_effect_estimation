@@ -2,8 +2,8 @@
  * The routines for gini-classification
  */
 #include <math.h>
-#include "rpart.h"
-#include "rpartproto.h"
+#include "causalTree.h"
+#include "causalTreeproto.h"
 
 static int numclass;
 static double *left,            /* left branch n (weighted) */
