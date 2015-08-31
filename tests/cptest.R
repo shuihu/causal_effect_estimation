@@ -1,4 +1,4 @@
-library(rpart)
+library(causalTree)
 mystate <- data.frame(state.x77, region=factor(state.region))
 names(mystate) <- c("population","income" , "illiteracy","life" ,
        "murder", "hs.grad", "frost",     "area",      "region")
@@ -11,9 +11,9 @@ names(mystate) <- c("population","income" , "illiteracy","life" ,
 #  except for the n's
 tdata <- rbind(mystate, mystate, mystate, mystate, mystate)
 tdata <- rbind(tdata, tdata, tdata, tdata)
-tfit1 <- rpart(income ~ population + illiteracy + murder + hs.grad + region,
+tfit1 <- causalTree(income ~ population + illiteracy + murder + hs.grad + region,
                data = mystate, method = "anova", xval=0, cp=.089)
-tfit2 <- rpart(income ~ population + illiteracy + murder + hs.grad + region,
+tfit2 <- causalTree(income ~ population + illiteracy + murder + hs.grad + region,
                data = tdata, method='anova', xval=0, cp=.089, 
                minsplit=400, minbucket=140)
 

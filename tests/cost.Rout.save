@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> library(rpart)
+> library(causalTree)
 > require(survival)
 Loading required package: survival
 Loading required package: splines
@@ -25,11 +25,11 @@ Loading required package: splines
 > #
 > # Check out using costs
 > #
-> fit1 <- rpart(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
+> fit1 <- causalTree(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
 + 	      + meal.cal + wt.loss, data=lung,
 + 	      maxdepth=1, maxcompete=6, xval=0)
 > 
-> fit2 <- rpart(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
+> fit2 <- causalTree(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
 + 	      + meal.cal + wt.loss, data=lung,
 + 	      maxdepth=1, maxcompete=6, xval=0, cost=(1+ 1:7/10))
 > 

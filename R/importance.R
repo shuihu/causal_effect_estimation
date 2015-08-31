@@ -3,7 +3,7 @@
 # Each primary split is credited with the value of splits$improve
 # Each surrogate split gets split$adj times the primary split's value
 #
-# Called only internally by rpart
+# Called only internally by causalTree
 #
 importance <- function(fit)
 {

@@ -2,16 +2,16 @@
 # The treble test for classification trees
 #  
 #
-library(rpart)
-xgrp <- rep(1:10,length=nrow(cu.summary))
-carfit <- rpart(Country ~ Reliability + Price + Mileage + Type,
+library(causalTree)
+xgct <- rep(1:10,length=nrow(cu.summary))
+carfit <- causalTree(Country ~ Reliability + Price + Mileage + Type,
 		 method='class', data=cu.summary, 
-		 control=rpart.control(xval=xgrp))
+		 control=causalTree.control(xval=xgct))
 
-carfit2 <- rpart(Country ~ Reliability + Price + Mileage + Type,
+carfit2 <- causalTree(Country ~ Reliability + Price + Mileage + Type,
 		 method='class', data=cu.summary, 
 		 weight=rep(3,nrow(cu.summary)),
-		 control=rpart.control(xval=xgrp))
+		 control=causalTree.control(xval=xgct))
 
 all.equal(carfit$frame$wt,    carfit2$frame$wt/3)
 all.equal(carfit$frame$dev,   carfit2$frame$dev/3)

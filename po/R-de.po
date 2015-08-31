@@ -1,11 +1,11 @@
-# Translation of R-rpart.pot to German
+# Translation of R-causalTree.pot to German
 # Copyright (C) 2007-2014 The R Foundation
-# This file is distributed under the same license as the rpart package.
+# This file is distributed under the same license as the causalTree package.
 # Chris Leick <c.leick@vollbio.de>, 2009.
 # Detlef Steuer <steuer@hsu-hh.de>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: R 3.1.0 / rpart 4.1-6\n"
+"Project-Id-Version: R 3.1.0 / causalTree 4.1-6\n"
 "Report-Msgid-Bugs-To: bugs@r-project.org\n"
 "POT-Creation-Date: 2012-11-22 09:24\n"
 "PO-Revision-Date: 2014-03-16 17:27+0100\n"
@@ -20,8 +20,8 @@ msgstr ""
 msgid "'x' must be a numeric vector"
 msgstr "'x' muss ein numerischer Vektor sein"
 
-msgid "Not a legitimate \"rpart\" object"
-msgstr "kein rechtmäßiges \"rpart\"-Objekt"
+msgid "Not a legitimate \"causalTree\" object"
+msgstr "kein rechtmäßiges \"causalTree\"-Objekt"
 
 # http://de.wikipedia.org/wiki/Poisson_Verteilung
 msgid "Plot not useful for classification or poisson trees"
@@ -39,17 +39,17 @@ msgstr "Baum hat Variablen, die in neuen Daten nicht gefunden wurden"
 msgid "type 'class' is only appropriate for classification"
 msgstr "Typ 'class' ist für Klssifikation nicht angemessen"
 
-msgid "Invalid prediction for \"rpart\" object"
-msgstr "ungültige Vorhersage für \"rpart\"-Objekt"
+msgid "Invalid prediction for \"causalTree\" object"
+msgstr "ungültige Vorhersage für \"causalTree\"-Objekt"
 
-msgid "'x' must be an \"rpart\" object"
-msgstr "'x' muss ein \"rpart\"-Objekt sein."
+msgid "'x' must be an \"causalTree\" object"
+msgstr "'x' muss ein \"causalTree\"-Objekt sein."
 
 msgid "Invalid type of residual"
 msgstr "Es ist nichts über diesen Residuen-Typ bekannt."
 
-msgid "Not legitimate \"rpart\" tree and endpoint not a 2 level-factor"
-msgstr "Kein regulärer \"rpart\"-Baum und ein Endpunkt kein zeistufiger Faktor"
+msgid "Not legitimate \"causalTree\" tree and endpoint not a 2 level-factor"
+msgstr "Kein regulärer \"causalTree\"-Baum und ein Endpunkt kein zeistufiger Faktor"
 
 msgid "a 'formula' argument is required"
 msgstr "ein 'formula' Argument ist nötig"
@@ -203,8 +203,8 @@ msgstr "Benutzerfunktion 'split' gab ungültige Richtung zurück."
 msgid "may not be applicable for this method"
 msgstr "evtl. nicht anwendbar für diese Methode"
 
-msgid "Not an \"rpart\" object"
-msgstr "kein \"rpart\"-Objekt"
+msgid "Not an \"causalTree\" object"
+msgstr "kein \"causalTree\"-Objekt"
 
 msgid "Nodes %s are not in this tree"
 msgstr "Knoten %s sind nicht in diesem Baum."
@@ -225,15 +225,15 @@ msgstr "mitgelieferte Knoten %s sind Blätter"
 #~ msgstr ""
 #~ "mehr als 52 Stufen in einem Vorhersagefaktor, für Ausdruck reduziert"
 
-#~ msgid "x does not appear to be an \"rpart\" object"
-#~ msgstr "x scheint kein \"rpart\"-Objekt zu sein."
+#~ msgid "x does not appear to be an \"causalTree\" object"
+#~ msgstr "x scheint kein \"causalTree\"-Objekt zu sein."
 
 #~ msgid "'x' not converted"
 #~ msgstr "'x' nicht konvertiert"
 
 #, fuzzy
-#~ msgid "'fit' must be an \"rpart\" object"
-#~ msgstr "'x' muss ein \"rpart\"-Objekt sein."
+#~ msgid "'fit' must be an \"causalTree\" object"
+#~ msgstr "'x' muss ein \"causalTree\"-Objekt sein."
 
 #~ msgid "Not legitimate tree"
 #~ msgstr "kein rechtmäßiger Baum"
@@ -245,5 +245,5 @@ msgstr "mitgelieferte Knoten %s sind Blätter"
 #~ msgid "the default value of 0 is used instead."
 #~ msgstr "der Standardwert von 0 wird an dessen Stelle benutzt."
 
-#~ msgid "Not legitimate rpart"
-#~ msgstr "kein rechtmäßiger rpart"
+#~ msgid "Not legitimate causalTree"
+#~ msgstr "kein rechtmäßiger causalTree"

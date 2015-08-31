@@ -6,7 +6,7 @@
 # For all of the cross-validations I set xgroups explicitly, so as
 #  to avoid any changes in random number allocation of the groups.
 
-library(rpart)
+library(causalTree)
 require(survival)
 options(digits=4)  #avoid trivial rounding changes across R versions
 
@@ -23,13 +23,13 @@ options(digits=4)  #avoid trivial rounding changes across R versions
 #   Gleason score (competing grading system)
 #   ploidy
 xgroup <- rep(1:10, length=nrow(stagec))
-fit1 <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
+fit1 <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
 		stagec, method="poisson",
-              control=rpart.control(usesurrogate=0, cp=0, xval=xgroup))
+              control=causalTree.control(usesurrogate=0, cp=0, xval=xgroup))
 fit1
 summary(fit1)
 
-fit2 <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
+fit2 <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
 		stagec, xval=xgroup)
 fit2
 summary(fit2)
@@ -47,18 +47,18 @@ names(mystate) <- c("population","income" , "illiteracy","life" ,
 xvals <- 1:nrow(mystate)
 xvals[order(mystate$income)] <- rep(1:10, length=nrow(mystate))
 
-fit4 <- rpart(income ~ population + region + illiteracy +life + murder +
+fit4 <- causalTree(income ~ population + region + illiteracy +life + murder +
 			hs.grad + frost , mystate,
-		   control=rpart.control(minsplit=10, xval=xvals))
+		   control=causalTree.control(minsplit=10, xval=xvals))
 
 summary(fit4)
 
 
 #
-# Check out xpred.rpart
+# Check out xpred.causalTree
 #
 meany <- mean(mystate$income)
-xpr <- xpred.rpart(fit4, xval=xvals)
+xpr <- xpred.causalTree(fit4, xval=xvals)
 xpr2 <- (xpr - mystate$income)^2
 risk0 <- mean((mystate$income - meany)^2)
 xpmean <- as.vector(apply(xpr2, 2, mean))   #kill the names
@@ -71,9 +71,9 @@ all.equal(xpstd, as.vector(fit4$cptable[,'xstd']))
 #
 # recreate subset #3 of the xval
 #
-tfit4 <- rpart(income ~ population + region + illiteracy +life + murder +
+tfit4 <- causalTree(income ~ population + region + illiteracy +life + murder +
 			hs.grad + frost , mystate,  subset=(xvals!=3),
-		   control=rpart.control(minsplit=10, xval=0))
+		   control=causalTree.control(minsplit=10, xval=0))
 tpred <- predict(tfit4, mystate[xvals==3,])
 all.equal(tpred, xpr[xvals==3,ncol(xpr)])
 
@@ -84,12 +84,12 @@ all.equal(tpred, xpr[xvals==3,ncol(xpr)])
 
 
 # Simple yes/no classification model
-fit5 <- rpart(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
+fit5 <- causalTree(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
 	  stagec, xval=xgroup)
 
 fit5
 
-fit6 <- rpart(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
+fit6 <- causalTree(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
 		stagec, parm=list(prior=c(.5,.5)), xval=xgroup)
 summary(fit6)
 #
@@ -99,7 +99,7 @@ summary(fit6)
 # areas of the code that nothing else does
 #
 xcar <- rep(1:8, length=nrow(cu.summary))
-carfit <- rpart(Reliability ~ Price + Country + Mileage + Type,
+carfit <- causalTree(Reliability ~ Price + Country + Mileage + Type,
 		   method='class', data=cu.summary, xval=xcar)
 
 summary(carfit)

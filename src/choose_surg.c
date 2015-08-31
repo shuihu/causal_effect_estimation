@@ -8,16 +8,16 @@
  *  y is coded as  +1=left, -1=right, 0=missing
  *
 */
-#include "rpart.h"
-#include "rpartproto.h"
+#include "causalTree.h"
+#include "causalTreeproto.h"
 
 void
 choose_surg(int n1, int n2, int *y, double *x, int *order,
 	    int ncat, double *agreement, double *split, int *csplit,
 	    double tleft, double tright, double *adj)
 {
-    int *left = rp.left, *right = rp.right;
-    double *lwt = rp.lwt, *rwt = rp.rwt;
+    int *left = ct.left, *right = ct.right;
+    double *lwt = ct.lwt, *rwt = ct.rwt;
     double llwt, lrwt, rrwt, rlwt;      /* sum of weights for each */
     double agree, majority, total_wt;
     int success = 0;  // set to 1 when something worthwhile is found
@@ -48,14 +48,14 @@ choose_surg(int n1, int n2, int *y, double *x, int *order,
 		lastx = x[j];   /*this is why I run the loop backwards */
 		switch (y[j]) {
 		case LEFT:
-		    if (rp.wt[j] > 0)
+		    if (ct.wt[j] > 0)
 			ll++;
-		    llwt += rp.wt[j];
+		    llwt += ct.wt[j];
 		    break;
 		case RIGHT:
-		    if (rp.wt[j] > 0)
+		    if (ct.wt[j] > 0)
 			rl++;
-		    rlwt += rp.wt[j];
+		    rlwt += ct.wt[j];
 		    break;
 		default:;
 		}
@@ -101,20 +101,20 @@ choose_surg(int n1, int n2, int *y, double *x, int *order,
 
 		switch (y[j]) { /* update numbers */
 		case LEFT:
-		    if (rp.wt[j] > 0) {
+		    if (ct.wt[j] > 0) {
 			ll--;
 			lr++;
 		    }
-		    llwt -= rp.wt[j];
-		    lrwt += rp.wt[j];
+		    llwt -= ct.wt[j];
+		    lrwt += ct.wt[j];
 		    break;
 		case RIGHT:
-		    if (rp.wt[j] > 0) {
+		    if (ct.wt[j] > 0) {
 			rl--;
 			rr++;
 		    }
-		    rlwt -= rp.wt[j];
-		    rrwt += rp.wt[j];
+		    rlwt -= ct.wt[j];
+		    rrwt += ct.wt[j];
 		    break;
 		default:;      /* ignore missing y's */
 		}
@@ -143,14 +143,14 @@ choose_surg(int n1, int n2, int *y, double *x, int *order,
 		int k = (int) x[j] - 1;
 		switch (y[j]) {
 		case LEFT:
-		    if (rp.wt[j] > 0)
+		    if (ct.wt[j] > 0)
 			left[k]++;
-		    lwt[k] += rp.wt[j];
+		    lwt[k] += ct.wt[j];
 		    break;
 		case RIGHT:
-		    if (rp.wt[j] > 0)
+		    if (ct.wt[j] > 0)
 			right[k]++;
-		    rwt[k] += rp.wt[j];
+		    rwt[k] += ct.wt[j];
 		    break;
 		default:;
 		}
@@ -221,7 +221,7 @@ choose_surg(int n1, int n2, int *y, double *x, int *order,
      *    preference), or only the y's for non-missing x (CART book)?
      *    If the former, need to reset some totals.
      */
-    if (rp.sur_agree == 0) {    /* use total table */
+    if (ct.sur_agree == 0) {    /* use total table */
 	total_wt = tleft + tright;
 	if (tleft > tright)
 	    majority = tleft;

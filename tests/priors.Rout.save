@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 > # A hard-core test of losses and priors
 > #  Simple data set where I know what the answers must be
 > #
-> library(rpart)
+> library(causalTree)
 > aeq <- function(x,y, ...) all.equal(as.vector(x), as.vector(y), ...)
 > 
 > dummy <- c(3,1,4,1,5,9,2,6,5,3,5,8,9,7,9)/5
@@ -32,7 +32,7 @@ Type 'q()' to quit R.
 > pdata$x3[c(1,5,10)] <- NA
 > pdata$y[15] <- 1     # make things unbalanced
 > 
-> pfit <- rpart(y ~ x1 + x2 + x3, pdata,
+> pfit <- causalTree(y ~ x1 + x2 + x3, pdata,
 +               cp=0, xval=0, minsplit=5, maxdepth=1,
 +               parms=list(prior=c(.2, .3, .5), 
 +                          loss =matrix(c(0,2,2,2,0,6,1,1,0), 3,3,byrow=T)))

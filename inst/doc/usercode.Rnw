@@ -8,7 +8,7 @@
 
 \SweaveOpts{keep.source=TRUE, fig=FALSE}
 %\VignetteIndexEntry{User Written Split Functions}
-%\VignetteDepends{rpart}
+%\VignetteDepends{causalTree}
 % Ross Ihaka suggestions
 \DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em}
 \DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em}
@@ -28,7 +28,7 @@ options(continue="  ", width=60)
 options(SweaveHooks=list(fig=function() par(mar=c(5.1, 4.1, .3, 1.1))))
 @
 \section{Splitting functions}
-The rpart code was written in a modular fashion with the idea that the C
+The causalTree code was written in a modular fashion with the idea that the C
 code would be extended to include more splitting functions.
 As a consequence all of the splitting functions are coordinated through a
 single structure in the file \texttt{func\_table.h}, shown below:
@@ -55,18 +55,18 @@ The last of these is used only in cross-validation.
 
 To add new splitting rules to the main routine
 four new C functions need to be defined, the
-\texttt{func\_table.h} file expanded, the R function \texttt{rpart} updated to
+\texttt{func\_table.h} file expanded, the R function \texttt{causalTree} updated to
 recognize the new
 option (it calls the C routine with the row number of func\_table),
 and finally an initialization function written.
-See the \texttt{rpart.class}, \texttt{rpart.anova}, and \texttt{rpart.exp}
+See the \texttt{causalTree.class}, \texttt{causalTree.anova}, and \texttt{causalTree.exp}
 functions for examples of the latter.
 The lion's share of the code, which deals with all the necessary bookkeeping,
 remains unchanged.
 
 An easier route is to add a user defined splitting rules as a set of R functions.
 The resulting code will be considerably slower than the built-in functions;
-nevertheless this allows an easy way to extend \texttt{rpart}, and to
+nevertheless this allows an easy way to extend \texttt{causalTree}, and to
 test out new
 ideas with less effort than additions to the C base.
 For user defined splits only the first three functions are defined,
@@ -102,7 +102,7 @@ itemp <- function(y, offset, parms, wt) {
 On input the function will be called with
 \begin{description}
   \item[y] the response value as found in the formula.
-    Note that rpart will normally
+    Note that causalTree will normally
     have removed any observations with a missing response.
   \item[offset] the offset term, if any, found on the right hand side of the formula
   \item[parms] the vector or list (if any) supplied by the user as a
@@ -119,7 +119,7 @@ vector if present, and return a list containing
   \item[numy] the number of columns of y
   \item[numresp] the length of the prediction vector for each node
   \item[summary] optional: a function which will produce a 1--3 line summary for the
-    node, to be used by \texttt{summary.rpart}.
+    node, to be used by \texttt{summary.causalTree}.
   \item[print] optional: a function which will produce a one line summary for
     the \texttt{print} function.
   \item[text] optional: a function which will produce a short label for the node,
@@ -144,7 +144,7 @@ It should return a character vector.
 The text function will be called with these arguments plus two more
 \begin{itemize}
   \item n= the number of observations in the node
-  \item use.n = TRUE/FALSE, see the help page for \texttt{text.rpart}
+  \item use.n = TRUE/FALSE, see the help page for \texttt{text.causalTree}
 \end{itemize}
 The print function is called only with yval, ylevels, and digits.
 
@@ -325,14 +325,14 @@ the splits.
 We can test the above code to make sure that it gives the same answer as
 the built-in anova splitting method.
 <<>>=
-library(rpart)
+library(causalTree)
 mystate <- data.frame(state.x77, region=state.region)
 names(mystate) <- casefold(names(mystate)) #remove mixed case
 ulist <- list(eval = etemp, split = stemp, init = itemp)
-fit1 <- rpart(murder ~ population + illiteracy + income + life.exp +
+fit1 <- causalTree(murder ~ population + illiteracy + income + life.exp +
               hs.grad + frost + region, data = mystate,
               method = ulist, minsplit = 10)
-fit2 <- rpart(murder ~ population + illiteracy + income + life.exp +
+fit2 <- causalTree(murder ~ population + illiteracy + income + life.exp +
               hs.grad + frost + region, data = mystate,
               method = 'anova', minsplit = 10, xval = 0)
 all.equal(fit1$frame, fit2$frame)
@@ -346,7 +346,7 @@ The all.equal test can't be done on fit1 vs fit2 as a whole since their
 
 \section{Cross validation}
 To do cross-validation on user written rules one needs to use the
-\texttt{xpred.rpart} routine.
+\texttt{xpred.causalTree} routine.
 This routine returns the predicted value(s) for each observation,
 predicted from a fit that did not include that observation.
 The result is a matrix with one row per subject and one column for
@@ -357,10 +357,10 @@ In order to get the same groupings we fix the xval group membership
 in advance.
 <<>>=
 xgroup <- rep(1:10, length = nrow(mystate))
-xfit <- xpred.rpart(fit1, xgroup)
+xfit <- xpred.causalTree(fit1, xgroup)
 xerror <- colMeans((xfit - mystate$murder)^2)
 
-fit2b <-  rpart(murder ~ population + illiteracy + income + life.exp +
+fit2b <-  causalTree(murder ~ population + illiteracy + income + life.exp +
                 hs.grad + frost + region, data = mystate,
                 method = 'anova', minsplit = 10, xval = xgroup)
 topnode.error <- (fit2b$frame$dev/fit2b$frame$wt)[1]
@@ -427,7 +427,7 @@ on clinical variables $X$ and $\eta_2$ is based on a tree model
 using a set of genetic markers $Z$.
 The solution was computed using alternate steps of an ordinary
 logistic regression on $X$ treating $\eta_2$ as an offset,
-and an rpart fit for $Z$ treating $\eta_1$ as an offset.
+and an causalTree fit for $Z$ treating $\eta_1$ as an offset.
 
 For many splitting rules the initialization function can take
 care of offset terms once and for all by modifying the y
@@ -485,8 +485,8 @@ logsplit <- function(y, wt, x, parms, continuous)
 	# First, find out what order to put the categories in, which
 	#  will be the order of the coefficients in this model
 	tfit <- glm(y[,1] ~ factor(x) + offset(y[,2]) - 1, binomial, weight = wt)
-	ngrp <- length(tfit$coef)
-	direction <- rank(rank(tfit$coef) + runif(ngrp, 0, 0.1)) #break ties
+	ngct <- length(tfit$coef)
+	direction <- rank(rank(tfit$coef) + runif(ngct, 0, 0.1)) #break ties
         # breaking ties -- if 2 groups have exactly the same p-hat, it
         #  does not matter which order I consider them in.  And the calling
         #  routine wants an ordering vector.

@@ -24,7 +24,7 @@ Type 'q()' to quit R.
 > # For all of the cross-validations I set xgroups explicitly, so as
 > #  to avoid any changes in random number allocation of the groups.
 > 
-> library(rpart)
+> library(causalTree)
 > require(survival)
 Loading required package: survival
 Loading required package: splines
@@ -43,9 +43,9 @@ Loading required package: splines
 > #   Gleason score (competing grading system)
 > #   ploidy
 > xgroup <- rep(1:10, length=nrow(stagec))
-> fit1 <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
+> fit1 <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
 + 		stagec, method="poisson",
-+               control=rpart.control(usesurrogate=0, cp=0, xval=xgroup))
++               control=causalTree.control(usesurrogate=0, cp=0, xval=xgroup))
 > fit1
 n= 146 
 
@@ -73,8 +73,8 @@ node), split, n, deviance, yval
       7) age< 56.5 10  11.420 0.196900 *
 > summary(fit1)
 Call:
-rpart(formula = Surv(pgtime, pgstat) ~ age + eet + g2 + grade + 
-    gleason + ploidy, data = stagec, method = "poisson", control = rpart.control(usesurrogate = 0, 
+causalTree(formula = Surv(pgtime, pgstat) ~ age + eet + g2 + grade + 
+    gleason + ploidy, data = stagec, method = "poisson", control = causalTree.control(usesurrogate = 0, 
     cp = 0, xval = xgroup))
   n= 146 
 
@@ -231,7 +231,7 @@ Node number 105: 16 observations
   events=6,  estimated rate=0.06387 , mean deviance=1.267 
 
 > 
-> fit2 <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
+> fit2 <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
 + 		stagec, xval=xgroup)
 > fit2
 n= 146 
@@ -258,7 +258,7 @@ node), split, n, deviance, yval
      7) age< 56.5 10  13.770 3.1820 *
 > summary(fit2)
 Call:
-rpart(formula = Surv(pgtime, pgstat) ~ age + eet + g2 + grade + 
+causalTree(formula = Surv(pgtime, pgstat) ~ age + eet + g2 + grade + 
     gleason + ploidy, data = stagec, xval = xgroup)
   n= 146 
 
@@ -416,14 +416,14 @@ Node number 51: 11 observations
 > xvals <- 1:nrow(mystate)
 > xvals[order(mystate$income)] <- rep(1:10, length=nrow(mystate))
 > 
-> fit4 <- rpart(income ~ population + region + illiteracy +life + murder +
+> fit4 <- causalTree(income ~ population + region + illiteracy +life + murder +
 + 			hs.grad + frost , mystate,
-+ 		   control=rpart.control(minsplit=10, xval=xvals))
++ 		   control=causalTree.control(minsplit=10, xval=xvals))
 > 
 > summary(fit4)
 Call:
-rpart(formula = income ~ population + region + illiteracy + life + 
-    murder + hs.grad + frost, data = mystate, control = rpart.control(minsplit = 10, 
+causalTree(formula = income ~ population + region + illiteracy + life + 
+    murder + hs.grad + frost, data = mystate, control = causalTree.control(minsplit = 10, 
     xval = xvals))
   n= 50 
 
@@ -580,10 +580,10 @@ Node number 111: 3 observations
 > 
 > 
 > #
-> # Check out xpred.rpart
+> # Check out xpred.causalTree
 > #
 > meany <- mean(mystate$income)
-> xpr <- xpred.rpart(fit4, xval=xvals)
+> xpr <- xpred.causalTree(fit4, xval=xvals)
 > xpr2 <- (xpr - mystate$income)^2
 > risk0 <- mean((mystate$income - meany)^2)
 > xpmean <- as.vector(apply(xpr2, 2, mean))   #kill the names
@@ -598,9 +598,9 @@ Node number 111: 3 observations
 > #
 > # recreate subset #3 of the xval
 > #
-> tfit4 <- rpart(income ~ population + region + illiteracy +life + murder +
+> tfit4 <- causalTree(income ~ population + region + illiteracy +life + murder +
 + 			hs.grad + frost , mystate,  subset=(xvals!=3),
-+ 		   control=rpart.control(minsplit=10, xval=0))
++ 		   control=causalTree.control(minsplit=10, xval=0))
 > tpred <- predict(tfit4, mystate[xvals==3,])
 > all.equal(tpred, xpr[xvals==3,ncol(xpr)])
 [1] TRUE
@@ -612,7 +612,7 @@ Node number 111: 3 observations
 > 
 > 
 > # Simple yes/no classification model
-> fit5 <- rpart(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
+> fit5 <- causalTree(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
 + 	  stagec, xval=xgroup)
 > 
 > fit5
@@ -637,11 +637,11 @@ node), split, n, loss, yval, (yprob)
         29) age< 62.5 7  3 1 (0.4286 0.5714) *
       15) g2< 17.91 23  3 1 (0.1304 0.8696) *
 > 
-> fit6 <- rpart(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
+> fit6 <- causalTree(factor(pgstat) ~  age + eet + g2+grade+gleason +ploidy,
 + 		stagec, parm=list(prior=c(.5,.5)), xval=xgroup)
 > summary(fit6)
 Call:
-rpart(formula = factor(pgstat) ~ age + eet + g2 + grade + gleason + 
+causalTree(formula = factor(pgstat) ~ age + eet + g2 + grade + gleason + 
     ploidy, data = stagec, parms = list(prior = c(0.5, 0.5)), 
     xval = xgroup)
   n= 146 
@@ -844,12 +844,12 @@ Node number 53: 8 observations
 > # areas of the code that nothing else does
 > #
 > xcar <- rep(1:8, length=nrow(cu.summary))
-> carfit <- rpart(Reliability ~ Price + Country + Mileage + Type,
+> carfit <- causalTree(Reliability ~ Price + Country + Mileage + Type,
 + 		   method='class', data=cu.summary, xval=xcar)
 > 
 > summary(carfit)
 Call:
-rpart(formula = Reliability ~ Price + Country + Mileage + Type, 
+causalTree(formula = Reliability ~ Price + Country + Mileage + Type, 
     data = cu.summary, method = "class", xval = xcar)
   n=85 (32 observations deleted due to missingness)
 

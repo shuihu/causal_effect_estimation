@@ -1,7 +1,7 @@
-## allow backticks in rpart.matrix: see
+## allow backticks in causalTree.matrix: see
 ## https://stat.ethz.ch/pipermail/r-help/2012-May/314081.html
 
-library(rpart)
+library(causalTree)
 Iris <- iris
 names(Iris) <- sub(".", " ", names(iris), fixed=TRUE)
-rpart(Species ~ `Sepal Length`, data = Iris)
+causalTree(Species ~ `Sepal Length`, data = Iris)

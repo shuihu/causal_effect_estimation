@@ -1,8 +1,8 @@
-# Korean translation for R rpart package
-# Recommended/rpart/po/R-ko.po
+# Korean translation for R causalTree package
+# Recommended/causalTree/po/R-ko.po
 # Maintainer: Brian Ripley <ripley@stats.ox.ac.uk>
 # 
-# This file is distributed under the same license as the R rpart package.
+# This file is distributed under the same license as the R causalTree package.
 # Chel Hee Lee <chl948@mail.usask.ca>, 2013-2015.
 # 
 # Reviewing process is completed (14-JAN-2015) 
@@ -12,7 +12,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpart 4.1-0\n"
+"Project-Id-Version: causalTree 4.1-0\n"
 "POT-Creation-Date: 2014-03-27 21:46\n"
 "PO-Revision-Date: 2015-02-06 21:56-0600\n"
 "Last-Translator:Chel Hee Lee  <chl948@mail.usask.ca>\n"
@@ -26,8 +26,8 @@ msgstr ""
 msgid "'x' must be a numeric vector"
 msgstr "'x'는 반드시 수치형 벡터이어야 합니다."
 
-msgid "Not a legitimate \"rpart\" object"
-msgstr "올바른 \"rpart\" 객체가 아닙니다."
+msgid "Not a legitimate \"causalTree\" object"
+msgstr "올바른 \"causalTree\" 객체가 아닙니다."
 
 msgid "Plot not useful for classification or poisson trees"
 msgstr "분류(classification) 또는 포이송 트리(poisson trees)에 유용하지 않은 플롯입니다."
@@ -44,17 +44,17 @@ msgstr "트리(tree)는 새데이터에서 찾을 수 없는 변수들을 가지
 msgid "type 'class' is only appropriate for classification"
 msgstr "타입 'class'는 오로지 클래시피케이션에서만 적절합니다"
 
-msgid "Invalid prediction for \"rpart\" object"
-msgstr "\"rpart\" 객체에 대한 올바른 예측이 아닙니다."
+msgid "Invalid prediction for \"causalTree\" object"
+msgstr "\"causalTree\" 객체에 대한 올바른 예측이 아닙니다."
 
-msgid "'x' must be an \"rpart\" object"
-msgstr "'x'는 반드시 \"rpart\"이라는 객체이어야 합니다."
+msgid "'x' must be an \"causalTree\" object"
+msgstr "'x'는 반드시 \"causalTree\"이라는 객체이어야 합니다."
 
 msgid "Invalid type of residual"
 msgstr "올바른 잔차(residual)의 유형이 아닙니다."
 
-msgid "Not legitimate \"rpart\" tree and endpoint not a 2 level-factor"
-msgstr "타당한 \"rpart\" 트리(tree)가 아니며 엔드포인트(endpoint)가 두 개의 수준(levels)을 가진 요인(factor)가 아닙니다."
+msgid "Not legitimate \"causalTree\" tree and endpoint not a 2 level-factor"
+msgstr "타당한 \"causalTree\" 트리(tree)가 아니며 엔드포인트(endpoint)가 두 개의 수준(levels)을 가진 요인(factor)가 아닙니다."
 
 msgid "a 'formula' argument is required"
 msgstr "'formula'라는 이름의 인자가 필요합니다."
@@ -194,8 +194,8 @@ msgstr "사용자의 'split' 함수로부터 반환된 direction의 길이가 �
 msgid "may not be applicable for this method"
 msgstr "이 메소드에 적용할 수 없을지도 모릅니다."
 
-msgid "Not an \"rpart\" object"
-msgstr "\"rpart\" 객체가 아닙니다."
+msgid "Not an \"causalTree\" object"
+msgstr "\"causalTree\" 객체가 아닙니다."
 
 msgid "Nodes %s are not in this tree"
 msgstr "노드(nodes) %s를 이 트리(tree)안에서 찾을 수 없습니다."

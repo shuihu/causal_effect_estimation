@@ -1,11 +1,11 @@
 \name{NEWS}
-\title{NEWS file for the rpart package}
+\title{NEWS file for the causalTree package}
 
 \section{Changes in version 4.1-0}{
   \itemize{
     \item The C and R code has been reformatted for legibility.
     
-    \item The old compatibility function \code{rpconvert()} has been removed.
+    \item The old compatibility function \code{ctconvert()} has been removed.
     
     \item The cross-validation functions allow for user interrupt at the
     end of evaluating each split.
@@ -28,7 +28,7 @@
 
 \section{Changes in version 4.0-3}{
   \itemize{
-    \item A fit of class \samp{"rpart"} now contains a component for
+    \item A fit of class \samp{"causalTree"} now contains a component for
     variable \sQuote{importance}, which is reported by the
     \code{summary()} method.
 
@@ -44,7 +44,7 @@
     \item Some memory leaks have been plugged.
 
     \item There is a second vignette, \file{longintro.Rnw}, a version of
-    the original Mayo Tecnical Report on \pkg{rpart}.
+    the original Mayo Tecnical Report on \pkg{causalTree}.
   }
 }
 
@@ -79,7 +79,7 @@
     test case, with L quite asymmetric, the early splits in the tree are
     unchanged -- a good split still looks good.
 	
-    \item Add the \code{return.all} argument to \code{xpred.rpart()}.
+    \item Add the \code{return.all} argument to \code{xpred.causalTree()}.
 
     \item Added a set of formal tests, i.e., cases with known answers to
     which we can compare.
@@ -91,8 +91,8 @@
     
     \item Add the \code{stagec} data set, used in some tests.
     
-    \item The \code{plot.rpart} routine needs to store a value that will
-    be visible to the \code{rpartco} routine at a later time.  This is
+    \item The \code{plot.causalTree} routine needs to store a value that will
+    be visible to the \code{causalTreeco} routine at a later time.  This is
     now done in an environment in the namespace.
   }
 }
@@ -113,7 +113,7 @@
 
 \section{Changes in version 3.1-53}{
   \itemize{
-    \item \code{rpart}, \code{rpart.matrix}: allow backticks in formulae.
+    \item \code{causalTree}, \code{causalTree.matrix}: allow backticks in formulae.
     \item \file{tests/backtick.R}: regession test
   }
 }
@@ -126,7 +126,7 @@
 
 \section{Changes in version 3.1-51}{
   \itemize{
-    \item  Change description of \samp{margin} in \code{?plot.rpart}
+    \item  Change description of \samp{margin} in \code{?plot.causalTree}
     as suggested by Bill Venables.
   }
 }

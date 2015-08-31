@@ -58,7 +58,7 @@ cu.summary
   \code{\link{car90}}
 }
 \examples{
-fit <- rpart(Price ~ Mileage + Type + Country, cu.summary)
+fit <- causalTree(Price ~ Mileage + Type + Country, cu.summary)
 par(xpd = TRUE)
 plot(fit, compress = TRUE)
 text(fit, use.n = TRUE)

@@ -29,6 +29,6 @@ impossible to measure.
 }
 \examples{
 require(survival)
-rpart(Surv(pgtime, pgstat) ~ ., stagec)
+causalTree(Surv(pgtime, pgstat) ~ ., stagec)
 }
 \keyword{datasets}

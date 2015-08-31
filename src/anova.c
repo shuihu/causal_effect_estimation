@@ -1,8 +1,8 @@
 /*
 * The four routines for anova splitting
 */
-#include "rpart.h"
-#include "rpartproto.h"
+#include "causalTree.h"
+#include "causalTreeproto.h"
 
 static double *mean, *sums, *wtsums;
 static double *wts;
@@ -65,7 +65,7 @@ anovass(int n, double *y[], double *value, double *risk, double *wt, double max_
     //*risk = 4 * n * MAX * MAX - effect * effect * n;
     //*risk = n * MAX * MAX - effect * effect * n;
     //max_y = MAX;
-    *risk = n * max_y * max_y - n * effect * effect ;
+    *risk = 4 * n * max_y * max_y - n * effect * effect ;
 }
 
 /*
@@ -79,7 +79,7 @@ void
 //anova(int n, double *y[], double *x, int nclass,
 //     int edge, double *improve, double *split, int *csplit,
 //      double myrisk, double *wt)
-// the rp_choose function:
+// the ct_choose function:
 
 anova(int n, double *y[], double *x, int nclass,
     int edge, double *improve, double *split, int *csplit,
@@ -115,7 +115,7 @@ anova(int n, double *y[], double *x, int nclass,
                  ((1 - right_wt / n) * right_wt);
                  
     node_effect = temp * temp * n;
-    Rprintf("n = %d, node_effect = %f\n", n, node_effect);
+    //Rprintf("n = %d, node_effect = %f\n", n, node_effect);
     
     if (nclass == 0) {
       /* continuous predictor */
@@ -280,8 +280,9 @@ anova(int n, double *y[], double *x, int nclass,
 	      }
 	 }
    *improve = best;
+   // Rprintf("for %f variable, improv = %f\n", x[0], *improve);
 
 	//*improve = best / myrisk;       /* % improvement */
   }
-  Rprintf("for %f variable, improv = %f\n", x[0], *improve);
+  //Rprintf("for %f variable, improv = %f\n", x[0], *improve);
 }

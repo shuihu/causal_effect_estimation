@@ -1,5 +1,5 @@
 # Any necessary setup
-library(rpart)
+library(causalTree)
 options(na.action="na.omit")
 options(digits=4) # to match earlier output
 set.seed(1234)
@@ -92,8 +92,8 @@ temp2 <- function(y, wt, x, parms, continuous) {
 #   return a dummy parms list
 #   numresp is the number of values produced by the eval routine's "label"
 #   numy is the number of columns for y
-#   summary is a function used to print one line in summary.rpart
-# In general, this function would also check for bad data, see rpart.poisson
+#   summary is a function used to print one line in summary.causalTree
+# In general, this function would also check for bad data, see causalTree.poisson
 #   for instace.
 temp3 <- function(y, offset, parms, wt) {
     if (!is.null(offset)) y <- y-offset
@@ -108,12 +108,12 @@ temp3 <- function(y, offset, parms, wt) {
 
 alist <- list(eval=temp1, split=temp2, init=temp3)
 
-fit1 <- rpart(income ~population +illiteracy  + murder + hs.grad + region,
-	     mystate, control=rpart.control(minsplit=10, xval=0),
+fit1 <- causalTree(income ~population +illiteracy  + murder + hs.grad + region,
+	     mystate, control=causalTree.control(minsplit=10, xval=0),
 	     method=alist)
 
-fit2 <- rpart(income ~population +illiteracy + murder + hs.grad + region,
-	     mystate, control=rpart.control(minsplit=10, xval=0),
+fit2 <- causalTree(income ~population +illiteracy + murder + hs.grad + region,
+	     mystate, control=causalTree.control(minsplit=10, xval=0),
 	      method='anova')
 
 # Other than their call statement, and a longer "functions" component in
@@ -126,13 +126,13 @@ all.equal(fit1$cptable, fit2$cptable)
 
 # Now try xpred on it
 xvtemp <- rep(1:5, length=50)
-xp1 <- xpred.rpart(fit1, xval=xvtemp)
-xp2 <- xpred.rpart(fit2, xval=xvtemp)
+xp1 <- xpred.causalTree(fit1, xval=xvtemp)
+xp2 <- xpred.causalTree(fit2, xval=xvtemp)
 aeq <- function(x,y) all.equal(as.vector(x), as.vector(y))
 aeq(xp1, xp2)
 
-fit3 <- rpart(income ~population +illiteracy + murder + hs.grad + region,
-	     mystate, control=rpart.control(minsplit=10, xval=xvtemp),
+fit3 <- causalTree(income ~population +illiteracy + murder + hs.grad + region,
+	     mystate, control=causalTree.control(minsplit=10, xval=xvtemp),
 	      method='anova')
 zz <- apply((mystate$income - xp1)^2,2, sum)
 aeq(zz/fit1$frame$dev[1], fit3$cptable[,4])  #reproduce xerror

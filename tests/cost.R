@@ -1,15 +1,15 @@
-library(rpart)
+library(causalTree)
 require(survival)
 aeq <- function(x,y, ...) all.equal(as.vector(x), as.vector(y), ...)
 
 #
 # Check out using costs
 #
-fit1 <- rpart(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
+fit1 <- causalTree(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
 	      + meal.cal + wt.loss, data=lung,
 	      maxdepth=1, maxcompete=6, xval=0)
 
-fit2 <- rpart(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
+fit2 <- causalTree(Surv(time, status) ~ age + sex + ph.ecog + ph.karno + pat.karno
 	      + meal.cal + wt.loss, data=lung,
 	      maxdepth=1, maxcompete=6, xval=0, cost=(1+ 1:7/10))
 

@@ -34,11 +34,11 @@ the number of the first (topmost) vertebra operated on.
   Pacific Grove, CA.
 }
 \examples{
-fit <- rpart(Kyphosis ~ Age + Number + Start, data = kyphosis)
-fit2 <- rpart(Kyphosis ~ Age + Number + Start, data = kyphosis,
+fit <- causalTree(Kyphosis ~ Age + Number + Start, data = kyphosis)
+fit2 <- causalTree(Kyphosis ~ Age + Number + Start, data = kyphosis,
               parms = list(prior = c(0.65, 0.35), split = "information"))
-fit3 <- rpart(Kyphosis ~ Age + Number + Start, data=kyphosis,
-              control = rpart.control(cp = 0.05))
+fit3 <- causalTree(Kyphosis ~ Age + Number + Start, data=kyphosis,
+              control = causalTree.control(cp = 0.05))
 par(mfrow = c(1,2), xpd = TRUE)
 plot(fit)
 text(fit, use.n = TRUE)

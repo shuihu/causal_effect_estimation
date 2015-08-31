@@ -23,17 +23,17 @@ Type 'q()' to quit R.
 > #   be threefold larger, other things will be the same.
 > # The improvement is the splits matrix, column 3, rows with n>0.  Other
 > #   rows are surrogate splits.
-> library(rpart)
+> library(causalTree)
 > require(survival)
 Loading required package: survival
 Loading required package: splines
 > 
-> tempc <- rpart.control(maxsurrogate=0, cp=0, xval=0)
-> fit1 <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
+> tempc <- causalTree.control(maxsurrogate=0, cp=0, xval=0)
+> fit1 <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
 +                 stagec, control=tempc,
 +                 method='poisson', parms=list(shrink=0))
 > wts <- rep(3, nrow(stagec))
-> fit1b <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
+> fit1b <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
 +                 stagec, control= tempc, parms=list(shrink=0),
 +                 method='poisson', weights=wts)
 > fit1b$frame$wt   <- fit1b$frame$wt/3
@@ -64,16 +64,16 @@ Loading required package: splines
 > 
 > wts <- rep(1:5, length=nrow(stagec))
 > temp <- rep(1:nrow(stagec), wts)             #row replicates
-> xgrp <- rep(1:10, length=146)[order(pseudo)]
-> xgrp2<- rep(xgrp, wts)
+> xgct <- rep(1:10, length=146)[order(pseudo)]
+> xgct2<- rep(xgct, wts)
 > #  Direct: replicate rows in the data set, and use unweighted
-> fit2 <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
-+ 	      control=rpart.control(minsplit=2, xval=xgrp2, cp=.025),
+> fit2 <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
++ 	      control=causalTree.control(minsplit=2, xval=xgct2, cp=.025),
 + 	      data=stagec[temp,], method='poisson')
 > 
 > #  Weighted
-> fit2b<- rpart(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
-+ 	      control=rpart.control(minsplit=2, xval=xgrp, cp=.025),
+> fit2b<- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2+grade+gleason +ploidy,
++ 	      control=causalTree.control(minsplit=2, xval=xgct, cp=.025),
 + 	      data=stagec, method='poisson', weight=wts)
 > 
 > all.equal(fit2$frame[-2],  fit2b$frame[-2])  # the "n" component won't match

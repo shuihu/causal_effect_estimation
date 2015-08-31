@@ -4,9 +4,9 @@
  *
  */
 #include <math.h>
-#include "rpart.h"
+#include "causalTree.h"
 #include "node.h"
-#include "rpartproto.h"
+#include "causalTreeproto.h"
 static double INFTY = 9999999999; // infinity
 
 int findNeighbor(int obs, int k) { 
@@ -19,10 +19,10 @@ int findNeighbor(int obs, int k) {
  
  neighbor = 0;
   
-  for (i = k; i < rp.n; i++) {
-    j = rp.sorts[0][i];
+  for (i = k; i < ct.n; i++) {
+    j = ct.sorts[0][i];
     temp = (j < 0)? -(1 + j) : j;
-    if (rp.wt[temp] != rp.wt[obs2]) {
+    if (ct.wt[temp] != ct.wt[obs2]) {
       //found = 1;
       //Rprintf("found one!\n");
       dist = measureDistance(obs2, temp);
@@ -42,8 +42,8 @@ int findNeighbor(int obs, int k) {
 double measureDistance(int i, int j) {
   int k;
   double distance = 0;
-  for (k = 0; k < rp.nvar; k++) {
-    distance += (rp.xdata[k][i] - rp.xdata[k][j]) * (rp.xdata[k][i] - rp.xdata[k][j]) / rp.xvar[k];   
+  for (k = 0; k < ct.nvar; k++) {
+    distance += (ct.xdata[k][i] - ct.xdata[k][j]) * (ct.xdata[k][i] - ct.xdata[k][j]) / ct.xvar[k];   
   }
   return distance;
 }

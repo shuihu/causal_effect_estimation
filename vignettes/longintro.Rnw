@@ -8,7 +8,7 @@
 
 \SweaveOpts{keep.source=TRUE, fig=FALSE}
 %\VignetteIndexEntry{Introduction to Rpart}
-%\VignetteDepends{rpart}
+%\VignetteDepends{causalTree}
 %\VignetteDepends{survival}
 % Ross Ihaka suggestions
 \DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em}
@@ -21,7 +21,7 @@
 \newcommand{\myfig}[1]{\resizebox{\textwidth}{!}
                         {\includegraphics{#1.pdf}}}
 \def\tree{\texttt{tree}}
-\def\rpart{\texttt{rpart}}
+\def\causalTree{\texttt{causalTree}}
 \def\splus{S-Plus}
 \newcommand{\Co}[1]{\texttt{#1}}
 
@@ -40,7 +40,7 @@ options(continue = "  ", width = 60)
 options(SweaveHooks=list(fig=function() par(mar = c(4.1, 4.1, 0.1, 1.1))))
 pdf.options(pointsize = 10)
 par(xpd = NA)  #stop clipping
-library(rpart)
+library(causalTree)
 @
 
 \section{Introduction}
@@ -49,20 +49,20 @@ Mayo Clinic Division of Biostatistics \cite{Therneau97},
 which was itself an expansion of an earlier Stanford report
 \cite{Therneau83}.
 It is intended to give a short overview of
-the methods found in the {\rpart} routines, which implement many of the
+the methods found in the {\causalTree} routines, which implement many of the
 ideas found in the CART (Classification and Regression Trees) book and
 programs of Breiman, Friedman, Olshen and Stone \cite{Breiman83}.
 Because CART is the trademarked name of a particular software
 implementation of these ideas, and \emph{tree} has been used
 for the {\splus} routines of Clark and Pregibon~\cite{Clark92}
  a different acronym
---- Recursive PARTitioning or rpart --- was chosen.
-It is somewhat humorous that this label ``rpart'' has now become more
+--- Recursive PARTitioning or causalTree --- was chosen.
+It is somewhat humorous that this label ``causalTree'' has now become more
 common than the original and more descriptive ``cart'',
 a testament to the
 influence of freely available software.
 
-The {\rpart} programs build classification or regression models of a very
+The {\causalTree} programs build classification or regression models of a very
 general structure using a two stage procedure; the resulting models can
 be represented as binary trees.  An example is some preliminary data
 gathered at Stanford on revival of cardiac arrest patients by
@@ -221,7 +221,7 @@ usually prefer the former, if for no other reason than because it better
 sets things up for the next splits.
 
 One way around both of these problems is to use look-ahead rules; but
-these are computationally very expensive.  Instead {\rpart} uses one of
+these are computationally very expensive.  Instead {\causalTree} uses one of
 several measures of impurity, or diversity, of a node.  Let $f$ be some
 impurity function and define the impurity of a node A as
 $$
@@ -266,7 +266,7 @@ $$
 where $C_1 $,$C_2 $ is some partition of the $C$ classes into
 two disjoint sets.  If $C=2$ twoing is equivalent to the usual impurity index
 for $f$.
-Surprisingly, twoing can be calculated almost as efficiently as the
+Suctrisingly, twoing can be calculated almost as efficiently as the
 usual impurity index.
 One potential advantage of twoing is that the output may give the user
 additional insight concerning the structure of the data.  It can be viewed
@@ -276,9 +276,9 @@ For certain problems there may be a natural ordering of the response
 categories (e.g. level of education), in which case ordered twoing can be
 naturally defined, by restricting $C_1$ to be an interval $[1,2,\ldots,k]$
 of classes.
-Twoing is not part of {\rpart}.
+Twoing is not part of {\causalTree}.
 
-\subsection{Incorporating losses}
+\subsection{Incoctorating losses}
 
 One salutatory aspect of the risk reduction criteria not found
 in the impurity measures is inclusion of the loss function.  Two different
@@ -286,11 +286,11 @@ ways of extending the impurity criteria
 to also include losses
 are implemented in CART, the
 generalized Gini index and altered priors.
-The {\rpart} software implements only the altered priors method.
+The {\causalTree} software implements only the altered priors method.
 
 \subsubsection{Generalized Gini index}
 
-The Gini index has the following interesting interpretation.  Suppose
+The Gini index has the following interesting intectretation.  Suppose
 an object is selected at random from one of C classes according to the
 probabilities $(p_1 ,p_2 ,...,p_C ) $
 and is randomly assigned to a class using the same distribution.  The
@@ -351,7 +351,7 @@ $$
 This is always possible when $C=2$,
 and hence altered priors are exact for the two class problem.
 For arbitrary loss matrix of dimension $C> 2$,
- {\rpart} uses the above formula with
+ {\causalTree} uses the above formula with
 $L_i = \sum_ j L(i,j)$.
 
 
@@ -413,7 +413,7 @@ The variables in the data set are
 \end{center}
 
 
-The model is fit by using the {\rpart} function.  The first
+The model is fit by using the {\causalTree} function.  The first
 argument of the function is a model formula,
 with the $\sim$ symbol standing for ``is modeled as''.
 The \Co{print} function gives an abbreviated output, as for other S models.
@@ -421,7 +421,7 @@ The \Co{plot} and \Co{text} command plot the tree and then label the
 plot, the result is shown in figure \ref{fgini1}.
 <<gini1, fig=TRUE, include=FALSE>>=
 progstat <- factor(stagec$pgstat, levels = 0:1, labels = c("No", "Prog"))
-cfit  <- rpart(progstat ~  age + eet + g2 + grade + gleason + ploidy,
+cfit  <- causalTree(progstat ~  age + eet + g2 + grade + gleason + ploidy,
                data = stagec, method = 'class')
 print(cfit)
 par(mar = rep(0.1, 4))
@@ -580,7 +580,7 @@ $\alpha$ by the following steps:
 \end{enumerate}
 
 In actual practice, we may use instead the 1-SE rule.  A plot of $\beta$
-versus risk often has an initial sharp drop followed by a relatively flat
+versus risk often has an initial shact drop followed by a relatively flat
 plateau and then a slow rise.  The choice of $\beta$ among those
 models on the
 plateau can be essentially random.  To avoid this, both an estimate of the
@@ -660,8 +660,8 @@ temp1 <- ifelse(lights[y+1, ] == 1, temp1, 1-temp1)
 temp2 <- matrix(rbinom(n*17, 1, 0.5), n, 17) # Random lights
 x <- cbind(temp1, temp2)
 
-dfit <- rpart(y ~ x, method='class',
-              control = rpart.control(xval = 10, minbucket = 2, cp = 0))
+dfit <- causalTree(y ~ x, method='class',
+              control = causalTree.control(xval = 10, minbucket = 2, cp = 0))
 printcp(dfit)
 
 fit9 <- prune(dfit, cp = 0.02)
@@ -745,7 +745,7 @@ values at which to split.
 Once a splitting variable and a split point for it have been decided,
 what {\em is}
 to be done with observations missing that variable?  One approach is to
-estimate the missing datum using the other independent variables; {\rpart}
+estimate the missing datum using the other independent variables; {\causalTree}
 uses a variation of this to define
 {\em surrogate} variables.
 
@@ -784,7 +784,7 @@ sending 1 subject to the right and $n-1$ to the left.
 A continuous variable that is completely unrelated to age has probability
 $1-p^2$ of generating such a
 trim-one-end surrogate by chance alone.  For this reason
-the {\rpart} routines impose one more constraint during the construction
+the {\causalTree} routines impose one more constraint during the construction
 of the surrogates: a candidate split must send at least 2 observations to
 the left and at least 2 to the right.
 
@@ -798,13 +798,13 @@ of this type (we hope).
 \subsection{Example: Stage C prostate cancer (cont.)}
 Let us return to the stage C prostate cancer data of the
 earlier example.
-For a more detailed listing of the rpart object, we use the \Co{summary}
+For a more detailed listing of the causalTree object, we use the \Co{summary}
 function. It includes the information from the CP table (not repeated below),
 plus information about each node.  It is easy to print a
 sub tree based on a different cp value using the \Co{cp} option.
 Any value between 0.0555 and 0.1049 would produce the same
 result as is listed below, that is, the tree with 3 splits.
-Because the printout is long, the \Co{file} option of \Co{summary.rpart}
+Because the printout is long, the \Co{file} option of \Co{summary.causalTree}
 is often useful.
 
 <<>>=
@@ -861,7 +861,7 @@ $$
 \section{Further options}
 \subsection{Program options}
 
-The central fitting function is {\rpart}, whose main arguments are
+The central fitting function is {\causalTree}, whose main arguments are
 \begin{itemize}
 \item \Co{formula}: the model formula, as in \Co{lm} and other S
 model fitting functions.  The right hand side may contain both
@@ -881,14 +881,14 @@ The priors must be positive and sum to 1.  The loss matrix must have
 zeros on the diagonal and positive off-diagonal elements.
 The splitting index can be \Co{"gini"} or \Co{"information"}.
 \item \Co{na.action}: the action for missing values.  The default action
-for rpart is \Co{na.rpart}, this default is not overridden by the
+for causalTree is \Co{na.causalTree}, this default is not overridden by the
 \Co{options(na.action)} global option.  The default action removes only
 those rows for which either the response $y$ or \emph{all} of the predictors
 are missing.
 This ability to retain partially missing observations is perhaps the single
-most useful feature of {\rpart} models.
+most useful feature of {\causalTree} models.
 \item \Co{control}: a list of control parameters, usually the result of
-the \Co{rpart.control} function.  The list must contain
+the \Co{causalTree.control} function.  The list must contain
 \begin{itemize}
 \item \Co{minsplit}: The minimum number of observations in a node for which
 the routine will even try to compute a split.  The default is 20.
@@ -934,7 +934,7 @@ This scaled version is much more user friendly than the original
 CART formula (\ref{cp1}) since it is unit less.
 A value of \Co{cp = 1} will always result in a tree with no splits.
 For regression models (see next section) the scaled cp has a very
-direct interpretation: if any split does not increase the overall
+direct intectretation: if any split does not increase the overall
 ${\rm R}^2$ of the model by at least $cp$
 (where ${\rm R}^2$ is the usual linear-models definition)
 then that split is decreed to be, a priori, not worth pursuing.
@@ -951,7 +951,7 @@ A second example using the \Co{class} method demonstrates the outcome
 for a response with multiple ($>2$) categories.  We also explore
 the difference between Gini and information splitting rules.
 The dataset cu.summary contains a collection of variables from the April,
-1990 Consumer Reports summary on 117 cars. For our purposes, car
+1990 Consumer Reports summary on 117 cars. For our puctoses, car
 Reliability will be treated as the response. The variables are:
 $$
 \begin{tabular}{ll}
@@ -974,7 +974,7 @@ information index.
 
 \begin{figure}[tb]
   \myfig{longintro-cars}
-  \caption{Displays the rpart-based model relating automobile
+  \caption{Displays the causalTree-based model relating automobile
     Reliability to car type, price, and country of origin. The figure
     on the left uses the \texttt{gini} splitting
     index and the figure on the right uses the \texttt{information} splitting
@@ -983,9 +983,9 @@ information index.
 \end{figure}
 
 <<cars, fig=TRUE, include=FALSE>>=
-fit1 <- rpart(Reliability ~ Price + Country + Mileage + Type,
+fit1 <- causalTree(Reliability ~ Price + Country + Mileage + Type,
                 data = cu.summary, parms = list(split = 'gini'))
-fit2 <- rpart(Reliability ~ Price + Country + Mileage + Type,
+fit2 <- causalTree(Reliability ~ Price + Country + Mileage + Type,
                 data = cu.summary, parms = list(split = 'information'))
 
 par(mfrow = c(1,2), mar = rep(0.1, 4))
@@ -1002,7 +1002,7 @@ summary(fit1, cp = 0.06)
 
 And for the information splitting the first split is
 <<>>=
-fit3 <- rpart(Reliability ~ Price + Country + Mileage + Type,
+fit3 <- causalTree(Reliability ~ Price + Country + Mileage + Type,
                 data=cu.summary, parms=list(split='information'),
               maxdepth=2)
 summary(fit3)
@@ -1048,7 +1048,7 @@ all $2^{m-1}$ different possible splits are tested..
    When there are a large number of categories for the predictor,
 the computational burden of evaluating all of these subsets can become
 large.
-For instance, the call \Co{rpart(Reliability ~ ., data=car90)}
+For instance, the call \Co{causalTree(Reliability ~ ., data=car90)}
 does not return for a \emph{long,} long time: one of the predictors
 in that data set is an unordered factor with 30 levels!
 Luckily, for any ordered outcome there is a computational
@@ -1075,7 +1075,7 @@ $$
 
 \begin{figure}
   \myfig{longintro-kyphos}
-  \caption{Displays the rpart-based models for the
+  \caption{Displays the causalTree-based models for the
     presence/absence of kyphosis.  The figure
     on the left uses the default {prior} (0.79,0.21) and {loss}; the
     middle figure uses the user-defined {prior} (0.65,0.35) and default
@@ -1086,11 +1086,11 @@ $$
 
 <<kyphos, fig=TRUE, include=FALSE>>=
 lmat <- matrix(c(0,3, 4,0), nrow = 2, ncol = 2, byrow = FALSE)
-fit1 <- rpart(Kyphosis ~  Age + Number + Start, data = kyphosis)
+fit1 <- causalTree(Kyphosis ~  Age + Number + Start, data = kyphosis)
 
-fit2 <- rpart(Kyphosis ~  Age + Number + Start, data = kyphosis,
+fit2 <- causalTree(Kyphosis ~  Age + Number + Start, data = kyphosis,
               parms = list(prior = c(0.65, 0.35)))
-fit3 <- rpart(Kyphosis ~  Age + Number + Start, data = kyphosis,
+fit3 <- causalTree(Kyphosis ~  Age + Number + Start, data = kyphosis,
               parms = list(loss = lmat))
 
 par(mfrow = c(1, 3), mar = rep(0.1, 4))
@@ -1210,7 +1210,7 @@ price and leads to a less interesting illustration.  (Tiny cars are cheaper
 and have small rims.)
 <<>>=
 cars <- car90[, -match(c("Rim", "Tires", "Model2"), names(car90))]
-carfit <- rpart(Price/1000 ~ ., data=cars)
+carfit <- causalTree(Price/1000 ~ ., data=cars)
 carfit
 printcp(carfit)
 @
@@ -1269,18 +1269,18 @@ This is indicated by a \Co{-} in the list of split directions.
 \begin{figure}
   \myfig{longintro-anova2}
   \caption{Both plots were obtained using the function
-    \Co{rsq.rpart(fit3)}. The figure on the left shows that the first split
+    \Co{rsq.causalTree(fit3)}. The figure on the left shows that the first split
     offers the most information.  The figure on the right suggests that
     the tree should be pruned to include only 1 or 2 splits.}
   \label{anovafig2}
 \end{figure}
 <<anova2, fig=TRUE, include=FALSE, echo=FALSE>>=
 par(mfrow=c(1,2))
-rsq.rpart(carfit)
+rsq.causalTree(carfit)
 par(mfrow=c(1,1))
 @
 Other plots can be used to help determine the best cp value for this
-model. The function \Co{rsq.rpart} plots the jackknifed error versus
+model. The function \Co{rsq.causalTree} plots the jackknifed error versus
 the number of splits.  Of interest is the smallest error, but any
 number of splits within the ``error bars'' (1-SE rule) are considered
 a reasonable number of splits (in this case, 1 or 2 splits seem to be
@@ -1314,7 +1314,7 @@ The stage C prostate cancer data of the earlier section can also
 be fit using the anova method, by treating the status variable
 as though it were continuous.
 <<>>=
-cfit2 <- rpart(pgstat ~ age + eet + g2 + grade + gleason + ploidy,
+cfit2 <- causalTree(pgstat ~ age + eet + g2 + grade + gleason + ploidy,
                data = stagec)
 
 printcp(cfit2)
@@ -1332,7 +1332,7 @@ the variance of a node.
 The two methods differ in their evaluation and pruning, however.
 Note that nodes 4 and 5, the two children of node 2, contain
 2/40 and 7/21 progressions, respectively.  For classification
-purposes both nodes have the same predicted value (No) and the
+puctoses both nodes have the same predicted value (No) and the
 split will be discarded since the error (\# of misclassifications)
 with and without the split is identical.
 In the regression context the two predicted values of .05 and .33
@@ -1343,13 +1343,13 @@ subgroup of significant size.
 sensible way to evaluate a split when the emphasis of the model
 is on understanding/explanation rather than on prediction error
 per se.  Extension of this rule to the multiple class problem
-is appealing, but has not yet been implemented in {\rpart}.
+is appealing, but has not yet been implemented in {\causalTree}.
 
 
 
 \section{Poisson regression}
 \subsection{Definition}
-The Poisson splitting method attempts to extend {{\rpart}} models to
+The Poisson splitting method attempts to extend {{\causalTree}} models to
 event rate data.
 The model in this case is
 $$
@@ -1423,7 +1423,7 @@ measure, the corresponding model is then infinitely bad.
 
 One might expect this phenomenon to be fairly rare, but unfortunately it is
 not so.  One given of tree-based modeling is that a right-sized model is
-arrived at by purposely over-fitting the data and then pruning back the
+arrived at by puctosely over-fitting the data and then pruning back the
 branches.  A program that aborts due to a numeric exception during the first
 stage is uninformative to say the least.
 Of more concern is that this edge effect does not seem to be limited to
@@ -1455,7 +1455,7 @@ $$
 $$
 where $\alpha= 1/k^2$ and $\beta = \alpha/ \hat\lambda$.
 
-This estimate is scale invariant, has a simple interpretation, and
+This estimate is scale invariant, has a simple intectretation, and
 shrinks least those nodes with a large amount of information.  In practice,
 a value of $k=10$ does essentially no shrinkage.
 For \Co{method='poisson'}, the optional parameters list is the single
@@ -1480,7 +1480,7 @@ Panel & factor: panel (1, 2 or 3) on board being counted \\
 \end{tabular}
 $$
 
-In this call, the \Co{rpart.control} options are modified:
+In this call, the \Co{causalTree.control} options are modified:
 \Co{maxcompete = 2} means that only 2 other competing splits are
 listed (default is 4); \Co{cp = .05} means that a smaller
 tree will be built initially (default is .01).
@@ -1490,9 +1490,9 @@ number of events in column 2, or it may be a vector of event
 counts alone.
 
 <<>>=
-sfit <- rpart(skips ~ Opening + Solder + Mask + PadType + Panel,
+sfit <- causalTree(skips ~ Opening + Solder + Mask + PadType + Panel,
               data = solder, method = 'poisson',
-              control = rpart.control(cp = 0.05, maxcompete = 2))
+              control = causalTree.control(cp = 0.05, maxcompete = 2))
 sfit
 @
 \begin{itemize}
@@ -1524,7 +1524,7 @@ boundary effect mentioned earlier, but more research is needed.
   \caption{The first figure shows the solder data, fit with the
     \Co{poisson} method, using a \Co{cp} value of 0.05.  The second figure
     shows the same fit, but with a \Co{cp} value of 0.10.  The function
-    \Co{prune.rpart} was used to produce the smaller tree.}
+    \Co{prune.causalTree} was used to produce the smaller tree.}
   \label{poissonfig1}
 \end{figure}
 <<poisson1, fig=TRUE, include=FALSE>>=
@@ -1541,7 +1541,7 @@ The \Co{use.n = TRUE} option specifies that number of events / total N should be
 listed along with the predicted rate (number of events/person-years).
 The function \Co{prune} trims the tree \Co{fit} to the \Co{cp} value
 $0.10$.  The same tree could have been created by specifying
-\Co{cp = 0.10} in the original call to {\rpart}.
+\Co{cp = 0.10} in the original call to {\causalTree}.
 
 \subsection{Example: Stage C Prostate cancer, survival method}
 One special case of the Poisson model is of particular interest
@@ -1584,7 +1584,7 @@ the variables explained previously, we will use pgtime, which is time
 to tumor progression.
 <<exp3, fig=TRUE, include=FALSE>>=
 require(survival)
-pfit <- rpart(Surv(pgtime, pgstat) ~ age + eet + g2 + grade +
+pfit <- causalTree(Surv(pgtime, pgstat) ~ age + eet + g2 + grade +
                gleason + ploidy, data = stagec)
 print(pfit)
 
@@ -1614,20 +1614,20 @@ g2 $<$ 11.36.
 
 For a final summary of the model, it can be helpful to plot the
 probability of survival based on the final bins in which the subjects
-landed. To create new variables based on the rpart groupings,
+landed. To create new variables based on the causalTree groupings,
 using the \Co{where} component of the fit, as
 shown in figure \ref{expfig4}.
 We'll further prune the tree down to four nodes by removing the
 split at node 6.
 \begin{figure}
   \myfig{longintro-exp4}
-  \caption{Survival plot based on snipped rpart object.  The
+  \caption{Survival plot based on snipped causalTree object.  The
     probability of tumor progression is greatest in node 8, which has
     patients who are older and have a higher initial tumor grade. }
   \label{expfig4}
 \end{figure}
 <<exp4, fig=TRUE, include=FALSE>>=
-temp <- snip.rpart(pfit2, 6)
+temp <- snip.causalTree(pfit2, 6)
 km <- survfit(Surv(pgtime, pgstat) ~ temp$where, stagec)
 plot(km, lty = 1:4, mark.time = FALSE,
      xlab = "Years", ylab = "Progression")
@@ -1648,14 +1648,14 @@ be the best.  This may be another artifact of the edge effect.
 \label{plotsect}
 
 This section examines the various options that are available when
-plotting an rpart object.  For simplicity, the same model (data from
+plotting an causalTree object.  For simplicity, the same model (data from
 Example 1) will be used throughout.
 You have doubtless already noticed the use of \texttt{par(mar =)}
 in the examples.
-The plot function for rpart uses the general \texttt{plot} function
+The plot function for causalTree uses the general \texttt{plot} function
 to set up the plot region.  By default, this leaves space for
 axes, legends or titles on the bottom, left, and top.
-Room for axes is not needed in general for rpart plots, and
+Room for axes is not needed in general for causalTree plots, and
 for this report we also do not have top titles.
 For the small plots in this report it was important to use all of
 the page, so we reset these for each plot.
@@ -1675,8 +1675,8 @@ nodes.
 \end{figure}
 
 <<plots1, fig=TRUE, include=FALSE>>=
-fit <- rpart(pgstat ~  age + eet + g2 + grade + gleason + ploidy,
-             stagec, control = rpart.control(cp = 0.025))
+fit <- causalTree(pgstat ~  age + eet + g2 + grade + gleason + ploidy,
+             stagec, control = causalTree.control(cp = 0.025))
 par(mar = rep(0.2, 4))
 plot(fit)
 text(fit)
@@ -1743,7 +1743,7 @@ text(fit, all = TRUE, use.n = TRUE)
 \end{figure}
 
 Several of these options were combined into a function called
-\Co{post.rpart}, whose default action of creating a .ps file
+\Co{post.causalTree}, whose default action of creating a .ps file
 in the current directory is now rather dated.
 Identical results to the function can be obtained by the collection
 of options shown below, the result is displayed in figure \ref{plotfig5}.
@@ -1761,13 +1761,13 @@ slightly so that the \Co{text} boxes don't run over the edge of the
 plot.
 The \Co{branch} option makes the lines exit the ellipse
 at a ``good'' angle.
-A separate package \texttt{rpart.plot} carries these ideas much further.
+A separate package \texttt{causalTree.plot} carries these ideas much further.
 
 
 \section{Other functions}
 A more general approach to cross-validation can be gained using the
-\Co{xpred.rpart} function.
-Given an rpart fit, a vector of $k$ complexity parameters,
+\Co{xpred.causalTree} function.
+Given an causalTree fit, a vector of $k$ complexity parameters,
 and the desired number of cross-validation groups,
 this function returns an $n$ by $k$ matrix containing the
 predicted value $\hat y_{(-i)}$ for each subject, from the model
@@ -1778,11 +1778,11 @@ sequence for the pruned tree on the full data set.
 Here is an example that uses the mean absolute deviation for
 continuous data rather than the usual mean square error.
 <<>>=
-carfit <- rpart(Price/1000 ~ ., cars)
+carfit <- causalTree(Price/1000 ~ ., cars)
 carfit$cptable
 
 price2 <-  cars$Price[!is.na(cars$Price)]/1000
-temp <- xpred.rpart(carfit)
+temp <- xpred.causalTree(carfit)
 errmat <- price2 - temp
 abserr <- colMeans(abs(errmat))
 rbind(abserr, relative=abserr/mean(abs(price2-mean(price2))))
@@ -1940,7 +1940,7 @@ $$
  15* \{(259/315)(39120/67081)  - [(174/315)(240/841) + (85/315)(60/289)]\}
          \approx 3.9876
 $$
-As is true in general with the rpart routines, variables with missing
+As is true in general with the causalTree routines, variables with missing
 values are penalized with respect to choosing a split -- a factor of
 259/315 or about 12/15 in the case of $x3$ at the top node.
 Table \ref{tab:cutpoint} shows the statistics for all of the cutpoints

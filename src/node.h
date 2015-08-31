@@ -17,7 +17,7 @@ typedef struct split {
     int csplit[20];            /* the actual length depends on splitting rule */
 } Split, *pSplit;
 
-/* The real 'nodesize' is set in rpart.c */
+/* The real 'nodesize' is set in causalTree.c */
 typedef struct node {
     double risk;                /* risk for the node */
     double complexity;          /* complexity at which it will collapse */

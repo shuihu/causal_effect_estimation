@@ -6,8 +6,8 @@
  *  stop:  last element of x to sort
  *  cvec:  a vector to carry along
  */
-#include "rpart.h"
-#include "rpartproto.h"
+#include "causalTree.h"
+#include "causalTreeproto.h"
 
 void
 mysort(int start, int stop, double *x, int *cvec)

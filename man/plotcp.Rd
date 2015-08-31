@@ -5,7 +5,7 @@
 }
 \description{
 Gives a visual representation of the cross-validation results in an 
-\code{rpart} object. 
+\code{causalTree} object. 
 }
 \usage{
 plotcp(x, minline = TRUE, lty = 3, col = 1,
@@ -13,7 +13,7 @@ plotcp(x, minline = TRUE, lty = 3, col = 1,
 }
 \arguments{
 \item{x}{
-an object of class \code{"rpart"} 
+an object of class \code{"causalTree"} 
 }
 \item{minline}{
 whether a horizontal line is drawn 1SE above the minimum of the curve. 
@@ -42,13 +42,13 @@ A plot is produced on the current graphical device.
 The set of possible cost-complexity prunings of a tree from a nested
 set. For the geometric means of the intervals of values of \code{cp} for which
 a pruning is optimal, a cross-validation has (usually) been done in
-the initial construction by \code{\link{rpart}}. The \code{cptable} in the fit contains
+the initial construction by \code{\link{causalTree}}. The \code{cptable} in the fit contains
 the mean and standard deviation of the errors in the cross-validated
 prediction against each of the geometric means, and these are plotted
 by this function. A good choice of \code{cp} for pruning is often the
 leftmost value for which the mean lies below the horizontal line.
 }
 \seealso{
-\code{\link{rpart}},  \code{\link{printcp}},  \code{\link{rpart.object}}   
+\code{\link{causalTree}},  \code{\link{printcp}},  \code{\link{causalTree.object}}   
 }
 \keyword{tree}
