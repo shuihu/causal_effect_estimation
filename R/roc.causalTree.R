@@ -1,9 +1,9 @@
 roc.causalTree <- function(object, plot.ok = TRUE, x.orient = 1L)
 {
 
-    if (!inherits(object, "causalTree") || object$method != "class" ||
+    if (!inherits(object, "rpart") || object$method != "class" ||
        length(attr(object, "ylevels")) != 2L)
-        stop('Not legitimate \"causalTree\" tree and endpoint not a 2 level-factor')
+        stop('Not legitimate \"rpart\" tree and endpoint not a 2 level-factor')
 
     ss.compare <- function(a, b) a >= b
 

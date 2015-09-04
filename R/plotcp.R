@@ -4,7 +4,7 @@ plotcp <- function(x, minline = TRUE, lty = 3, col = 1,
 		   upper = c("size", "splits", "none"), ...)
 {
     dots <- list(...)
-    if (!inherits(x, "causalTree")) stop("Not a legitimate \"causalTree\" object")
+    if (!inherits(x, "rpart")) stop("Not a legitimate \"rpart\" object")
     upper <- match.arg(upper)
     p.causalTree <- x$cptable
     if (ncol(p.causalTree) < 5L)

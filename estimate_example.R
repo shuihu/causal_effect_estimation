@@ -1,7 +1,8 @@
-### notice: right now, we only need to change "rpart" to "causalTree" in our codes
-### "rpart.plot" cannot be used at present
-### example:
+### example for using estimate.causalTree 
+### estimate.causalTree is to estimate causal effects of test data using honest tree:
 library(causalTree)
+library(rpart)
+library(rpart.plot)
 x1 <- rnorm(1000, 0, 1) 
 x2 <- rnorm(1000, 0, 1) 
 x3 <- rnorm(1000, 0, 1) 
@@ -32,9 +33,10 @@ names(te1) <- c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "y"
 
 ## build and prune tree
 tree1 <- causalTree(y~., data = tr1, weights = w, method = "anova",
-                    cp = 0, parms = 1, minbucket = 1, cv.option = "matching")
+               cp = 0, parms = 1, minbucket = 1, cv.option = "matching")
 opcp1 <- tree1$cp[which(tree1$cp[,4] == min(tree1$cp[,4])), 1]
 prune1 <- prune(tree1, cp = opcp1)
+rpart.plot(prune1)
 
 ## estimate the test data set:
 est1 <- estimate.causalTree(prune1, y~., data = te1, weights = w)

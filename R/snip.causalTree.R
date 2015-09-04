@@ -3,7 +3,7 @@
 ##
 snip.causalTree <- function(x, toss)
 {
-    if (!inherits(x, "causalTree")) stop("Not an \"causalTree\" object")
+    if (!inherits(x, "rpart")) stop("Not an \"rpart\" object")
 
     if (missing(toss) || length(toss) == 0L) {
         toss <- snip.causalTree.mouse(x)
