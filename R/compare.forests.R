@@ -23,10 +23,8 @@ compare.forests <- function(Y, X, W, num.trees, sample.size, node.size, cv.optio
     tree.standard <- causalTree(Y~., data = data.frame(X = sample.standard$X, Y = sample.standard$Y), weights = sample.standard$W, method = "anova", cp = 0, parms = node.size, minbucket = 1, cv.option = cv.option)
     optimal.cp.standard <- tree.standard$cp[which.min(tree.standard$cp[,'xerror']), 'CP']
     pruned.tree.standard <- prune(tree.standard, cp = optimal.cp.standard)
-    if (tree.index == 1) print(pruned.tree.standard)
     comparison.results$pred.standard.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.standard, X)
     pruned.tree.honest <- reestimate.tau(pruned.tree.standard, sample.honest$Y, sample.honest$X, sample.honest$W)
-    if (tree.index == 1) print(pruned.tree.honest)
     comparison.results$pred.honest.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.honest, X)
   }
   print("Compute the variances")
