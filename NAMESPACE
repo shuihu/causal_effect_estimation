@@ -2,7 +2,7 @@ useDynLib(causalTree, .registration = TRUE, .fixes = "C_")
 
 export(meanvar, na.causalTree, path.causalTree, plotcp, post, printcp, prune,
        prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, 
-       estimate.causalTree)
+       estimate.causalTree, compare.forests)
 export(causalTree.exp)  # needed for one of the tests
 
 importFrom(grDevices, dev.cur, dev.off)
