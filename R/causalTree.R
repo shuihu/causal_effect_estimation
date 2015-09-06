@@ -337,6 +337,6 @@ causalTree <-
     if (!is.null(attr(m, "na.action"))) ans$na.action <- attr(m, "na.action")
     if (!is.null(xlevels)) attr(ans, "xlevels") <- xlevels
     if (method == "class") attr(ans, "ylevels") <- init$ylevels
-    class(ans) <- "rpart"
+    class(ans) <- c('rpart', 'causalTree')
     ans
 }
