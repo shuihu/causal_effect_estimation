@@ -3,7 +3,7 @@
 # forest averages the predictions produced by the training sample, while the
 # "honest" random forest averages the predictions produced by applying a separate estimation
 # sample to the same trees produced by the training sample.
-# The result is: list(pred.honest, pred.standard, pred.honest.matrix, pred.standard.matrix, use.matrix, variance.honest, variance.standard)
+# The result is: list(pred.honest, pred.standard, pred.honest.matrix, pred.standard.matrix, use.matrix.honest, use.matrix.standard, variance.honest, variance.standard)
 
 compare.forests <- function(Y, X, W, num.trees, sample.size, node.size, cv.option, seed) {
   if (!missing(seed)) {
