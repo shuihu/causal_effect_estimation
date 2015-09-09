@@ -10,7 +10,20 @@
 # variance.honest: vector of num.obs elements
 # variance.standard: vector of num.obs elements
 
-init.compare.forests.results <- function(num.obs, num.trees) {
+RandomForestComparison <- setClass(
+  "RandomForestComparison",
+  slots = c(
+    pred.honest = "vector",
+    pred.standard = "vector",
+    pred.honest.matrix = "matrix",
+    pred.standard.matrix = "matrix",
+    use.matrix.honest = "matrix",
+    use.matrix.standard = "matrix", 
+    variance.honest = "vector",
+    variance.standard = "vector")
+)
+
+init.RandomForestComparison <- function(num.obs, num.trees) {
   pred.honest <- rep(0, num.obs)
   pred.standard <- rep(0, num.obs)
   pred.honest.matrix <- matrix(0, num.obs, num.trees)
@@ -19,5 +32,5 @@ init.compare.forests.results <- function(num.obs, num.trees) {
   use.matrix.standard <- matrix(0, num.obs, num.trees)
   variance.honest <- rep(0, num.obs)
   variance.standard <- rep(0, num.obs)
-  list(pred.honest = pred.honest, pred.standard = pred.standard, pred.honest.matrix = pred.honest.matrix, pred.standard.matrix = pred.standard.matrix, use.matrix.honest = use.matrix.honest, use.matrix.standard = use.matrix.standard, variance.honest = variance.honest, variance.standard = variance.standard)
+  RandomForestComparison(pred.honest = pred.honest, pred.standard = pred.standard, pred.honest.matrix = pred.honest.matrix, pred.standard.matrix = pred.standard.matrix, use.matrix.honest = use.matrix.honest, use.matrix.standard = use.matrix.standard, variance.honest = variance.honest, variance.standard = variance.standard)
 }
