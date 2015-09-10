@@ -11,7 +11,7 @@
  *                   of doubles.
  *      parms   = extra parameters for the split function, e.g. poissoninit
  *      xvals    = number of cross-validations to do
- *      xgct     = indices for the cross-validations
+ *      xgrp     = indices for the cross-validations
  *      ymat    = vector of response variables
  *      xmat    = matrix of continuous variables
  *      ny      = number of columns of the y matrix (it is passed in as a
@@ -39,8 +39,8 @@
 
 SEXP
 causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
-      SEXP parms2, SEXP p2, SEXP xvals2, SEXP xgct2,
-      SEXP ymat2, SEXP xmat2, SEXP wt2, SEXP ny2, SEXP cost2, SEXP xvar2)
+      SEXP parms2, SEXP minsize2, SEXP p2, SEXP xvals2, SEXP xgrp2,
+      SEXP ymat2, SEXP xmat2, SEXP wt2, SEXP treatment2, SEXP ny2, SEXP cost2, SEXP xvar2)
 {
 
     pNode tree;          /* top node of the tree */
@@ -54,11 +54,13 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     /*
      * pointers to R objects
      */
-    int *ncat, *xgct;
+    int *ncat, *xgrp;
     int xvals;
     //double *wt, *parms;
-    double * wt;
-    int parms;
+    double *wt;
+    double *treatment;
+    double *parms;
+    int minsize;
     // add propensity score:
     double p;
     /*
@@ -76,12 +78,16 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     CpTable cp;
 
     ncat = INTEGER(ncat2);
-    xgct = INTEGER(xgct2);
+    xgrp = INTEGER(xgrp2);
     xvals = asInteger(xvals2);
     wt = REAL(wt2);
-    //parms = REAL(parms2);
-    parms = asInteger(parms2);
+    treatment = REAL(treatment2);
+    parms = REAL(parms2);
+    //parms = asInteger(parms2);
+    minsize = asInteger(minsize2);
     p = asReal(p2);
+    
+    
     /*
      * initialize the splitting functions from the function table
      */
@@ -93,7 +99,7 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
 	    ct_error = func_table[i].error;
 	    ct.num_y = asInteger(ny2);
     } else
-	error(_("Invalid value for 'method'"));
+      error(_("Invalid value for 'method'"));
 
     /*
      * set some other parameters
@@ -105,19 +111,21 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     ct.maxpri = (int) dptr[3] + 1;      /* max primary splits =
 					   max competitors + 1 */
     if (ct.maxpri < 1)
-	ct.maxpri = 1;
+      ct.maxpri = 1;
     ct.maxsur = (int) dptr[4];
     ct.usesurrogate = (int) dptr[5];
     ct.sur_agree = (int) dptr[6];
     ct.maxnode = (int) pow((double) 2.0, (double) dptr[7]) - 1;
     ct.n = nrows(xmat2);
-    n = ct.n;                   /* I get tired of typing "ct.n" 100 times
-				 * below */
+    n = ct.n;                   
+    /* I get tired of typing "ct.n" 100 times 
+    * below */
     //Rprintf("ct.n = %d\n", n);
     
     ct.nvar = ncols(xmat2);
     ct.numcat = INTEGER(ncat2);
     ct.wt = wt;
+    ct.treatment = treatment;
     ct.iscale = 0.0;
     ct.vcost = REAL(cost2);
     
@@ -132,8 +140,8 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     dptr = REAL(xmat2);
     ct.xdata = (double **) ALLOC(ct.nvar, sizeof(double *));
     for (i = 0; i < ct.nvar; i++) {
-	ct.xdata[i] = dptr;
-	dptr += n;
+      ct.xdata[i] = dptr;
+	    dptr += n;
     }
     
     ct.ydata = (double **) ALLOC(n, sizeof(double *));
@@ -142,7 +150,7 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     temp2 = 0;
     for (i = 0; i < n; i++) {
 	    ct.ydata[i] = dptr;
-      for (j = 0; j <  ct.num_y; j++){
+      for (j = 0; j <  ct.num_y; j++) {
         if (fabs(ct.ydata[i][j]) > temp2) temp2 = fabs(ct.ydata[i][j]);        
       }
       	dptr += ct.num_y;
@@ -155,6 +163,7 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     ct.xtemp = (double *) ALLOC(n, sizeof(double));
     ct.ytemp = (double **) ALLOC(n, sizeof(double *));
     ct.wtemp = (double *) ALLOC(n, sizeof(double));
+    ct.trtemp = (double *) ALLOC(n, sizeof(double));
 
     /*
      * create a matrix of sort indices, one for each continuous variable
@@ -165,43 +174,45 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     ct.sorts[0] = (int *) ALLOC(n * ct.nvar, sizeof(int));
     maxcat = 0;
     for (i = 0; i < ct.nvar; i++) {
-	ct.sorts[i] = ct.sorts[0] + i * n;
-	for (k = 0; k < n; k++) {
-	    if (!R_FINITE(ct.xdata[i][k])) {
-		ct.tempvec[k] = -(k + 1);       /* this variable is missing */
-		ct.xtemp[k] = 0;        /* avoid weird numerics in S's NA */
-	    } else {
-		ct.tempvec[k] = k;
-		ct.xtemp[k] = ct.xdata[i][k];
+      ct.sorts[i] = ct.sorts[0] + i * n;
+	    for (k = 0; k < n; k++) {
+        if (!R_FINITE(ct.xdata[i][k])) {
+		      ct.tempvec[k] = -(k + 1);       /* this variable is missing */
+		      ct.xtemp[k] = 0;        /* avoid weird numerics in S's NA */
+	       } else {
+		      ct.tempvec[k] = k;
+		      ct.xtemp[k] = ct.xdata[i][k];
+	      }
 	    }
-	}
-	if (ncat[i] == 0)
-	    mysort(0, n - 1, ct.xtemp, ct.tempvec);
-	else if (ncat[i] > maxcat)
-	    maxcat = ncat[i];
-	for (k = 0; k < n; k++)
-	    ct.sorts[i][k] = ct.tempvec[k];
+	    if (ncat[i] == 0)
+	      mysort(0, n - 1, ct.xtemp, ct.tempvec);
+	    else if (ncat[i] > maxcat)
+	      maxcat = ncat[i];
+	    for (k = 0; k < n; k++)
+	      ct.sorts[i][k] = ct.tempvec[k];
     }
 
     /*
      * save away a copy of the ct.sorts, if needed for xval
      */
     if (xvals > 1) {
-	savesort = (int *) ALLOC(n * ct.nvar, sizeof(int));
-	memcpy(savesort, ct.sorts[0], n * ct.nvar * sizeof(int));
+	    savesort = (int *) ALLOC(n * ct.nvar, sizeof(int));
+	    memcpy(savesort, ct.sorts[0], n * ct.nvar * sizeof(int));
     }
 
     /*
      * And now the last of my scratch space
      */
     if (maxcat > 0) {
-	ct.csplit = (int *) ALLOC(3 * maxcat, sizeof(int));
-	ct.lwt = (double *) ALLOC(2 * maxcat, sizeof(double));
-	ct.left = ct.csplit + maxcat;
-	ct.right = ct.left + maxcat;
-	ct.rwt = ct.lwt + maxcat;
+	    ct.csplit = (int *) ALLOC(3 * maxcat, sizeof(int));
+	    ct.left = ct.csplit + maxcat;
+	    ct.right = ct.left + maxcat;
+      ct.lwt = (double *) ALLOC(2 * maxcat, sizeof(double));
+	    ct.rwt = ct.lwt + maxcat;
+      ct.ltr = (double *) ALLOC(2 * maxcat, sizeof(double));
+      ct.rtr = ct.ltr + maxcat;
     } else
-	ct.csplit = (int *) ALLOC(1, sizeof(int));
+	    ct.csplit = (int *) ALLOC(1, sizeof(int));
 
     /*
      * initialize the top node of the tree
@@ -210,23 +221,30 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     which3 = PROTECT(allocVector(INTSXP, n));
     ct.which = INTEGER(which3);
     temp = 0;
+    temp2 = 0;
+    
     for (i = 0; i < n; i++) {
-	ct.which[i] = 1;
-	temp += wt[i];
+	    ct.which[i] = 1;
+	    temp += wt[i];
+      temp2 += treatment[i];
     }
-    i = (*ct_init) (n, ct.ydata, maxcat, &errmsg, parms, &ct.num_resp, 1, wt);
+
+    // question: do I need to put treatment in init function？
+    i = (*ct_init) (n, ct.ydata, maxcat, &errmsg, parms, &ct.num_resp, 1, wt, treatment);
     if (i > 0)
 	    error(errmsg);
-
+    
     nodesize = sizeof(Node) + (ct.num_resp - 20) * sizeof(double);
     tree = (pNode) ALLOC(1, nodesize);
     memset(tree, 0, nodesize);
     tree->num_obs = n;
     tree->sum_wt = temp;
+    tree->sum_tr = temp2;
 
     // add ct.maxx_y inside the evaluation funciton
     // (*ct_eval) (n, ct.ydata, tree->response_est, &(tree->risk), wt)
-    (*ct_eval) (n, ct.ydata, tree->response_est, &(tree->risk), wt, ct.max_y);
+    // here I am now >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    (*ct_eval) (n, ct.ydata, tree->response_est, &(tree->risk), wt, treatment, ct.max_y);
     tree->complexity = tree->risk;
     ct.alpha = ct.complexity * tree->risk;
     // for debug only:
@@ -237,7 +255,7 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
      * Do the basic tree
      */
     //partition(1, tree, &temp, 0, n);
-    partition(1, tree, &temp, 0, n, parms);
+    partition(1, tree, &temp, 0, n, minsize);
     
     CpTable cptable = (CpTable) ALLOC(1, sizeof(cpTable));
     cptable->cp = tree->complexity;
@@ -253,7 +271,7 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
       make_cp_list(tree, tree->complexity, cptable);
 	    make_cp_table(tree, tree->complexity, 0);
 	if (xvals > 1) {
-      xval(xvals, cptable, xgct, maxcat, &errmsg, parms, p, savesort);
+      xval(xvals, cptable, xgrp, maxcat, &errmsg, parms, minsize, p, savesort);
 	}
     }
     /*

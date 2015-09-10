@@ -1,13 +1,13 @@
 useDynLib(causalTree, .registration = TRUE, .fixes = "C_")
 
-export(meanvar, na.causalTree, path.causalTree, plotcp, post, printcp, prune,
-       prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, 
+export(na.causalTree, path.causalTree, prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, 
        estimate.causalTree)
 export(causalTree.exp)  # needed for one of the tests
 
 importFrom(grDevices, dev.cur, dev.off)
 importFrom(graphics, plot, text)
 importFrom(stats, model.frame, predict, residuals)
+importFrom(rpart, rpart)
 
 S3method(labels, causalTree)
 S3method(meanvar, causalTree)

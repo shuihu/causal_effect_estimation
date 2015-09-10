@@ -45,10 +45,14 @@ EXTERN struct {
     double **xdata;
     double *xtemp;
     double *wt;
+    double *treatment;
     double **ytemp;
     double *wtemp;              /* temp vector of weights */
+    double *trtemp;             /* temp vector of treatment status */
     double *lwt;
+    double *ltr;
     double *rwt;                /*scratch double vectors, of length ncat */
+    double *rtr;
     double *vcost;              /* variable costs */
     int *numcat;                /* variable type: 0=cont, 1+  =#categories */
     int **sorts;                /* matrix of sort indices */
@@ -71,7 +75,6 @@ EXTERN struct {
     int *right;
     double max_y;               /* maximum absolute value of y */
     double *xvar;               /* variance of predictors: for distance measure in matching method */
-
 } ct;
 
 EXTERN struct cptable *cptable_tail;
