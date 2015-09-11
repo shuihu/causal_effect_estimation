@@ -23,7 +23,7 @@ get.descendant.leaves.helper <- function(parent, leaves, count, maxdepth) {
   } 
 }
 
-recursive.which.in.leaf(leaf.assignments, leaf, leaves) {
+recursive.which.in.leaf <- function(leaf.assignments, leaf, leaves) {
   in.leaf <- which(leaf.assignments == leaf)
   parent <- leaf
   while(length(in.leaf) == 0) {

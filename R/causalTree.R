@@ -1,4 +1,4 @@
-#
+ #
 #  The recursive partitioning function, for R
 #
 
@@ -6,16 +6,20 @@
 # we need to add cv.option in causalTree.R
 causalTree <-
  #   function(formula, data, weights, subset, na.action = na.causalTree, method,
-  function(formula, data, weights, subset, na.action = na.causalTree, method, cv.option,
-#             model = FALSE, x = FALSE, y = TRUE, parms, control, cost, ...)
-              model = FALSE, x = FALSE, y = TRUE, parms, p, control, cost, ...) # p := propensity score
-# ... is only for those arguments in causalTree.control
-# so if I want to add args, one idea is in causalTree.control, or just change the whole code by adding and reducing some args.             
-{
-      # 2015.8.7
-      Call <- match.call()
+  function(formula, data, weights, treatment, subset, na.action = na.causalTree, method, 
+           split.option, cv.option, minsize = 2L, model = FALSE, x = FALSE, y = TRUE, parms, p, control, cost, ...) 
+    # p := propensity score
+    # split.option := CT or TOT, splitting rule
+    # cv.option := cross validation option, TOT or matching
+    # minsize := minimum leaf size for both control and treated cases, the default is 2.
+{   
+    mtemp <- model
+    ## begin to call:
+    Call <- match.call()
     if (is.data.frame(model)) {
         m <- model
+        # set the temp model:
+        #mtemp <- model
         model <- FALSE
     } else {
         indx <- match(c("formula", "data", "weights", "subset"),
@@ -26,11 +30,11 @@ causalTree <-
         temp[[1L]] <- quote(stats::model.frame) # change the function called
         m <- eval.parent(temp)
     }
-
+    
     Terms <- attr(m, "terms")
     if (any(attr(Terms, "order") > 1L))
-	stop("Trees cannot handle interaction terms")
-
+      stop("Trees cannot handle interaction terms")
+    
     Y <- model.response(m)
     wt <- model.weights(m)
     if (any(wt < 0)) stop("negative weights not allowed")
@@ -39,74 +43,124 @@ causalTree <-
     X <- causalTree.matrix(m)
     nobs <- nrow(X)
     nvar <- ncol(X)
-  
+    
+    # requirement for split.option:
+    # set this temporarily:
+    if (missing(split.option)) {
+      warning("The default splitting method is CT.")
+      split.option <- "CT"
+    } else {
+      split.option.num <- pmatch(split.option, c("CT", "TOT"))
+      if(is.na(split.option.num)) stop("Invalid spliting option.")
+    }
+    
+    #requirement for treatment status
+    if (missing(treatment)) 
+      stop("You should input the treatment status vector for data:
+           1 represent treated and 0 represent control.")
+    if (sum(treatment %in% c(0,1)) != nobs)
+      stop("The treatment status should be 1 or 0 only: 1 represent treated and 0 represent control.")
+    if (sum(treatment) == 0 || sum(treatment) == nobs)
+      stop("The data only contains treated cases or control cases, please check 'treatment' again.") 
+    
+    ## use original rpart for TOT method:
+    if (split.option == "TOT") {
+      ## set the tr vector for TOT method:
+      if (missing(p)) {
+        p = sum(treatment) / nobs
+      } else if (p > 1 || p < 0) {
+        stop("Propensity score should be between 0 and 1.")
+      }
+      trp <- 1 / (p - 1 + treatment)
+      
+      formula.elements <- strsplit(deparse(temp$formula), "~")[[1]]
+      if (length(formula.elements) != 2)
+        stop("Please enter valid formula.")
+      formula.left <- formula.elements[1]
+      formula.right <- formula.elements[2]
+      formula.left <- paste(formula.left, "*", "trp")
+      myformula <- as.formula(paste(formula.left, "~", formula.right))
+      ## need to deal with subset!!!!!!!!!!!!!!!!!!!!!!!
+      if (missing(subset)) {
+        ans <- rpart(formula = myformula, data = data, weights = wt, 
+                   na.action = na.rpart, method = method, model = mtemp, x = x, y = y, 
+                   parms = parms, control = control, cost = cost, ...)
+      } else {
+        ans <- rpart(formula = myformula, data = data, weights = wt, subset = subset,
+                     na.action = na.rpart, method = method, model = mtemp, x = x, y = y, 
+                     parms = parms, control = control, cost = cost, ...)
+      }
+      return (ans)
+    }
+
+    ## get back to causalTree for CT method:
     # here we add the variance of the predictors of X:
     xvar <- apply(X, 2, var)
 
     if (missing(method)) {
-	method <- if (is.factor(Y) || is.character(Y)) "class"
-        else if (inherits(Y, "Surv")) "exp"
-	else if (is.matrix(Y)) "poisson"
-	else "anova"
+      method <- if (is.factor(Y) || is.character(Y)) "class"
+      else if (inherits(Y, "Surv")) "exp"
+      else if (is.matrix(Y)) "poisson"
+	    else "anova"
     }
-  
-    # requirement for cv.option
+    
+    # requirement for cv.option in CT method:
     if (missing(cv.option)) {
       warning("The default corss validation method is TOT.")
       cv.option <-"TOT"
     } else {
       cv.option.num <- pmatch(cv.option, c("TOT", "matching"))
-      if(is.na(cv.option.num)) stop("Invalid cv option")
+      if(is.na(cv.option.num)) stop("Invalid cv option.")
     }
-  
-
+    
     if (is.list(method)) {
         ## User-written split methods
-	mlist <- method
-	method <- "user"
-
+      mlist <- method
+	    method <- "user"
         ## Set up C callback.  Assign the result to a variable to avoid
         ## garbage collection
-	init <- if (missing(parms)) mlist$init(Y, offset, wt = wt)
-	        else mlist$init(Y, offset, parms, wt)
-        keep <- causalTreecallback(mlist, nobs, init)
+	    init <- if (missing(parms)) mlist$init(Y, offset, wt = wt)
+	            else mlist$init(Y, offset, parms, wt)
+      keep <- causalTreecallback(mlist, nobs, init)
 
-	method.int <- 4L             # the fourth entry in func_table.h
-#	numresp <- init$numresp
-#	numy <- init$numy
-	parms <- init$parms
-    } else { # not user function
-	method.int <- pmatch(method, c("anova", "poisson", "class", "exp"))
-	if (is.na(method.int)) stop("Invalid method")
-	method <- c("anova", "poisson", "class", "exp")[method.int]
-	if (method.int == 4L) method.int <- 2L
+    	method.int <- 4L             # the fourth entry in func_table.h
+      #	numresp <- init$numresp
+      #	numy <- init$numy
+    	parms <- init$parms
+    } else { 
+      # not user function
+	    method.int <- pmatch(method, c("anova", "poisson", "class", "exp"))
+	    if (is.na(method.int)) stop("Invalid method")
+	    method <- c("anova", "poisson", "class", "exp")[method.int]
+    	if (method.int == 4L) method.int <- 2L
 
         ## If this function is being retrieved from the causalTree package, then
         ##   preferentially "get" the init function from there.  But don't
         ##   lock in the causalTree package otherwise, so that we can still do
         ##   standalone debugging.
   
-  # consider differenct CV method.
-  if (cv.option == "TOT") {
-    if (missing(p)) {
-      #stop("For TOT cross-validation test, propensity socre is needed.")
-      warning("For TOT cv test, the defualt propensity score is proportion of treated cases.")
-      p = sum(wt) / nobs
-      } else if (p > 1 || p < 0) {
-        stop("Propensity score should be between 0 and 1.")
-    }
-  } else {
-    # Matching method in cv:                            
-    p = -1
-  }
-  
-	init <- {if (missing(parms))
+     # consider differenct CV method.
+      if (cv.option == "TOT") {
+        if (missing(p)) {
+          #stop("For TOT cross-validation test, propensity socre is needed.")
+          #warning("For TOT cv test in CT, the defualt propensity score is proportion of treated cases.")
+          p = sum(treatment) / nobs
+        } else if (p > 1 || p < 0) {
+          stop("Propensity score should be between 0 and 1.")
+        }
+      } else {
+      # cv.option = "matching"                           
+      p = -1
+      }
+        
+	    init <- {
+        if (missing(parms))
             get(paste("causalTree", method, sep = "."),
                  envir = environment())(Y, offset, , wt) 
-           else
+        else
             get(paste("causalTree", method, sep = "."),
                  envir = environment())(Y, offset, parms, wt)
-	}
+  	  }
         ## avoid saving environment on fitted objects
         ns <- asNamespace("causalTree")
         if (!is.null(init$print)) environment(init$print) <- ns
@@ -119,7 +173,7 @@ causalTree <-
     xlevels <- .getXlevels(Terms, m)
     cats <- rep(0L, ncol(X))
     if (!is.null(xlevels))
-	cats[match(names(xlevels), colnames(X))] <-
+      cats[match(names(xlevels), colnames(X))] <-
             unlist(lapply(xlevels, length))
 
     ## We want to pass any ... args to causalTree.control, but not pass things
@@ -128,9 +182,9 @@ causalTree <-
     
     extraArgs <- list(...)
     if (length(extraArgs)) {
-	controlargs <- names(formals(causalTree.control)) # legal arg names
-	indx <- match(names(extraArgs), controlargs, nomatch = 0L)
-	if (any(indx == 0L))
+      controlargs <- names(formals(causalTree.control)) # legal arg names
+	    indx <- match(names(extraArgs), controlargs, nomatch = 0L)
+	    if (any(indx == 0L))
             stop(gettextf("Argument %s not matched",
                           names(extraArgs)[indx == 0L]),
                  domain = NA)
@@ -141,13 +195,13 @@ causalTree <-
 
     xval <- controls$xval
     if (is.null(xval) || (length(xval) == 1L && xval == 0L) || method=="user") {
-	xgroups <- 0L
-	xval <- 0L
+      xgroups <- 0L
+    	xval <- 0L
     } else if (length(xval) == 1L) {
         ## make random groups
         ################ here we debug only:
-        control_idx <- which(wt == 0)
-        treat_idx <- which(wt == 1)
+        control_idx <- which(treatment == 0)
+        treat_idx <- which(treatment == 1)
         xgroups <- rep(0, nobs)
         xgroups[control_idx] <- sample(rep(1L:xval, length = length(control_idx)), length(control_idx), replace = F)
         xgroups[treat_idx] <- sample(rep(1L:xval, length = length(treat_idx)), length(treat_idx), replace = F)  
@@ -158,18 +212,18 @@ causalTree <-
         #print("xgroups = ")
         #print(xgroups)
     } else if (length(xval) == nobs) {
-      ## pass xgroups by xval 
-	xgroups <- xval
-	xval <- length(unique(xgroups))
+        ## pass xgroups by xval 
+	      xgroups <- xval
+	      xval <- length(unique(xgroups))
     } else {
         ## Check to see if observations were removed due to missing
-	if (!is.null(attr(m, "na.action"))) {
+	    if (!is.null(attr(m, "na.action"))) {
             ## if na.causalTree was used, then na.action will be a vector
 	    temp <- as.integer(attr(m, "na.action"))
 	    xval <- xval[-temp]
 	    if (length(xval) == nobs) {
-		xgroups <- xval
-		xval <- length(unique(xgroups))
+        xgroups <- xval
+		    xval <- length(unique(xgroups))
             } else stop("Wrong length for 'xval'")
         } else stop("Wrong length for 'xval'")
     }
@@ -179,9 +233,9 @@ causalTree <-
     ##
     if (missing(cost)) cost <- rep(1, nvar)
     else {
-	if (length(cost) != nvar)
+	  if (length(cost) != nvar)
             stop("Cost vector is the wrong length")
-	if (any(cost <= 0)) stop("Cost vector must be positive")
+	  if (any(cost <= 0)) stop("Cost vector must be positive")
     }
 
     ##
@@ -190,26 +244,30 @@ causalTree <-
     ## for the code.
     ##
     tfun <- function(x)
-	if (is.matrix(x)) rep(is.ordered(x), ncol(x)) else is.ordered(x)
+	  if (is.matrix(x)) rep(is.ordered(x), ncol(x)) else is.ordered(x)
     labs <- sub("^`(.*)`$", "\\1", attr(Terms, "term.labels")) # beware backticks
     isord <- unlist(lapply(m[labs], tfun))
 
     storage.mode(X) <- "double"
     storage.mode(wt) <- "double"
-    #temp <- as.double(unlist(init$parms))
-    temp <- as.integer(init$parms)
-    if (!length(temp)) temp <- 1    # if parms is NULL pass a dummy
+    storage.mode(treatment) <- "double"
+    temp <- as.double(unlist(init$parms))
+    #temp <- as.integer(init$parms)
+    minsize <- as.integer(minsize)
+    if (!length(temp)) temp <- 0  # if parms is NULL pass a dummy
     ctfit <- .Call(C_causalTree,
                    ncat = as.integer(cats * !isord),
                    method = as.integer(method.int),
                    as.double(unlist(controls)),
-                   temp, #parms = min_node_size
+                   temp, # parms
+                   minsize, #minsize = min_node_size
                    as.double(p),
                    as.integer(xval),
                    as.integer(xgroups),
                    as.double(t(init$y)),
                    X,
                    wt,
+                   treatment,
                    as.integer(init$numy),
                    as.double(cost),
                    as.double(xvar))
@@ -337,6 +395,6 @@ causalTree <-
     if (!is.null(attr(m, "na.action"))) ans$na.action <- attr(m, "na.action")
     if (!is.null(xlevels)) attr(ans, "xlevels") <- xlevels
     if (method == "class") attr(ans, "ylevels") <- init$ylevels
-    class(ans) <- c('causalTree')
+    class(ans) <- "rpart"
     ans
 }

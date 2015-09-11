@@ -22,7 +22,7 @@ int findNeighbor(int obs, int k) {
   for (i = k; i < ct.n; i++) {
     j = ct.sorts[0][i];
     temp = (j < 0)? -(1 + j) : j;
-    if (ct.wt[temp] != ct.wt[obs2]) {
+    if (ct.treatment[temp] != ct.treatment[obs2]) {
       //found = 1;
       //Rprintf("found one!\n");
       dist = measureDistance(obs2, temp);

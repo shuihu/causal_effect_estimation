@@ -3,44 +3,45 @@
 # forest averages the predictions produced by the training sample, while the
 # "honest" random forest averages the predictions produced by applying a separate estimation
 # sample to the same trees produced by the training sample.
-# The result is: RandomForestComparison(random.forest.honest, random.forest.standard, pred.honest, pred.standard, pred.honest.matrix, pred.standard.matrix, use.matrix.honest, use.matrix.standard, variance.honest, variance.standard)
+# The result is: list(standard = randomForest.standard, honest = randomForest.honest)
+# where randomForest.standard is a randomForest object for the standard (dishonest) forest
+# while randomForest.honest is a randomForest object for the honest forest.
 
 compare.forests <- function(Y, X, W, num.trees, sample.size, node.size, cv.option, seed) {
   if (!missing(seed)) {
     set.seed(seed)
   }
   num.obs <-nrow(X)
-  comparison.results <- init.RandomForestComparison(num.obs, num.trees)
+  randomForest.standard <- init.randomForest(num.obs, num.trees)
+  randomForest.honest <- init.randomForest(num.obs, num.trees)
   sample.size <- min(sample.size, floor(num.obs / 2))
-  random.forest.standard <- init.RandomForest(num.trees) # not used right now
-  random.forest.honest <- init.RandomForest(num.trees) # not used right now
   print("Building trees ...")
   for (tree.index in 1:num.trees) {
     print(paste("Tree", as.character(tree.index)))
     sample.standard <- create.sample(Y, X, W, sample.size, replace = T)
     sample.honest <- create.sample(Y, X, W, sample.size, replace = T)
-    # set use.matrix.standard[i, j] to 1 if and only if the ith observation is in the standard sample
-    comparison.results@use.matrix.standard[sample.standard$indices, tree.index] = 1
-    # set use.matrix.honest[i, j] to 1 if and only if the ith observation is in at least one of the samples
-    comparison.results@use.matrix.honest[sample.honest$indices, tree.index] = 1
-    comparison.results@use.matrix.honest[sample.standard$indices, tree.index] = 1
-    tree.standard <- causalTree(Y~., data = data.frame(X = sample.standard$X, Y = sample.standard$Y), weights = sample.standard$W, method = "anova", cp = 0, parms = node.size, minbucket = 1, cv.option = cv.option)
+    # set the standard inbag[i, j] to 1 if and only if the ith observation is in the standard sample
+    randomForest.standard$inbag[sample.standard$indices, tree.index] = 1
+    # set the honest inbag[i, j] to 1 if and only if the ith observation is in at least one of the samples
+    randomForest.honest$inbag[sample.honest$indices, tree.index] = 1
+    randomForest.honest$inbag[sample.standard$indices, tree.index] = 1
+    tree.standard <- causalTree(Y~., data = data.frame(X = sample.standard$X, Y = sample.standard$Y), treatment = sample.standard$W, method = "anova", cp = 0, parms = node.size, minbucket = 1, cv.option = cv.option)
     optimal.cp.standard <- tree.standard$cp[which.min(tree.standard$cp[,'xerror']), 'CP']
     pruned.tree.standard <- prune(tree.standard, cp = optimal.cp.standard)
-    random.forest.standard@trees[tree.index] <- pruned.tree.standard
-    comparison.results@pred.standard.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.standard, X)
+    randomForest.standard$trees[[tree.index]] <- pruned.tree.standard
+    randomForest.standard$pred.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.standard, X)
     pruned.tree.honest <- reestimate.tau(pruned.tree.standard, sample.honest$Y, sample.honest$X, sample.honest$W)
-    random.forest.honest@trees[tree.index] <- pruned.tree.honest
-    comparison.results@pred.honest.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.honest, X)
+    randomForest.honest$trees[[tree.index]] <- pruned.tree.honest
+    randomForest.honest$pred.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.honest, X)
   }
   print("Compute the variances")
-  comparison.results@pred.standard <- rowMeans(comparison.results@pred.standard.matrix)
-  comparison.results@pred.honest <- rowMeans(comparison.results@pred.honest.matrix)
+  randomForest.standard$y <- rowMeans(randomForest.standard$pred.matrix)
+  randomForest.honest$y <- rowMeans(randomForest.honest$pred.matrix)
   for (i in 1:num.obs) {
     for (j in 1:num.obs) {
-      comparison.results@variance.standard[i] <- comparison.results@variance.standard[i] + (cov(comparison.results@pred.standard.matrix[i,], comparison.results@use.matrix.standard[j,]))^2
-      comparison.results@variance.honest[i] <- comparison.results@variance.honest[i] + (cov(comparison.results@pred.honest.matrix[i,], comparison.results@use.matrix.honest[j,]))^2
+      randomForest.standard$variance[i] <- randomForest.standard$variance[i] + (cov(randomForest.standard$pred.matrix[i,], randomForest.standard$inbag[j,]))^2
+      randomForest.honest$variance[i] <- randomForest.honest$variance[i] + (cov(randomForest.honest$pred.matrix[i,], randomForest.honest$inbag[j,]))^2
     }
   }
-  comparison.results
+  list(standard = randomForest.standard, honest = randomForest.honest)
 }
