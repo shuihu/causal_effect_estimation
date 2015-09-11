@@ -6,6 +6,6 @@
 
 full.simulation <- function(num.replications = 1000, num.designs = 3, model.names = c('ST', 'TT', 'TOT', 'CT'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10) {
   library(rpart)
-  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, num.obs.per.set, num.vars.per.obs, propensity, xvals)
+  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, 1L)
   compare.results(num.designs, model.names, simulation.results)
 }

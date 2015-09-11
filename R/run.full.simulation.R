@@ -2,21 +2,25 @@
 # several models that estimate causal effect.  Return the results from each replication, as well
 # as statistics on how often each model was the best according to various criteria.
 
-run.full.simulation <- function(num.replications = 1000, num.designs = 3, model.names = c('ST', 'TT', 'TOT', 'CT'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, seed = 92827L) {
+run.full.simulation <- function(num.replications = 1000, num.designs = 3, model.names = c('ST', 'TT', 'TOT', 'CT'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, seed) {
+  if (missing(seed)) {
+    seed <- sample(1:.Machine$integer.max, 1)
+  }
+  
   all.tree.stats <- init.all.tree.stats(num.replications, num.designs, model.names)
   all.winning.models <- init.all.winning.models(num.designs, model.names)
   
   test.XW <- generate.input(num.obs.per.set, num.vars.per.obs, seed)
   match.indices <- match.observations(test.XW)
   # flip the W's
-  counterfactual.test.XW <- list(X = test.XW.X, W = 1 - W)
+  counterfactual.test.XW <- list(X = test.XW$X, W = 1 - test.XW$W)
   for (repl in 1:num.replications) {
     # generate the input
     train.split.XW <- generate.input(num.obs.per.set, num.vars.per.obs, repl)
-    train.estimation.XW <- generate.input(num.obs.per.set, num.vars.per.obs, repl)
+    train.restimation.XW <- generate.input(num.obs.per.set, num.vars.per.obs, repl)
     for (design in 1:num.designs) {
       train.split.Y <- generate.output(train.split.XW, design, repl)
-      train.estimation.Y <- generate.output(train.estimations.XW, design, repl)
+      train.estimation.Y <- generate.output(train.restimation.XW, design, repl)
       test.Y <- generate.output(test.XW, design, seed)
       counterfactual.test.Y <- generate.output(counterfactual.test.XW, design, seed)
       
@@ -24,7 +28,7 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 3, model.
       winning.models <- list(os.to = NULL, os.m = NULL, os.infeasible = NULL)
       min.os.values <- list(os.to = -1, os.m = -1, os.infeasible = -1)
       for (model.name in model.names) {
-        tree.stats <- compute.tree.stats(train.split.XW, train.split.Y, train.estimation.XW, train.estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, match.indices)
+        tree.stats <- compute.tree.stats(train.split.XW, train.split.Y, train.restimation.XW, train.estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, match.indices)
         # fill all.tree.stats with the stats for this (model, design, replication) triple
         all.tree.stats[model.name]$num.leaves[design, repl] <- tree.stats$num.leaves
         all.tree.stats[model.name]$os.to[design, repl] <- tree.stats$os.to

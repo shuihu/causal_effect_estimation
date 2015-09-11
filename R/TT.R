@@ -54,9 +54,9 @@ setMethod(
   definition = function(tt, X, W, Y) {
     data1 <- create.data.frame.for.tt(X, W, Y, 1)
     data0 <- create.data.frame.for.tt(X, W, Y, 0)
-    st@tree1 <- reestimate(st@tree1, data1, Y)
-    st@tree0 <- reestimate(st@tree0, data0, Y)
-    st
+    tt@tree1 <- reestimate(tt@tree1, data1, Y)
+    tt@tree0 <- reestimate(tt@tree0, data0, Y)
+    tt
   }
 )
 
@@ -73,5 +73,20 @@ setMethod(
   definition = function(tt, X) {
     data <- create.data.frame.for.tt(X)
     predict(tt@tree1, data) - predict(tt@tree0, data)
+  }
+)
+
+setGeneric(
+  name = "count.leaves",
+  def = function(tt) {
+    standardGeneric("count.leaves")
+  }
+)
+
+setMethod(
+  f = "count.leaves",
+  signature = "TT",
+  definition = function(tt) {
+    length(which(tt@tree1$frame$var == "<leaf>")) + length(which(tt@tree0$frame$var == "<leaf>"))
   }
 )

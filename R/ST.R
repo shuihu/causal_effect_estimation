@@ -70,3 +70,18 @@ setMethod(
     predict(st@tree, data1) - predict(st@tree, data)
   }
 )
+
+setGeneric(
+  name = "count.leaves",
+  def = function(st) {
+    standardGeneric("count.leaves")
+  }
+)
+
+setMethod(
+  f = "count.leaves",
+  signature = "ST",
+  definition = function(st) {
+    length(which(st@tree$frame$var == "<leaf>"))
+  }
+)
