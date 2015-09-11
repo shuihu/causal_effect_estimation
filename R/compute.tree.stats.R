@@ -13,8 +13,9 @@ init.model <- function(model.name, propensity) {
 }
 
 compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, matchIndices) {
+  library(causalTree)
   initial.model <- init.model(model.name, propensity)
-  trained.split.model <- train(initial.model, split.XW$X, split$XW$W, split.Y)
+  trained.split.model <- train(initial.model, split.XW$X, split.XW$W, split.Y)
   trained.reestimation.model <- reestimate(trained.split.model, estimation.XW$X, estimation.XW$W, estimation.Y)
   test.preds <- predict(trained.reestimation.model, test.XW$X)
   num.leaves <- count.leaves(trained.reestimation.tree)
