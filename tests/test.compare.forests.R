@@ -1,4 +1,4 @@
-# This runs builds an honest and a standard random forest using causal trees, and compares their performance.
+# This builds a honest and a standard random forest using causal trees, and compares their performance.
 
 library(causalTree)
 num.obs <- 500
@@ -13,17 +13,26 @@ w <- rep(1:0, each = num.obs / 2)
 y1 <- rnorm(num.obs / 2, 1 - x[1:num.obs/2, 1] + x[1:num.obs/2, 2], 1)
 y0 <- rnorm(num.obs / 2, 0 + x[(num.obs/2 + 1):num.obs, 1] + x[(num.obs/2 + 1):num.obs, 2], 1)
 y <- c(y1, y0)
-comparison <- compare.forests(y, x, w, num.trees, sample.size, node.size, cv.option)
+forests <- compare.forests(y, x, w, num.trees, sample.size, node.size, cv.option)
 
-print(paste("variance.standard mean:", as.character(mean(comparison@variance.standard))))
-print(paste("variance.honest mean:", as.character(mean(comparison@variance.honest))))
+print(paste("standard variance mean:", as.character(mean(forests$standard$variance))))
+print(paste("honest variance mean:", as.character(mean(forests$honest$variance))))
 
 # Uncomment any of the these lines to examine the comparison results
-#print(comparison@pred.honest)
-#print(comparison@pred.standard)
-#print(comparison@pred.honest.matrix)
-#print(comparison@pred.standard.matrix)
-#print(comparison@use.matrix.honest)
-#print(comparison@use.matrix.standard)
-#print(comparison@variance.honest)
-#print(comparison@variance.standard)
+#print(forests$honest$y)
+#print(forests$standard$y)
+#print(forests$honest$pred.matrix)
+#print(forests$standard$pred.matrix)
+#print(forests$honest$inbag)
+#print(forests$standard$inbag)
+#print(forests$honest$variance)
+#print(forests$standard$variance)
+#print(forests$honest$trees)
+#print(forests$standard$trees)
+#print(forests$honest$ntree)
+#print(forests$standard$ntree)
+
+predictions.standard <- predict.randomForest.shuihu(forests$standard, x)
+print(length(which((predictions.standard$individual == forests$standard$pred.matrix) == TRUE))) # should be 500,000
+predictions.honest <- predict.randomForest.shuihu(forests$honest, x)
+print(length(which((predictions.honest$individual == forests$honest$pred.matrix) == TRUE))) # should be 500,000
