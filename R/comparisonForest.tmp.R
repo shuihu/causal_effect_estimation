@@ -19,7 +19,7 @@ comparisonForest <- function(Y, X, W, num.trees, X.test = NULL, sample.size = le
     structure.idx <- full.idx[1:sample.size]
     evaluation.idx <- full.idx[sample.size + (1:sample.size)]
     
-    tree.standard <- causalTree(Y ~ ., data = data.frame(X = X[structure.idx,], Y = Y[structure.idx]), treatment = W[structure.idx], method = "anova", cp = 0, parms = node.size, minbucket = 1, cv.option = cv.option)
+    tree.standard <- causalTree(Y ~ ., data = data.frame(X = X[structure.idx,], Y = Y[structure.idx]), treatment = W[structure.idx], method = "anova", cp = 0, minsize = node.size, cv.option = cv.option)
     
     #optimal.cp.standard <- tree.standard$cp[which.min(tree.standard$cp[,'xerror']), 'CP']
     # pruned.tree.standard <- prune(tree.standard, cp = optimal.cp.standard)
