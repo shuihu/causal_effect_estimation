@@ -3,13 +3,14 @@ library(causalTree)
 library(Hmisc)
 library(mgcv)
 library(ggplot2)
+library(FNN)
 
 rm(list = ls())
 
 n = 20000
 ntree = 5000
-sigma = 0.1
-d = 6
+sigma = 1
+d = 20
 k = 2
 
 # heterogeneous effect of treatment
@@ -81,9 +82,14 @@ plot(true.eff, predict(cov.fit, type = "response"))
 dev.off()
 
 knn.tau = knn.cate(X, Y, W, X.test, k = 20)
+
+pdf("~/public_html/cate_knn.pdf")
 plot(true.eff, knn.tau)
 abline(0, 1, lwd = 2, col = 2)
+dev.off()
 
+pdf("~/public_html/preds_knn.pdf")
 fit.knn = pmax(ceiling(ncol * (knn.tau- minp) / rngp), 1)
 plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.knn], xlab = "x1", ylab = "x2")
+dev.off()
 
