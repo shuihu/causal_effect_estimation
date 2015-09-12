@@ -24,6 +24,6 @@ n.test = 10000
 X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
 true.eff = apply(X.test, 1, effect)
 
-cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = 100, sample.size = n / 10)
+cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = 1000, sample.size = n / 10)
 
 plot(true.eff, cmp$new.tau)
