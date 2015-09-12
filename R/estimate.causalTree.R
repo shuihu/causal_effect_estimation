@@ -23,6 +23,17 @@ get.descendant.leaves.helper <- function(parent, leaves, count, maxdepth) {
   } 
 }
 
+recursive.which.in.leaf <- function(leaf.assignments, leaf, leaves) {
+  in.leaf <- which(leaf.assignments == leaf)
+  parent <- leaf
+  while(length(in.leaf) == 0) {
+    parent <- floor(parent / 2)
+    descendant.leaves <- get.descendant.leaves(parent, leaves)
+    in.leaf <- which(leaf.assignments %in% descendant.leaves)
+  }
+  in.leaf
+}
+
 estimate.leaf.tau <- function(leaf.assignments, treat, control, Y, leaves, leaf) {
   index <- which(leaf.assignments == leaf)
   index1 <- intersect(index, treat)

@@ -25,7 +25,7 @@ compare.forests <- function(Y, X, W, num.trees, sample.size, node.size, cv.optio
     # set the honest inbag[i, j] to 1 if and only if the ith observation is in at least one of the samples
     randomForest.honest$inbag[sample.honest$indices, tree.index] = 1
     randomForest.honest$inbag[sample.standard$indices, tree.index] = 1
-    tree.standard <- causalTree(Y~., data = data.frame(X = sample.standard$X, Y = sample.standard$Y), treatment = sample.standard$W, method = "anova", cp = 0, parms = node.size, minbucket = 1, cv.option = cv.option)
+    tree.standard <- causalTree(Y~., data = data.frame(X = sample.standard$X, Y = sample.standard$Y), treatment = sample.standard$W, method = "anova", cp = 0, minsize = node.size, cv.option = cv.option)
     optimal.cp.standard <- tree.standard$cp[which.min(tree.standard$cp[,'xerror']), 'CP']
     pruned.tree.standard <- prune(tree.standard, cp = optimal.cp.standard)
     randomForest.standard$trees[[tree.index]] <- pruned.tree.standard

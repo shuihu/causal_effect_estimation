@@ -1,0 +1,10 @@
+# Run the simulations and generate the full table of comparisons between the ST, TT, TOT, and CT models as described in the paper.
+# This compares the number of leaves, the TO out-of-sample criterion, the matching out-of-sample criterion,
+# and the infeasible (oracle) out-of-sample criterion across three data simulation designs, each with
+# 1000 replications of the data.
+# By calling full.simulation with different arguments, we can generate different simulations.
+
+full.simulation <- function(num.replications = 1000, num.designs = 3, model.names = c('ST', 'TT', 'TOT', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10) {
+  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, os.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, 1L)
+  compare.results(num.designs, model.names, simulation.results, num.replications, FALSE)
+}
