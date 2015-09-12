@@ -4,7 +4,7 @@ test2 <- function() {
   black <- sample(0:1, 20, replace = T)
   married <- sample(0:1, 20, replace = T)
   income <- sample(1:30, 20, replace = T)
-  mini <- data.frame(age, education, black, married, income, mini)
+  mini <- data.frame(age, education, black, married, income)
   
   mtree <- rpart(income~., data = mini, method = "anova", cp = 0, minbucket = 1, xval = 0)
   mtree2 <- mtree
