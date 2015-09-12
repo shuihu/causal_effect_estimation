@@ -2,10 +2,9 @@
 library(causalTree)
 library(Hmisc)
 library(mgcv)
+library(ggplot2)
 
 rm(list = ls())
-
-library(ggplot2)
 
 n = 20000
 ntree = 5000
@@ -49,8 +48,14 @@ true.scl = pmax(ceiling(ncol * (true.eff - minp) / rngp), 1)
 fit.scl = pmax(ceiling(ncol * (cmp$new.tau - minp) / rngp), 1)
 
 hc = heat.colors(ncol)
-plot(x=X.test[,1], y=X.test[,2], pch = 16, col = hc[true.scl])
-plot(x=X.test[,1], y=X.test[,2], pch = 16, col = hc[fit.scl])
+
+pdf("~/public_html/cate_true.pdf")
+plot(X.test[,1], X.test[,2], pch = 16, col = hc[true.scl], xlab = "x1", ylab = "x2")
+dev.off()
+
+pdf("~/public_html/cate_fit.pdf")
+plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.scl], xlab = "x1", ylab = "x2")
+dev.off()
 
 cmp.ci = randomForestInfJack(cmp, cmp$new.pred, calibrate = TRUE)
 plot(cmp.ci)
@@ -59,16 +64,26 @@ se.hat = sqrt(cmp.ci$var.hat)
 up.lim = cmp$new.tau + 1.96 * se.hat
 down.lim = cmp$new.tau - 1.96 * se.hat
 
+pdf("~/public_html/preds.pdf")
 errbar(true.eff, cmp$new.tau, up.lim, down.lim, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
 abline(0, 1, col = 2, lwd = 2)
+dev.off()
 
 covered = (true.eff <= up.lim) & (true.eff >= down.lim)
 
 mean(covered)
 
-save.image("./cmpforest.RData")
+#save.image("./cmpforest.RData")
 
 pdf("~/public_html/coverage.pdf")
 cov.fit = gam(covered ~ s(true.eff), sp = 0.001, family = binomial())
 plot(true.eff, predict(cov.fit, type = "response"))
 dev.off()
+
+knn.tau = knn.cate(X, Y, W, X.test, k = 20)
+plot(true.eff, knn.tau)
+abline(0, 1, lwd = 2, col = 2)
+
+fit.knn = pmax(ceiling(ncol * (knn.tau- minp) / rngp), 1)
+plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.knn], xlab = "x1", ylab = "x2")
+
