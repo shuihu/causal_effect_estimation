@@ -1,3 +1,7 @@
+#install.packages("~/git_local/causal_effect_estimation", type = "source", repos = NULL)
+library(causalTree)
+library(Hmisc)
+
 rm(list = ls())
 
 library(ggplot2)
@@ -28,9 +32,9 @@ n.test = 10000
 X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
 true.eff = apply(X.test, 1, effect)
 
-cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = 100, sample.size = n / 10)
+cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = 2000, sample.size = n / 10)
 
-plot(true.eff, cmp$new.tau)
+plot(true.eff, cmp$new.tau, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
 abline(0, 1, col = 2, lwd = 2)
 
 minp = min(true.eff, cmp$new.tau)
@@ -46,5 +50,14 @@ hc = heat.colors(ncol)
 plot(x=X.test[,1], y=X.test[,2], pch = 16, col = hc[true.scl])
 plot(x=X.test[,1], y=X.test[,2], pch = 16, col = hc[fit.scl])
 
+cmp.ci = randomForestInfJack(cmp, cmp$new.pred, calibrate = TRUE)
+plot(cmp.ci)
 
+se.hat = sqrt(cmp.ci$var.hat)
+up.lim = cmp$new.tau + 1.96 * se.hat
+down.lim = cmp$new.tau - 1.96 * se.hat
 
+errbar(true.eff, cmp$new.tau, up.lim, down.lim, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
+abline(0, 1, col = 2, lwd = 2)
+
+covered = (true.eff <= up.lim) & (true.eff >= down.lim)
