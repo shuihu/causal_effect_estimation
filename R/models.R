@@ -2,7 +2,7 @@ setOldClass("rpart")
 setOldClass("causalTree")
 
 # class for ST (single tree) model
-# methods: train, reestimate, predict, count.leaves
+# methods: train.model, reestimate.model, predict.model, count.leaves
 
 ST <- setClass(
   "ST",
@@ -10,7 +10,7 @@ ST <- setClass(
 )
 
 # class for TT (two tree) model
-# methods: train, reestimate, predict, count.leaves
+# methods: train.model, reestimate.model, predict.model, count.leaves
 
 TT <- setClass(
   "TT",
@@ -18,11 +18,11 @@ TT <- setClass(
 )
 
 # class for CT (causal tree) model
-# methods: train, reestimate, predict, count.leaves
+# methods: train.model, reestimate.model, predict.model, count.leaves
 
 CT <- setClass(
   "CT",
-  slots = c(tree = "list", cv.option = "character", propensity = "numeric")
+  slots = c(tree = "rpart", cv.option = "character", propensity = "numeric")
 )
 
 # helper methods
@@ -40,8 +40,8 @@ create.data.frame.for.st <- function(X, W, Y) {
 }
 
 create.data.frame.for.tt <- function(X, W, Y, treatment.level) {
-  index <- 1:length(W)
-  if (!missing(treatment.level)) {
+  index <- 1:nrow(X)
+  if (!missing(treatment.level) && !missing(W)) {
     index <- which(W == treatment.level)
   }
   if (missing(Y)) {
@@ -56,8 +56,9 @@ create.data.frame.for.tt <- function(X, W, Y, treatment.level) {
 }
 
 reestimate.causalTree.matching <- function(tree, X, W, Y) {
-  leaf.assignments <- est.causalTree(tree, X)
+  leaf.assignments <- est.causalTree(tree, causalTree.matrix(create.data.frame(tree, X)))
   all.leaves <- get.all.leaves(tree)
+  rownames <- as.numeric(rownames(tree$frame))
   for (leaf in all.leaves) {
     obs.in.leaf <- recursive.which.in.leaf(leaf.assignments, leaf, all.leaves)
     relevant.W <- W[obs.in.leaf]
@@ -68,8 +69,9 @@ reestimate.causalTree.matching <- function(tree, X, W, Y) {
 }
 
 reestimate.causalTree.TOT <- function(tree, X, W, Y, propensity) {
-  leaf.assignments <- est.causalTree(tree, X)
+  leaf.assignments <- est.causalTree(tree, causalTree.matrix(create.data.frame(tree, X)))
   all.leaves <- get.all.leaves(tree)
+  rownames <- as.numeric(rownames(tree$frame))
   transformed.Y <- Y * (W - propensity) / (propensity * (1 - propensity))
   for (leaf in all.leaves) {
     obs.in.leaf <- recursive.which.in.leaf(leaf.assignments, leaf, all.leaves)
@@ -81,14 +83,14 @@ reestimate.causalTree.TOT <- function(tree, X, W, Y, propensity) {
 # methods for each class
 
 setGeneric(
-  name = "train",
+  name = "train.model",
   def = function(model, X, W, Y) {
-    standardGeneric("train")
+    standardGeneric("train.model")
   }
 )
 
 setMethod(
-  f = "train",
+  f = "train.model",
   signature("ST", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data <- create.data.frame.for.st(X, W, Y)
@@ -98,7 +100,7 @@ setMethod(
 )
 
 setMethod(
-  f = "train",
+  f = "train.model",
   signature("TT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data1 <- create.data.frame.for.tt(X, W, Y, 1)
@@ -110,7 +112,7 @@ setMethod(
 )
 
 setMethod(
-  f = "train",
+  f = "train.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     model@tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), treatment = W, method = "anova", parms = 1, minbucket = 1, cv.option = model@cv.option, p = 0.5, xval = 10)
@@ -119,14 +121,14 @@ setMethod(
 )
 
 setGeneric(
-  name = "reestimate",
+  name = "reestimate.model",
   def = function(model, X, W, Y) {
-    standardGeneric("reestimate")
+    standardGeneric("reestimate.model")
   }
 )
 
 setMethod(
-  f = "reestimate",
+  f = "reestimate.model",
   signature("ST", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data <- create.data.frame.for.st(X, W)
@@ -136,19 +138,19 @@ setMethod(
 )
 
 setMethod(
-  f = "reestimate",
+  f = "reestimate.model",
   signature("TT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data1 <- create.data.frame.for.tt(X, W, Y, 1)
     data0 <- create.data.frame.for.tt(X, W, Y, 0)
-    model@tree1 <- reestimate(model@tree1, data1, Y)
-    model@tree0 <- reestimate(model@tree0, data0, Y)
+    model@tree1 <- reestimate.rpart(model@tree1, data1, Y)
+    model@tree0 <- reestimate.rpart(model@tree0, data0, Y)
     model
   }
 )
 
 setMethod(
-  f = "reestimate",
+  f = "reestimate.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     if (model@cv.option == "matching") {
@@ -161,26 +163,26 @@ setMethod(
 )
 
 setGeneric(
-  name = "predict",
+  name = "predict.model",
   def = function(model, X) {
-    standardGeneric("predict")
+    standardGeneric("predict.model")
   }
 )
 
 setMethod(
-  f = "predict",
+  f = "predict.model",
   signature("ST", "matrix"),
   definition = function(model, X) {
     W1 <- rep(1, nrow(X))
     W0 <- rep(0, nrow(X))
     data1<- create.data.frame.for.st(X, W1)
     data0 <- create.data.frame.for.st(X, W0)
-    predict(model@tree, data1) - predict(nodel@tree, data0)
+    predict(model@tree, data1) - predict(model@tree, data0)
   }
 )
 
 setMethod(
-  f = "predict",
+  f = "predict.model",
   signature("TT", "matrix"),
   definition = function(model, X) {
     data <- create.data.frame.for.tt(X)
@@ -189,10 +191,10 @@ setMethod(
 )
 
 setMethod(
-  f = "predict",
+  f = "predict.model",
   signature("CT", "matrix"),
   definition = function(model, X) {
-    est.causalTree.tau(moel@tree, X)
+    est.causalTree.tau(model@tree, X)
   }
 )
 

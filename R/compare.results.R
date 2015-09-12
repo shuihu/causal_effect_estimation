@@ -2,20 +2,20 @@
 # criterion for the different models given their performance on many replications of input data across several simulation
 # designs.
 
-compare.results <- function(num.designs, model.names, simulation.results, printOpt = TRUE) {
+compare.results <- function(num.designs, model.names, simulation.results, num.replications, printOpt = TRUE) {
   all.tree.stats <- simulation.results$all.tree.stats
   all.winning.models <- simulation.results$all.winning.models
   
   # compare num.leaves
   leaf.comparisons <- compute.leaf.comparisons(num.designs, model.names, all.tree.stats)
   # compare os.to
-  os.to.comparisons <- compute.os.comparisons(num.designs, model.names, "os.to", all.tree.stats, all.winning.models)
+  os.to.comparisons <- compute.os.comparisons(num.designs, model.names, "os.to", all.tree.stats, all.winning.models, num.replications)
   # compare os.m
-  os.m.comparisons <- compute.os.comparisons(num.designs, model.names, "os.m", all.tree.stats, all.winning.models)
+  os.m.comparisons <- compute.os.comparisons(num.designs, model.names, "os.m", all.tree.stats, all.winning.models, num.replications)
   # compare os.infeasible
-  os.infeasible.comparisons <- compute.os.comparisons(num.designs, model.names, "os.infeasible", all.tree.stats, all.winning.models)
+  os.infeasible.comparisons <- compute.os.comparisons(num.designs, model.names, "os.infeasible", all.tree.stats, all.winning.models, num.replications)
 
-  if (printOpt) {
+  if (isTRUE(printOpt)) {
     print("Leaves")
     print(leaf.comparisons)
     print("OS TO")

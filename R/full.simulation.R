@@ -4,11 +4,7 @@
 # 1000 replications of the data.
 # By calling full.simulation with different arguments, we can generate different simulations.
 
-full.simulation <- function(num.replications = 1000, num.designs = 3, model.names = c('ST', 'TT', 'TOT', 'CT'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10) {
-  library(rpart)
-  print("before test2")
-  test2()
-  print("after test2")
-  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, 1L)
-  compare.results(num.designs, model.names, simulation.results)
+full.simulation <- function(num.replications = 1000, num.designs = 3, model.names = c('ST', 'TT', 'TOT', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10) {
+  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, os.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, 1L)
+  compare.results(num.designs, model.names, simulation.results, num.replications, FALSE)
 }

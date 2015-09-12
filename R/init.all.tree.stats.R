@@ -4,13 +4,9 @@
 # - os.m: matching out-of-sample criterion
 # - os.infeasible: infeasible (oracle) criterion, where we can observe each counterfactual observation
 
-init.all.tree.stats <- function(num.replications, num.designs, model.names) {
+init.all.tree.stats <- function(num.replications, num.designs, model.names, stats.names) {
   tree.stats <- matrix(0, num.designs, num.replications)
-  tree.stats.per.model <- list(num.leaves = tree.stats, os.to = tree.stats, os.m = tree.stats, os.infeasible = tree.stats)
-  all.tree.stats <- vector("list", length(model.names))
-  names(all.tree.stats) <- model.names
-  for (model.name in model.names) {
-    all.tree.stats[[model.name]] <- tree.stats.per.model
-  }
+  tree.stats.per.model <- init.named.list(stats.names, tree.stats)
+  all.tree.stats <- init.named.list(model.names, tree.stats.per.model)
   all.tree.stats
 }
