@@ -12,7 +12,7 @@
 ##
 
 
-comparisonForest <- function(Y, X, W, num.trees, X.test = NULL, sample.size = length(Y) / 10, mtry = ceiling(ncol(X)/3), node.size = 5, cv.option = "matching") {
+comparisonForest <- function(Y, X, W, num.trees, X.test = NULL, sample.size = length(Y) / 10, mtry = ceiling(ncol(X)/3), node.size = 1, cv.option = "matching") {
   
   num.obs <-nrow(X)
   comparisonForest.honest <- causalTree:::init.randomForest(num.obs, num.trees)
