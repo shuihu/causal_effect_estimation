@@ -1,7 +1,7 @@
 useDynLib(causalTree, .registration = TRUE, .fixes = "C_")
 
-export(na.causalTree, path.causalTree, prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, 
-       estimate.causalTree, compare.forests, predict.randomForest.shuihu, full.simulation)
+export(na.causalTree, path.causalTree, prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, comparisonForest,
+       estimate.causalTree, compare.forests, predict.randomForest.shuihu, full.simulation, randomForestInfJack)
 export(causalTree.exp)  # needed for one of the tests
 
 importFrom(grDevices, dev.cur, dev.off)
