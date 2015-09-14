@@ -64,11 +64,42 @@ W = as.numeric(welfare$w)[ok.idx]
 
 cmp = comparisonForest(Y, X, W, num.trees=500)
 
-results = data.frame(income = X[,1], polviews = X[,2], CATE = cmp$tau)
+results = data.frame(income = X[,1], polviews = X[,2], CATE = -cmp$tau)
 
 cmp.ci = randomForestInfJack(cmp, cmp$pred.matrix)
 
 save.image("~/welfare.RData")
 
-#boxplot(CATE ~ income, data = results)
-#boxplot(CATE ~ polviews, data = results)
+RMV = sqrt(mean(cmp.ci$var.hat))
+
+boxplot(CATE ~ income, data = results)
+
+pdf("~/git_local/causal_effect_estimation/scripts/welfare_polviews.pdf")
+boxplot(CATE ~ polviews, data = results, ylab = "CATE Estimate", xlab = "<---   liberal   ---   moderate   ---   conservative   --->")
+segments(0.6, 0.45, 0.6, 0.45 + RMV, lwd = 2, col = 2)
+text(1.8, 0.45 + RMV/2, "root mean variance", col = 2)
+dev.off()
+
+(median(results$CATE[results$polviews==3]) - median(results$CATE[results$polviews==-3]))/RMV
+
+CATE.mu = outer(sort(unique(results$income)), sort(unique(results$polviews)), FUN = Vectorize(function(a, b) mean(results$CATE[results$income == a & results$polviews == b])))
+image(CATE.mu, ylab = "<---   liberal   ---   moderate   ---   conservative   --->", xlab = "<--- less income --- more income --->")
+
+pdf("~/git_local/causal_effect_estimation/scripts/welfare_interact.pdf", width = 10, height = 7)
+plot.df = expand.grid(income=factor(sort(unique(results$income))), polviews=factor(sort(unique(results$polviews))))
+plot.df$CATE = c(CATE.mu)
+ggplot(plot.df, aes(income, polviews)) + geom_tile(aes(fill = CATE), colour = "white") + scale_fill_gradient(low = "red1", high = "yellow") + xlab("<---   less income   ---   more income   --->") + ylab("<---   more liberal   ---   more conservative   --->") + scale_y_discrete(breaks=NULL) + scale_x_discrete(breaks=NULL) + theme(text = element_text(size=17))
+dev.off()
+
+mu0.direct = outer(sort(unique(results$income)), sort(unique(results$polviews)), FUN = Vectorize(function(a, b) mean(Y[results$income == a & results$polviews == b & W == 0])))
+
+mu1.direct = outer(sort(unique(results$income)), sort(unique(results$polviews)), FUN = Vectorize(function(a, b) mean(Y[results$income == a & results$polviews == b & W == 1])))
+
+CATE.direct = - mu1.direct + mu0.direct
+
+pdf("~/git_local/causal_effect_estimation/scripts/welfare_direct.pdf", width = 10, height = 7)
+direct.df = expand.grid(income=factor(sort(unique(results$income))), polviews=factor(sort(unique(results$polviews))))
+direct.df$CATE = c(CATE.direct)
+ggplot(direct.df, aes(income, polviews)) + geom_tile(aes(fill = CATE), colour = "white") + scale_fill_gradient(low = "red4", high = "yellow") + xlab("<---   less income   ---   more income   --->") + ylab("<---   more liberal   ---   more conservative   --->") + scale_y_discrete(breaks=NULL) + scale_x_discrete(breaks=NULL) + theme(text = element_text(size=17))
+dev.off()
+

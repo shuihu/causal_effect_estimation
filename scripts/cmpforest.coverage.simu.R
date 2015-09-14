@@ -37,11 +37,11 @@ W = rbinom(n, 1, 0.5) #treatment condition
 Y = apply(X, 1, baseline) +  (W - 0.5) * apply(X, 1, effect) + sigma * rnorm(n)
 
 
-n.test = 10000
+n.test = 1000
 X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
 true.eff = apply(X.test, 1, effect)
 
-cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = ntree, sample.size = n / 10)
+cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = ntree, sample.size = n / 40)
 y.hat = cmp$new.tau
 
 pdf("~/public_html/preds_plot.pdf")
@@ -96,4 +96,9 @@ gg2 = gam(covered ~ s(y.hat), family = binomial(), sp = 0.01)
 plot(y.hat, predict(gg2, type = "response"), xlab = "prediction", ylab = "coverage")
 dev.off()
 
-plot(smooth.spline(y.hat, se.hat))
+nplot = n.test
+
+pdf("~/public_html/preds_errbar.pdf")
+errbar(true.eff[1:nplot], cmp$new.tau[1:nplot], up.lim[1:nplot], down.lim[1:nplot], xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
+abline(0, 1, col = 2, lwd = 2)
+dev.off()
