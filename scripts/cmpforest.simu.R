@@ -9,7 +9,7 @@ rm(list = ls())
 n = 20000
 ntree = 5000
 sigma = 1
-d = 20
+d = 10
 k = 2
 
 # heterogeneous effect of treatment
