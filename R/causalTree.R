@@ -13,6 +13,7 @@ causalTree <-
     # cv.option := cross validation option, TOT or matching
     # minsize := minimum leaf size for both control and treated cases, the default is 2.
 {   
+    print("causalTree method")
     mtemp <- model
     ## begin to call:
     Call <- match.call()

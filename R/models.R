@@ -115,6 +115,7 @@ setMethod(
   f = "train.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
+    print("CT.train.model")
     model@tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), treatment = W, method = "anova", parms = 1, minbucket = 1, cv.option = model@cv.option, p = 0.5, xval = 10)
     model
   }

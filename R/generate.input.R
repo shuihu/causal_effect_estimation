@@ -1,6 +1,6 @@
 # generate X and W for a single replication
 generate.input <- function(num.obs, num.vars, seed) {
-  if (missing(seed)) {
+  if (!missing(seed)) {
     set.seed(seed)
   }
   
