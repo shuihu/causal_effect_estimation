@@ -1,3 +1,5 @@
+rm(list = ls())
+
 library(causalTree)
 
 #welfare = read.csv("~/Dropbox/Collaborations/TreatmentEffectsData/WelfareSurvey/ProcessedData/welfarelabel.csv")
@@ -27,7 +29,7 @@ income = sapply(X.all$income, function(xx) {
 	if(xx == "$10000 - 14999") return(10)
 	if(xx == "$15000 - 19999") return(15)
 	if(xx == "$20000 - 24999") return(20)
-	if(xx == "$25000 or more") return(15)
+	if(xx == "$25000 or more") return(25)
 	if(xx == "$3000 to 3999") return(3)
 	if(xx == "$4000 to 4999") return(4)
 	if(xx == "$5000 to 5999") return(5)
@@ -74,7 +76,8 @@ RMV = sqrt(mean(cmp.ci$var.hat))
 
 boxplot(CATE ~ income, data = results)
 
-pdf("~/git_local/causal_effect_estimation/scripts/welfare_polviews.pdf")
+#pdf("~/git_local/causal_effect_estimation/scripts/welfare_polviews.pdf")
+pdf("~/public_html/welfare_polviews.pdf")
 boxplot(CATE ~ polviews, data = results, ylab = "CATE Estimate", xlab = "<---   liberal   ---   moderate   ---   conservative   --->")
 segments(0.6, 0.45, 0.6, 0.45 + RMV, lwd = 2, col = 2)
 text(1.8, 0.45 + RMV/2, "root mean variance", col = 2)
@@ -85,19 +88,27 @@ dev.off()
 CATE.mu = outer(sort(unique(results$income)), sort(unique(results$polviews)), FUN = Vectorize(function(a, b) mean(results$CATE[results$income == a & results$polviews == b])))
 image(CATE.mu, ylab = "<---   liberal   ---   moderate   ---   conservative   --->", xlab = "<--- less income --- more income --->")
 
-pdf("~/git_local/causal_effect_estimation/scripts/welfare_interact.pdf", width = 10, height = 7)
+#pdf("~/git_local/causal_effect_estimation/scripts/welfare_interact.pdf", width = 10, height = 7)
+pdf("~/public_html/welfare_interact.pdf", width = 10, height = 7)
 plot.df = expand.grid(income=factor(sort(unique(results$income))), polviews=factor(sort(unique(results$polviews))))
 plot.df$CATE = c(CATE.mu)
 ggplot(plot.df, aes(income, polviews)) + geom_tile(aes(fill = CATE), colour = "white") + scale_fill_gradient(low = "red1", high = "yellow") + xlab("<---   less income   ---   more income   --->") + ylab("<---   more liberal   ---   more conservative   --->") + scale_y_discrete(breaks=NULL) + scale_x_discrete(breaks=NULL) + theme(text = element_text(size=17))
 dev.off()
 
-mu0.direct = outer(sort(unique(results$income)), sort(unique(results$polviews)), FUN = Vectorize(function(a, b) mean(Y[results$income == a & results$polviews == b & W == 0])))
+mu0.direct = outer(sort(unique(X[,1])), sort(unique(X[,2])), FUN = Vectorize(function(a, b) mean(Y[X[,1]== a & X[,2]== b & W == 0])))
 
-mu1.direct = outer(sort(unique(results$income)), sort(unique(results$polviews)), FUN = Vectorize(function(a, b) mean(Y[results$income == a & results$polviews == b & W == 1])))
+mu1.direct = outer(sort(unique(X[,1])), sort(unique(X[,2])), FUN = Vectorize(function(a, b) mean(Y[X[,1]== a & X[,2]== b & W == 1])))
 
 CATE.direct = - mu1.direct + mu0.direct
+image(CATE.direct, ylab = "<---   liberal   ---   moderate   ---   conservative   --->", xlab = "<--- less income --- more income --->")
 
-pdf("~/git_local/causal_effect_estimation/scripts/welfare_direct.pdf", width = 10, height = 7)
+count0 = outer(sort(unique(X[,1])), sort(unique(X[,2])), FUN = Vectorize(function(a, b) length(Y[X[,1]== a & X[,2]== b & W == 0])))
+
+count1 = outer(sort(unique(X[,1])), sort(unique(X[,2])), FUN = Vectorize(function(a, b) length(Y[X[,1]== a & X[,2]== b & W == 1])))
+
+
+#pdf("~/git_local/causal_effect_estimation/scripts/welfare_direct.pdf", width = 10, height = 7)
+pdf("~/public_html/welfare_direct.pdf", width = 10, height = 7)
 direct.df = expand.grid(income=factor(sort(unique(results$income))), polviews=factor(sort(unique(results$polviews))))
 direct.df$CATE = c(CATE.direct)
 ggplot(direct.df, aes(income, polviews)) + geom_tile(aes(fill = CATE), colour = "white") + scale_fill_gradient(low = "red4", high = "yellow") + xlab("<---   less income   ---   more income   --->") + ylab("<---   more liberal   ---   more conservative   --->") + scale_y_discrete(breaks=NULL) + scale_x_discrete(breaks=NULL) + theme(text = element_text(size=17))
