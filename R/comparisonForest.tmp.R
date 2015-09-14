@@ -33,9 +33,9 @@ comparisonForest <- function(Y, X, W, num.trees, X.test = NULL, sample.size = fl
     structure.idx <- full.idx[1:sample.size]
     evaluation.idx <- full.idx[sample.size + (1:sample.size)]
     
-    tree.standard <- causalTree(Y ~ ., data = data.frame(X = X[structure.idx,], Y = Y[structure.idx]), treatment = W[structure.idx], method = "anova", cp = 0, minsize = node.size, cv.option = cv.option)
+    tree.standard <- causalTree(Y ~ ., data = data.frame(X = X[structure.idx,], Y = Y[structure.idx]), treatment = W[structure.idx], method = "anova", cp = 0, minsize = node.size, cv.option = cv.option, split.option = "CT")
      
-    tree.honest <- causalTree:::reestimate.tau(tree.standard, Y[evaluation.idx], X[evaluation.idx,], W[evaluation.idx])
+    tree.honest <- causalTree:::reestimate.tau(tree.standard, Y[evaluation.idx], data.frame(X = X[evaluation.idx,]), W[evaluation.idx])
     
     comparisonForest.honest$trees[[tree.index]] <- tree.honest
     comparisonForest.honest$pred.matrix[, tree.index] <- causalTree:::est.causalTree.tau(tree.honest, X)
@@ -54,8 +54,13 @@ comparisonForest <- function(Y, X, W, num.trees, X.test = NULL, sample.size = fl
   
   comparisonForest.honest$tau <- rowMeans(comparisonForest.honest$pred.matrix)
   
-  comparisonForest.honest$new.pred = new.pred
-  comparisonForest.honest$new.tau = rowMeans(new.pred)
+  comparisonForest.honest$new.pred = NULL
+  comparisonForest.honest$new.tau = NULL
+  
+  if(!is.null(X.test)) {
+	  comparisonForest.honest$new.pred = new.pred
+	  comparisonForest.honest$new.tau = rowMeans(new.pred)
+  }
   
   return(comparisonForest.honest)
 }
