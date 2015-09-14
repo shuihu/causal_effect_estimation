@@ -14,7 +14,7 @@
 ## package for standard errors (and this file can be deleted).
 ##
 
-randomForestInfJack = function(rf, predictions, calibrate = TRUE, used.trees = NULL) {
+randomForestInfJack = function(rf, predictions, calibrate = TRUE, used.trees = NULL, unif.fraction = 0.1) {
 	
 	#
 	# Setup
@@ -113,7 +113,7 @@ randomForestInfJack = function(rf, predictions, calibrate = TRUE, used.trees = N
 		sigma2 = (delta^2 + (1 - delta)^2) / (2 * (1 - delta)^2) * sigma2.ss
 		
 		# Use Monte Carlo noise scale estimate for empirical Bayes calibration
-		vars.calibrated = causalTree:::calibrateEB(vars, sigma2)
+		vars.calibrated = causalTree:::calibrateEB(vars, sigma2, unif.fraction = unif.fraction)
 		results$var.hat = vars.calibrated
 	}
 	

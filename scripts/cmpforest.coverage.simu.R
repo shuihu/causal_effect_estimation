@@ -74,7 +74,7 @@ plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.scl], xlab = "x1", ylab = "x
 par(pardef)
 dev.off()
 
-cmp.ci = randomForestInfJack(cmp, cmp$new.pred, calibrate = TRUE)
+cmp.ci = randomForestInfJack(cmp, cmp$new.pred, calibrate = TRUE, unif.fraction = 0.5)
 plot(cmp.ci)
 
 se.hat = sqrt(cmp.ci$var.hat)
@@ -101,4 +101,8 @@ nplot = n.test
 pdf("~/public_html/preds_errbar.pdf")
 errbar(true.eff[1:nplot], cmp$new.tau[1:nplot], up.lim[1:nplot], down.lim[1:nplot], xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
 abline(0, 1, col = 2, lwd = 2)
+dev.off()
+
+pdf("~/public_html/se_spline.pdf")
+plot(smooth.spline(true.eff, se.hat, tol = 10^(-8)))
 dev.off()
