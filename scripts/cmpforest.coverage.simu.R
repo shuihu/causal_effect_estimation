@@ -10,7 +10,7 @@ library(ggplot2)
 rm(list = ls())
 
 n = 4000
-ntree = 5000
+ntree = 20000
 sigma = 1
 d = 2
 k = 2
@@ -41,7 +41,7 @@ n.test = 1000
 X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
 true.eff = apply(X.test, 1, effect)
 
-cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = ntree, sample.size = n / 40)
+cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = ntree, sample.size = n / 10)
 y.hat = cmp$new.tau
 
 pdf("~/public_html/preds_plot.pdf")
@@ -94,6 +94,11 @@ gg = gam(covered ~ s(se.hat), family = binomial(), sp = 0.01)
 plot(se.hat, predict(gg, type = "response"), xlab = "SE estimate", ylab = "coverage")
 gg2 = gam(covered ~ s(y.hat), family = binomial(), sp = 0.01)
 plot(y.hat, predict(gg2, type = "response"), xlab = "prediction", ylab = "coverage")
+dev.off()
+
+pdf("~/public_html/cov_vs_true.pdf")
+ggt = gam(covered ~ s(true.eff), family = binomial(), sp = 0.005)
+plot(true.eff, predict(ggt, type = "response"), xlab = "SE estimate", ylab = "coverage")
 dev.off()
 
 nplot = n.test

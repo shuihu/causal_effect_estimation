@@ -1,6 +1,7 @@
 rm(list = ls())
 
 library(causalTree)
+library(ggplot2)
 
 #welfare = read.csv("~/Dropbox/Collaborations/TreatmentEffectsData/WelfareSurvey/ProcessedData/welfarelabel.csv")
 
@@ -72,15 +73,15 @@ cmp.ci = randomForestInfJack(cmp, cmp$pred.matrix)
 
 save.image("~/welfare.RData")
 
-RMV = sqrt(mean(cmp.ci$var.hat))
+RMV = sqrt(median(cmp.ci$var.hat))
 
-boxplot(CATE ~ income, data = results)
+#boxplot(CATE ~ income, data = results)
 
 #pdf("~/git_local/causal_effect_estimation/scripts/welfare_polviews.pdf")
 pdf("~/public_html/welfare_polviews.pdf")
 boxplot(CATE ~ polviews, data = results, ylab = "CATE Estimate", xlab = "<---   liberal   ---   moderate   ---   conservative   --->")
 segments(0.6, 0.45, 0.6, 0.45 + RMV, lwd = 2, col = 2)
-text(1.8, 0.45 + RMV/2, "root mean variance", col = 2)
+text(1.85, 0.45 + RMV/2, "median standard error", col = 2)
 dev.off()
 
 (median(results$CATE[results$polviews==3]) - median(results$CATE[results$polviews==-3]))/RMV
