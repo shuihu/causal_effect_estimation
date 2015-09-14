@@ -26,13 +26,11 @@ compare.forests <- function(Y, X, W, num.trees, sample.size, node.size, cv.optio
     randomForest.honest$inbag[sample.honest$indices, tree.index] = 1
     randomForest.honest$inbag[sample.standard$indices, tree.index] = 1
     tree.standard <- causalTree(Y~., data = data.frame(X = sample.standard$X, Y = sample.standard$Y), treatment = sample.standard$W, method = "anova", cp = 0, minsize = node.size, cv.option = cv.option)
-    optimal.cp.standard <- tree.standard$cp[which.min(tree.standard$cp[,'xerror']), 'CP']
-    pruned.tree.standard <- prune(tree.standard, cp = optimal.cp.standard)
-    randomForest.standard$trees[[tree.index]] <- pruned.tree.standard
-    randomForest.standard$pred.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.standard, X)
-    pruned.tree.honest <- reestimate.tau(pruned.tree.standard, sample.honest$Y, sample.honest$X, sample.honest$W)
-    randomForest.honest$trees[[tree.index]] <- pruned.tree.honest
-    randomForest.honest$pred.matrix[, tree.index] <- est.causalTree.tau(pruned.tree.honest, X)
+    randomForest.standard$trees[[tree.index]] <- tree.standard
+    randomForest.standard$pred.matrix[, tree.index] <- est.causalTree.tau(tree.standard, X)
+    tree.honest <- reestimate.tau(tree.standard, sample.honest$Y, sample.honest$X, sample.honest$W)
+    randomForest.honest$trees[[tree.index]] <- tree.honest
+    randomForest.honest$pred.matrix[, tree.index] <- est.causalTree.tau(tree.honest, X)
   }
   print("Compute the variances")
   randomForest.standard$y <- rowMeans(randomForest.standard$pred.matrix)
