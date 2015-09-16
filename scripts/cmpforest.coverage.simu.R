@@ -10,7 +10,7 @@ library(ggplot2)
 rm(list = ls())
 
 n = 4000
-ntree = 5000
+ntree = 20000
 sigma = 1
 d = 2
 k = 2
@@ -37,7 +37,7 @@ W = rbinom(n, 1, 0.5) #treatment condition
 Y = apply(X, 1, baseline) +  (W - 0.5) * apply(X, 1, effect) + sigma * rnorm(n)
 
 
-n.test = 10000
+n.test = 1000
 X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
 true.eff = apply(X.test, 1, effect)
 
@@ -74,7 +74,7 @@ plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.scl], xlab = "x1", ylab = "x
 par(pardef)
 dev.off()
 
-cmp.ci = randomForestInfJack(cmp, cmp$new.pred, calibrate = TRUE)
+cmp.ci = randomForestInfJack(cmp, cmp$new.pred, calibrate = TRUE, unif.fraction = 0.5)
 plot(cmp.ci)
 
 se.hat = sqrt(cmp.ci$var.hat)
@@ -96,4 +96,18 @@ gg2 = gam(covered ~ s(y.hat), family = binomial(), sp = 0.01)
 plot(y.hat, predict(gg2, type = "response"), xlab = "prediction", ylab = "coverage")
 dev.off()
 
-plot(smooth.spline(y.hat, se.hat))
+pdf("~/public_html/cov_vs_true.pdf")
+ggt = gam(covered ~ s(true.eff), family = binomial(), sp = 0.005)
+plot(true.eff, predict(ggt, type = "response"), xlab = "SE estimate", ylab = "coverage")
+dev.off()
+
+nplot = n.test
+
+pdf("~/public_html/preds_errbar.pdf")
+errbar(true.eff[1:nplot], cmp$new.tau[1:nplot], up.lim[1:nplot], down.lim[1:nplot], xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
+abline(0, 1, col = 2, lwd = 2)
+dev.off()
+
+pdf("~/public_html/se_spline.pdf")
+plot(smooth.spline(true.eff, se.hat, tol = 10^(-8)))
+dev.off()

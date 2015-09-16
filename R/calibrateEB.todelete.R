@@ -15,6 +15,8 @@
 
 gfit = function(X, sigma, p = 2, nbin = 1000, unif.fraction = 0.1) {
 	
+	print(paste("unif frac:", unif.fraction))
+	
 	xvals = seq(min(min(X) - 2 * sd(X), 0), max(max(X) + 2 * sd(X), sd(X)), length.out = nbin)
 	binw = xvals[2] - xvals[1]
 	
@@ -71,14 +73,14 @@ gbayes = function(x0, g.est, sigma) {
 #'
 #' @return calibrated variance estimates
 
-calibrateEB = function(vars, sigma2) {
+calibrateEB = function(vars, sigma2, unif.fraction = 0.1) {
 	
 	if(sigma2 <= 0 | min(vars) == max(vars)) {
 		return(pmax(vars, 0))
 	}
 	
 	sigma = sqrt(sigma2)
-	eb.prior = gfit(vars, sigma)
+	eb.prior = gfit(vars, sigma, unif.fraction = unif.fraction)
 	
 	if (length(vars >= 200)) {
 		# If there are many test points, use interpolation to speed up computations
