@@ -12,7 +12,7 @@
  *                   of doubles.
  *      parms   = min_node_size
  *      xvals    = number of cross-validations to do
- *      xgrp     = indices for the cross-validations
+ *      xgct     = indices for the cross-validations
  *      ymat    = vector of response variables
  *      xmat    = matrix of continuous variables
  *      ny      = number of columns of the y matrix (it is passed in as a
@@ -32,8 +32,8 @@
 
 SEXP
 xpred(SEXP ncat2, SEXP method2, SEXP opt2,
-      SEXP parms2, SEXP minsize2, SEXP xvals2, SEXP xgrp2,
-      SEXP ymat2, SEXP xmat2, SEXP wt2, SEXP treatment2,
+      SEXP parms2, SEXP xvals2, SEXP xgct2,
+      SEXP ymat2, SEXP xmat2, SEXP wt2,
       SEXP ny2, SEXP cost2, SEXP all2, SEXP cp2, SEXP toprisk2, SEXP nresp2)
 {
     char *errmsg;
@@ -51,16 +51,13 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
     /*
      * pointers to R objects
      */
-    int *ncat, *xgrp;
+    int *ncat, *xgct;
     int xvals;
     //double *wt, *parms;
     double *wt;
-    double *treatment;
-    double *parms;
-    int minsize;
+    int parms;
     double *predict;
     double *cp;
-    
 
     /*
      *        Return objects for R
@@ -72,13 +69,11 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
      * first get copies of some input variables
      */
     ncat = INTEGER(ncat2);
-    xgrp = INTEGER(xgrp2);
+    xgct = INTEGER(xgct2);
     xvals = asInteger(xvals2);
     wt = REAL(wt2);
-    treatment = REAL(treatment2);
     //parms = REAL(parms2);
-    parms = REAL(parms2);
-    minsize = asInteger(minsize2);
+    parms = asInteger(parms2);
     ncp = LENGTH(cp2);
     cp = REAL(cp2);
     toprisk = asReal(toprisk2);
@@ -117,7 +112,6 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
     ct.nvar = ncols(xmat2);
     ct.numcat = INTEGER(ncat2);
     ct.wt = wt;
-    ct.treatment = treatment;
     ct.iscale = 0.0;
     ct.vcost = REAL(cost2);
     ct.num_resp = asInteger(nresp2);
@@ -147,7 +141,6 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
     ct.xtemp = (double *) ALLOC(n, sizeof(double));
     ct.ytemp = (double **) ALLOC(n, sizeof(double *));
     ct.wtemp = (double *) ALLOC(n, sizeof(double));
-    ct.trtemp = (double *) ALLOC(n, sizeof(double));
 
     /*
      * create a matrix of sort indices, one for each continuous variable
@@ -189,12 +182,10 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
      */
     if (maxcat > 0) {
       ct.csplit = (int *) ALLOC(3 * maxcat, sizeof(int));
-      ct.left = ct.csplit + maxcat;
-	    ct.right = ct.left + maxcat;
-      ct.lwt = (double *) ALLOC(2 * maxcat, sizeof(double));
-	    ct.rwt = ct.lwt + maxcat;
-      ct.ltr = (double *) ALLOC(2 * maxcat, sizeof(double));
-      ct.rtr = ct.ltr + maxcat;
+    	ct.lwt = (double *) ALLOC(2 * maxcat, sizeof(double));
+    	ct.left = ct.csplit + maxcat;
+    	ct.right = ct.left + maxcat;
+    	ct.rwt = ct.lwt + maxcat;
     } else
 	    ct.csplit = (int *) ALLOC(1, sizeof(int));
 
@@ -204,7 +195,7 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
 
     ct.which = (int *) ALLOC(n, sizeof(int));
     xtree = (pNode) ALLOC(1, nodesize);
-    (*ct_init) (n, ct.ydata, maxcat, &errmsg, parms, &ct.num_resp, 1, wt, treatment);
+    (*ct_init) (n, ct.ydata, maxcat, &errmsg, parms, &ct.num_resp, 1, wt);
 
     /*
      * From this point on we look much more like xval.c
@@ -213,10 +204,11 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
     for (i = 0; i < ncp; i++) {
       cp[i] *= toprisk;       /* scale to internal units */
       // rescale the cp:
-      //cp[i] *= (xvals - 1) * 1.0 / xvals; 
-      //Rprintf("cp[%d] = %f\n", i, cp[i]);   
+      cp[i] *= (xvals - 1) * 1.0 / xvals; 
+      //Rprintf("cp[%d] = %f\n", i, cp[i]);
+      
     }
-    //ct.alpha *= (xvals - 1) * 1.0 / xvals;
+    ct.alpha *= (xvals - 1) * 1.0 / xvals;
     
     //Rprintf("ct.alpha = %f\n", ct.alpha);
 
@@ -252,7 +244,7 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
 						 * in order */
 		      if (ii < 0)
 		        ii = -(1 + ii);     /* missings move too */
-		      if (xgrp[ii] != xgroup + 1) {      
+		      if (xgct[ii] != xgroup + 1) {      
            /*
 		        * this obs is left in --
 		        * copy to the front half of ct.sorts
@@ -272,13 +264,12 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
 	    temp = 0;
 	    for (i = 0; i < n; i++) {
         ct.which[i] = 1;    /* everyone starts in the top node */
-	      if (xgrp[i] == xgroup + 1) {
+	      if (xgct[i] == xgroup + 1) {
 		      ct.sorts[0][last] = i;
 		      last++;
 	      } else {
 		      ct.ytemp[k] = ct.ydata[i];
 		      ct.wtemp[k] = ct.wt[i];
-          ct.trtemp[k] = ct.treatment[i];
 		      temp += ct.wt[i];
 		      k++;
 	      }
@@ -286,21 +277,21 @@ xpred(SEXP ncat2, SEXP method2, SEXP opt2,
 
 	    /* at this point k = #obs in the prediction group */
 	    /* rescale the cp */
-	    for (j = 0; j < ct.num_unique_cp; j++)
-	       cp[j] *= temp / old_wt;
-	    ct.alpha *= temp / old_wt;
-	    old_wt = temp;
+	    //for (j = 0; j < ct.num_unique_cp; j++)
+	    //    cp[j] *= temp / old_wt;
+	    //ct.alpha *= temp / old_wt;
+	    //old_wt = temp;
 
 	  /*
 	   * partition the new tree
 	   */
 	    xtree->num_obs = k;
-	    (*ct_init) (k, ct.ytemp, maxcat, &errmsg, parms, &ii, 2, ct.wtemp, ct.trtemp);
+	    (*ct_init) (k, ct.ytemp, maxcat, &errmsg, parms, &ii, 2, ct.wtemp);
 	    //(*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp);
-      (*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp, ct.trtemp, ct.max_y);
+      (*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp, ct.max_y);
 	    xtree->complexity = xtree->risk;
 	    //partition(1, xtree, &temp, 0, k);
-      partition(1, xtree, &temp, 0, k, minsize);
+      partition(1, xtree, &temp, 0, k, parms);
 	    fix_cp(xtree, xtree->complexity);
      // Rprintf("%d th xtree\n", xgroup + 1);
 	   // print_tree(xtree, 5);        /* debug line */

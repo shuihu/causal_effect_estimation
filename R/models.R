@@ -80,6 +80,10 @@ reestimate.causalTree.TOT <- function(tree, X, W, Y, propensity) {
   tree
 }
 
+get.optimal.cp <- function(tree) {
+  max(tree$cp[which(tree$cp[,'xerror'] == min(tree$cp[,'xerror'])), 'CP'])
+}
+
 # methods for each class
 
 setGeneric(
@@ -94,7 +98,12 @@ setMethod(
   signature("ST", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data <- create.data.frame.for.st(X, W, Y)
-    model@tree <- rpart(y ~ ., data = data, method = "anova")
+    unpruned.tree <- rpart(y ~ ., data = data, method = "anova", cp = 0)
+    optimal.cp <- get.optimal.cp(unpruned.tree)
+    #print(length(optimal.cp))
+    #print(paste("unpruned tree"))
+    #print(unpruned.tree)
+    model@tree <- prune(unpruned.tree, cp = optimal.cp)
     model
   }
 )
@@ -105,8 +114,12 @@ setMethod(
   definition = function(model, X, W, Y) {
     data1 <- create.data.frame.for.tt(X, W, Y, 1)
     data0 <- create.data.frame.for.tt(X, W, Y, 0)
-    model@tree1 <- rpart(y ~ ., data = data1, method = "anova")
-    model@tree0 <- rpart(y ~ ., data = data0, method = "anova")
+    unpruned.tree1 <- rpart(y ~ ., data = data1, method = "anova", cp = 0)
+    optimal.cp1 <- get.optimal.cp(unpruned.tree1)
+    model@tree1 <- prune(unpruned.tree1, cp = optimal.cp1)
+    unpruned.tree0 <- rpart(y ~ ., data = data0, method = "anova", cp = 0)
+    optimal.cp0 <- get.optimal.cp(unpruned.tree0)
+    model@tree0 <- prune(unpruned.tree0, cp = optimal.cp0)
     model
   }
 )
@@ -115,8 +128,9 @@ setMethod(
   f = "train.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
-    print("CT.train.model")
-    model@tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), treatment = W, method = "anova", parms = 1, minbucket = 1, cv.option = model@cv.option, p = 0.5, xval = 10)
+    unpruned.tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), weights = W, method = "anova", parms = 2, cp = 0, cv.option = model@cv.option, p = 0.5)
+    optimal.cp <- get.optimal.cp(unpruned.tree)
+    model@tree <- prune(unpruned.tree, cp = optimal.cp)
     model
   }
 )

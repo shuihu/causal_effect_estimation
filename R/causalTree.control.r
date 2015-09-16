@@ -1,5 +1,5 @@
 causalTree.control <-
-  function(minsplit = 3L, minbucket = round(minsplit/3), cp = 0.01,
+  function(minsplit = 20L, minbucket = round(minsplit/3), cp = 0.01,
 	   maxcompete = 4L, maxsurrogate = 5L, usesurrogate = 2L, xval = 10L,
 	   surrogatestyle = 0L, maxdepth = 30L, ...)
 {

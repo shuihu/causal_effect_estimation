@@ -57,7 +57,7 @@ estimate.leaf.tau <- function(leaf.assignments, treat, control, Y, leaves, leaf)
 #' @param object A tree-structured fit object.
 #' @param formula A regression formula.
 #' @param data New observations.
-#' @param weights The treatment status of new observations
+#' @param weights The weights status of new observations
 #' @return The estimated causal effects of \code{data}.
 #' Notice here when the leaf contains only treated or control cases, the function will trace back to the leaf's parent mnode recursively until the parent can be used to compute causal effect.
 #' 
@@ -76,9 +76,9 @@ estimate.causalTree <- function(object, formula, data, weights, na.action = na.p
   Y <- model.response(m)
   n <- nrow(m)
   # check the weights condition:
-  if (missing(weights)) stop("You should import the treatment status for data.")
+  if (missing(weights)) stop("You should import the weights status for data.")
   if (length(weights) != n) 
-    stop("The length of treatment status vector should be same as number
+    stop("The length of weights status vector should be same as number
          of observations.")
   if (length(which(weights == 0)) == 0 || length(which(weights == 1)) == 0)
     stop("Can't make estimation since no treated cases or no control cases.")

@@ -60,8 +60,7 @@ rundown3(pNode tree, int obs, int neighbor, double *cp, double *xpred, double *x
     
     
     // matching function:
-    // i  am here:
-    temp = (2 * ct.treatment[obs2] - 1) * (*ct.ydata[obs2] - *ct.ydata[neighbor2]);
+    temp = (2 * ct.wt[obs2] - 1) * (*ct.ydata[obs2] - *ct.ydata[neighbor2]);
     //Rprintf("neighbor2 = %d\n", neighbor2);
     //Rprintf("ct.wt[%d] = %f, ct.ydata[%d] = %f, ct.ydata[%d] = %f\n", obs2, ct.wt[obs2], 
     //  obs2, *ct.ydata[obs2], neighbor2, *ct.ydata[neighbor2]);
