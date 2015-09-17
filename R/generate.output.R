@@ -1,6 +1,6 @@
 # generate Y according to a particular design given X and W
 generate.output <- function(input, design, seed) {
-  if (missing(seed)) {
+  if (!missing(seed)) {
     set.seed(seed)
   }
   

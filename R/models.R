@@ -100,9 +100,6 @@ setMethod(
     data <- create.data.frame.for.st(X, W, Y)
     unpruned.tree <- rpart(y ~ ., data = data, method = "anova", cp = 0)
     optimal.cp <- get.optimal.cp(unpruned.tree)
-    #print(length(optimal.cp))
-    #print(paste("unpruned tree"))
-    #print(unpruned.tree)
     model@tree <- prune(unpruned.tree, cp = optimal.cp)
     model
   }
