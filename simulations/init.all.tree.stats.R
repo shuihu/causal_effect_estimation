@@ -3,6 +3,7 @@
 # - os.to: TOT out-of-sample criterion
 # - os.m: matching out-of-sample criterion
 # - os.infeasible: infeasible (oracle) criterion, where we can observe each counterfactual observation
+source("simulations/init.named.list.R")
 
 init.all.tree.stats <- function(num.replications, num.designs, model.names, stats.names) {
   tree.stats <- matrix(0, num.designs, num.replications)

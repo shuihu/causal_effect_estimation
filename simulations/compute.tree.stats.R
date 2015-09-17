@@ -1,3 +1,8 @@
+source("simulations/models.R")
+source("simulations/compute.os.m.R")
+source("simulations/compute.os.to.R")
+source("simulations/compute.os.infeasible.R")
+
 init.model <- function(model.name, propensity) {
   tree <- list()
   class(tree) <- "rpart"
@@ -17,7 +22,6 @@ init.model <- function(model.name, propensity) {
 compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, matchIndices) {
   initial.model <- init.model(model.name, propensity)
   trained.split.model <- train.model(initial.model, split.XW$X, split.XW$W, split.Y)
-  #return(trained.split.model)
   trained.reestimation.model <- reestimate.model(trained.split.model, estimation.XW$X, estimation.XW$W, estimation.Y)
   test.preds <- predict.model(trained.reestimation.model, test.XW$X)
   num.leaves <- count.leaves(trained.reestimation.model)

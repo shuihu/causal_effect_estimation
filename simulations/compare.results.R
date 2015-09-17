@@ -1,6 +1,8 @@
 # Compare the number of leaves, out-of-sample TOT criterion, out-of-sample matching criterion, and out-of-sample infeasible 
 # criterion for the different models given their performance on many replications of input data across several simulation
 # designs.
+source("simulations/compute.leaf.comparisons.R")
+source("simulations/compute.os.comparisons.R")
 
 compare.results <- function(num.designs, model.names, simulation.results, num.replications, printOpt = TRUE) {
   all.tree.stats <- simulation.results$all.tree.stats

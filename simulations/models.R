@@ -1,5 +1,7 @@
-setOldClass("rpart")
-setOldClass("causalTree")
+source("simulations/causalTree.matrix.R")
+source("simulations/create.data.frame.R")
+source("simulations/get.all.leaves.R")
+source("simulations/reestimate.rpart.R")
 
 # class for ST (single tree) model
 # methods: train.model, reestimate.model, predict.model, count.leaves

@@ -1,6 +1,13 @@
 # Simulate some data multiple times, and for each replication, use the data to train and test
 # several models that estimate causal effect.  Return the results from each replication, as well
 # as statistics on how often each model was the best according to various criteria.
+source("simulations/init.all.tree.stats.R")
+source("simulations/init.all.winning.models.R")
+source("simulations/generate.input.R")
+source("simulations/generate.output.R")
+source("simulations/match.observations.R")
+source("simulations/init.named.list.R")
+source("simulations/compute.tree.stats.R")
 
 run.full.simulation <- function(num.replications = 1000, num.designs = 3, model.names = c('ST', 'TT', 'TOT', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, seed) {
   if (missing(seed)) {

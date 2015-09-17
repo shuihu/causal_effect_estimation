@@ -1,5 +1,6 @@
 # all.winning.models stores for each triple (design, os, model), the number of replications in the design where the model achieved the lowest -Q
 # on the os (out-of-sample criterion).  This is used for producing the "Share" column in the comparison table.
+source("simulations/init.named.list.R")
 
 init.all.winning.models <- function(num.designs, model.names, os.names) {
   winning.model.per.design.and.os.name <- init.named.list(model.names, 0) 
