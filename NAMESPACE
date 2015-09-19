@@ -3,7 +3,7 @@ useDynLib(causalTree, .registration = TRUE, .fixes = "C_")
 export(na.causalTree, path.causalTree, prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, comparisonForest,
        estimate.causalTree, compare.forests, predict.randomForest.shuihu, randomForestInfJack, est.causalTree.tau)
 export(causalTree.exp)  # needed for one of the tests
-export(recursive.which.in.leaf, est.causalTree) # needed for the simulations
+export(causalTree.matrix, create.data.frame, recursive.which.in.leaf, est.causalTree) # needed for the simulations
 
 importFrom(grDevices, dev.cur, dev.off)
 importFrom(graphics, plot, text)

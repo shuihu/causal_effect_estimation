@@ -20,3 +20,12 @@ match.observations <- function(XW) {
   }
   matches
 }
+
+match.observations.for.all.designs <- function(XW) {
+  num.designs <- length(XW)
+  matches <- vector("list", num.designs)
+  for (design in 1:num.designs) {
+    matches[[design]] <- match.observations(XW[[design]])
+  }
+  matches
+}

@@ -19,12 +19,16 @@ init.model <- function(model.name, propensity) {
   }
 }
 
-compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, matchIndices) {
+compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, matchIndices, is.honest) {
   initial.model <- init.model(model.name, propensity)
   trained.split.model <- train.model(initial.model, split.XW$X, split.XW$W, split.Y)
-  trained.reestimation.model <- reestimate.model(trained.split.model, estimation.XW$X, estimation.XW$W, estimation.Y)
-  test.preds <- predict.model(trained.reestimation.model, test.XW$X)
-  num.leaves <- count.leaves(trained.reestimation.model)
+  if (is.honest) {
+    trained.prediction.model <- reestimate.model(trained.split.model, estimation.XW$X, estimation.XW$W, estimation.Y)
+  } else {
+    trained.prediction.model <- trained.split.model
+  }
+  test.preds <- predict.model(trained.prediction.model, test.XW$X)
+  num.leaves <- count.leaves(trained.prediction.model)
   os.to <- compute.os.to(test.XW, test.Y, test.preds, propensity)
   os.m <-compute.os.m(test.XW, test.Y, test.preds, matchIndices)
   os.infeasible <- compute.os.infeasible(test.XW, test.Y, test.preds, counterfactual.test.Y)

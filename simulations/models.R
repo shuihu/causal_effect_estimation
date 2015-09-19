@@ -1,5 +1,4 @@
-source("simulations/causalTree.matrix.R")
-source("simulations/create.data.frame.R")
+setOldClass("rpart")
 source("simulations/get.all.leaves.R")
 source("simulations/reestimate.rpart.R")
 
@@ -62,7 +61,7 @@ reestimate.causalTree.matching <- function(tree, X, W, Y) {
   all.leaves <- get.all.leaves(tree)
   rownames <- as.numeric(rownames(tree$frame))
   for (leaf in all.leaves) {
-    obs.in.leaf <- recursive.which.in.leaf(leaf.assignments, leaf, all.leaves)
+    obs.in.leaf <- recursive.which.in.leaf(leaf.assignments, leaf, all.leaves, W)
     relevant.W <- W[obs.in.leaf]
     relevant.Y <- Y[obs.in.leaf]
     tree$frame$yval[which(rownames == leaf)[1]] <- sum(relevant.Y * relevant.W / sum(relevant.W)) - sum(relevant.Y * (1 - relevant.W) / sum(1 - relevant.W))
@@ -157,8 +156,8 @@ setMethod(
   definition = function(model, X, W, Y) {
     data1 <- create.data.frame.for.tt(X, W, Y, 1)
     data0 <- create.data.frame.for.tt(X, W, Y, 0)
-    model@tree1 <- reestimate.rpart(model@tree1, data1, Y)
-    model@tree0 <- reestimate.rpart(model@tree0, data0, Y)
+    model@tree1 <- reestimate.rpart(model@tree1, data1, data1$y)
+    model@tree0 <- reestimate.rpart(model@tree0, data0, data0$y)
     model
   }
 )

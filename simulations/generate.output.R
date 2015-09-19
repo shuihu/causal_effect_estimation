@@ -20,8 +20,20 @@ generate.output <- function(input, design, seed) {
   } else if (design == 3) {
     output[w0Indices] <- rnorm(num.w0,  0 + input$X[w0Indices,1] + input$X[w0Indices,2], 0.1)
     output[w1Indices] <- rnorm(num.w1,  1 - input$X[w1Indices,1] + input$X[w1Indices,2], 0.1)
+  } else if (design == 4) {
+    output[w0Indices] <- rnorm(num.w0,  0 + input$X[w0Indices,1] + input$X[w0Indices,2], 0.1)
+    output[w1Indices] <- rnorm(num.w1,  1 - input$X[w1Indices,1] + input$X[w1Indices,2], 0.1)
   } else {
-    stop("design must be 1, 2, or 3")
+    stop("design must be 1-4")
+  }
+  output
+}
+
+generate.output.for.all.designs <- function(inputs) {
+  num.designs <- length(inputs)
+  output <- vector("list", num.designs)
+  for (design in 1:num.designs) {
+    output[[design]] <- generate.output(inputs[[design]], design)
   }
   output
 }

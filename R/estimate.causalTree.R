@@ -23,10 +23,20 @@ get.descendant.leaves.helper <- function(parent, leaves, count, maxdepth) {
   } 
 }
 
-recursive.which.in.leaf <- function(leaf.assignments, leaf, leaves) {
+contains.all.treatment.levels <- function(index, treatment) {
+  if (missing(treatment)) {
+    TRUE
+  } else {
+    treat0.obs <- which(treatment == 0)
+    treat1.obs <- which(treatment == 1)
+    length(which(index %in% treat0.obs)) > 0 && length(which(index %in% treat1.obs)) > 0
+  }
+}
+
+recursive.which.in.leaf <- function(leaf.assignments, leaf, leaves, treatment) {
   in.leaf <- which(leaf.assignments == leaf)
   parent <- leaf
-  while(length(in.leaf) == 0) {
+  while(length(in.leaf) == 0 || !contains.all.treatment.levels(in.leaf, treatment)) {
     parent <- floor(parent / 2)
     descendant.leaves <- get.descendant.leaves(parent, leaves)
     in.leaf <- which(leaf.assignments %in% descendant.leaves)

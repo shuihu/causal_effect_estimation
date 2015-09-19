@@ -12,3 +12,16 @@ generate.input <- function(num.obs, num.vars, seed) {
   W <- rep(0:1, each = num.obs / 2)
   list(X = X, W = W)
 }
+
+generate.input.for.all.designs <- function(num.obs, num.vars.typical, num.designs, seed) {
+  inputs <- vector("list", num.designs)
+  for (design in 1:num.designs) {
+    if (design == 4) {
+      num.vars <- 2
+    } else {
+      num.vars <- num.vars.typical
+    }
+    inputs[[design]] <- generate.input(num.obs, num.vars, seed)
+  }
+  inputs
+}

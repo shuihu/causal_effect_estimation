@@ -10,8 +10,11 @@ compute.leaf.comparisons <- function(num.designs, model.names, all.tree.stats) {
   }
   for (design in 1:num.designs) {
     for (model.name in model.names) {
+      print(paste("Design:", as.character(design), "model:", model.name))
+      print(all.tree.stats[[model.name]]$num.leaves[design,])
       leaf.comparisons[[model.name]][[design]]$Mean <- mean(all.tree.stats[[model.name]]$num.leaves[design,])
       leaf.comparisons[[model.name]][[design]]$Median <- median(all.tree.stats[[model.name]]$num.leaves[design,])
+      leaf.comparisons[[model.name]][[design]]$Variance <- var(all.tree.stats[[model.name]]$num.leaves[design,])
     }
   }
   leaf.comparisons
