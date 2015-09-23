@@ -13,10 +13,10 @@ static int debug = 0;
 #endif
 
 	void
-//xval(int n_xval, CpTable cptable_head, int *x_gct,
+//xval(int n_xval, CpTable cptable_head, int *x_grp,
 //		int maxcat, char **errmsg, double *parms, int *savesort)
-xval(int n_xval, CpTable cptable_head, int *x_gct,
-   	int maxcat, char **errmsg, int parms, double p, int *savesort)
+xval(int n_xval, CpTable cptable_head, int *x_grp,
+   	int maxcat, char **errmsg, double *parms, int minsize, double p, int *savesort)
 {
 	int i, j, k, ii, jj;
 	int last;
@@ -27,7 +27,7 @@ xval(int n_xval, CpTable cptable_head, int *x_gct,
 	double alphasave;
 	pNode xtree;
 	CpTable cplist;
-	double temp, temp1;
+	double temp;
 	double old_wt, total_wt;
   int neighbor; // nearest neighbor number
 
@@ -60,11 +60,11 @@ xval(int n_xval, CpTable cptable_head, int *x_gct,
 		cp[i] = sqrt(cplist->cp * (cplist->forward)->cp);
     //Rprintf("geometric cp[%d] = %f\n", i, cp[i]);
     //rescale the cp here:
-    cp[i] = (n_xval - 1) * 1.0 / n_xval * cp[i];
+    // cp[i] = (n_xval - 1) * 1.0 / n_xval * cp[i];
     //Rprintf("scaled cp[%d] = %f\n", i, cp[i]);
 	}
    //rescale alpha:
-  ct.alpha *= (n_xval - 1) * 1.0 / n_xval;
+  // ct.alpha *= (n_xval - 1) * 1.0 / n_xval;
  // Rprintf("ct.alpha = %f\n", ct.alpha);
   
 
@@ -89,7 +89,7 @@ xval(int n_xval, CpTable cptable_head, int *x_gct,
 				ii = savesort[j * ct.n + i];
 				if (ii < 0)
 					ii = -(1 + ii);     /* missings move too */
-				if (x_gct[ii] != xgroup + 1) { 
+				if (x_grp[ii] != xgroup + 1) { 
 					// samples not belong to the test fold:
 					/*
 					 * this obs is left in --
@@ -109,30 +109,25 @@ xval(int n_xval, CpTable cptable_head, int *x_gct,
 
 		k = 0;
 		temp = 0;
-		temp1 = 0;
 		for (i = 0; i < ct.n; i++) {
 			ct.which[i] = 1;    /* everyone starts in group 1 */
-			if (x_gct[i] == xgroup + 1) {
+			if (x_grp[i] == xgroup + 1) {
         //Rprintf("validation data is %d\n", i + 1);
 				ct.sorts[0][last] = i;
 				last++;
 			} else {
 				ct.ytemp[k] = ct.ydata[i];
 				ct.wtemp[k] = ct.wt[i];
+        ct.trtemp[k] = ct.treatment[i];
 				temp += ct.wt[i];
-				temp1 += 1;
 				k++;
 			}
 		}
   
-    
-    //for (j = 0; j < ct.num_unique_cp; j++) {
-    //  cp[j] *= temp1 / ct.n;
-    //  Rprintf("after: cp[%d] = %f\n", j, cp[j]);
-    //}
-       
-    //ct.alpha *= temp1 / ct.n;
-    // we choose not to rescale the cp in cross validation:
+    /* rescale the cp */
+    for (j = 0; j < ct.num_unique_cp; j++) 
+      cp[j] *= temp / old_wt;
+    ct.alpha *= temp / old_wt;
     old_wt = temp;
 
 
@@ -141,14 +136,14 @@ xval(int n_xval, CpTable cptable_head, int *x_gct,
 		 */
 		xtree = (pNode) CALLOC(1, nodesize);
 		xtree->num_obs = k;
-		(*ct_init) (k, ct.ytemp, maxcat, errmsg, parms, &temp, 2, ct.wtemp);
+		(*ct_init) (k, ct.ytemp, maxcat, errmsg, parms, &temp, 2, ct.wtemp, ct.trtemp);
 		//(*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp);
-        (*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp, ct.max_y);
+    (*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp, ct.trtemp, ct.max_y);
 		xtree->complexity = xtree->risk;
     //Rprintf("xtree->complexity = %f\n", xtree->complexity);
 		//partition(1, xtree, &temp, 0, k);
 
-    partition(1, xtree, &temp, 0, k, parms);
+    partition(1, xtree, &temp, 0, k, minsize);
     
     //Rprintf("now, xtree->complexity = %f\n", xtree->complexity);
 		//the complexity should be min(me, any-node-above-me). This routine fixes that.
@@ -193,10 +188,10 @@ xval(int n_xval, CpTable cptable_head, int *x_gct,
 			/* add it in to the risk */
 			cplist = cptable_head;
 			for (jj = 0; jj < ct.num_unique_cp; jj++) {
-				//cplist->xrisk += xtemp[jj] * ct.wt[j];
-				cplist->xrisk += xtemp[jj];
-				//cplist->xstd += xtemp[jj] * xtemp[jj] * ct.wt[j];
-        cplist->xstd += xtemp[jj] * xtemp[jj];
+				cplist->xrisk += xtemp[jj] * ct.wt[j];
+				//cplist->xrisk += xtemp[jj];
+				cplist->xstd += xtemp[jj] * xtemp[jj] * ct.wt[j];
+        //cplist->xstd += xtemp[jj] * xtemp[jj];
         
 #if DEBUG > 1
 			//	if (debug > 1)
@@ -215,10 +210,10 @@ xval(int n_xval, CpTable cptable_head, int *x_gct,
 	}
 
 	for (cplist = cptable_head; cplist; cplist = cplist->forward) {
-		//cplist->xstd = sqrt(cplist->xstd -
-		//		cplist->xrisk * cplist->xrisk / total_wt);
-    cplist->xstd = sqrt(cplist->xstd -
-  			cplist->xrisk * cplist->xrisk / ct.n);
+		cplist->xstd = sqrt(cplist->xstd -
+				cplist->xrisk * cplist->xrisk / total_wt);
+    //cplist->xstd = sqrt(cplist->xstd -
+  		//	cplist->xrisk * cplist->xrisk / ct.n);
 	}
 	ct.alpha = alphasave;
 	for (i = 0; i < ct.n; i++)

@@ -36,7 +36,7 @@ rundown(pNode tree, int obs, double *cp, double *xpred, double *xtemp, double p)
   // error functions where we need to change:
  // xtemp[i] = (*ct_error) (ct.ydata[obs2], tree->response_est);
  
-	xtemp[i] = (*ct_error) (ct.ydata[obs2], ct.wt[obs2], tree->response_est, p);
+	xtemp[i] = (*ct_error) (ct.ydata[obs2], ct.wt[obs2], ct.treatment[obs2], tree->response_est, p);
   //Rprintf("error: %f\n", xtemp[i]);
     }
 
@@ -47,7 +47,7 @@ oops:;
 	for (; i < ct.num_unique_cp; i++)
 	    xpred[i] = otree->response_est[0];
   // xtemp[i] = (*ct_error) (ct.ydata[obs2], otree->response_est);
-	xtemp[i] = (*ct_error) (ct.ydata[obs2], ct.wt[obs2], otree->response_est, p);
+	xtemp[i] = (*ct_error) (ct.ydata[obs2], ct.wt[obs2], ct.treatment[obs2], otree->response_est, p);
 	Rprintf("oops number %d.\n", opnumber++);
   return;
     }

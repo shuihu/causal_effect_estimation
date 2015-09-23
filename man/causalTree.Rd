@@ -2,14 +2,13 @@
 \alias{causalTree}
 %\alias{causalTreecallback}
 \title{
-  Recursive Partitioning and Regression Trees
+  Causal Effect Regression and Estimation Trees
 }
 \description{
-  Fit a \code{causalTree} model
+  Fit a \code{causalTree} model to get an \code{rpart} object
 }
 \usage{
-causalTree(formula, data, weights, subset, na.action = na.causalTree, method,
-      model = FALSE, x = FALSE, y = TRUE, parms, control, cost, \dots)
+causalTree(formula, data, weights, treatment, subset, na.action = na.rpart, split.option, cv.option, minsize = 2L, model = FALSE, x = FALSE, y = TRUE, parms, p, control, cost, \dots)
 }
 \arguments{
   \item{formula}{a \link{formula}, with a response but no interaction
@@ -17,10 +16,12 @@ causalTree(formula, data, weights, subset, na.action = na.causalTree, method,
     (see \code{\link{model.frame}).}
   }
   
-  \item{data}{an optional data frame in which to intectret the variables
+  \item{data}{an optional data frame in which to interact the variables
     named in the formula.} 
   
   \item{weights}{optional case weights.}
+  
+  \item{treatment}{a vector indicates the treatment status of the data, 1 represents treated and 0 represents controlled. }
   
   \item{subset}{optional expression saying that only a subset of the
     rows of the data should be used in the fit.}
@@ -30,19 +31,13 @@ causalTree(formula, data, weights, subset, na.action = na.causalTree, method,
     are missing.}
   
   \item{method}{one of \code{"anova"}, \code{"poisson"}, \code{"class"}
-    or \code{"exp"}.  If \code{method} is missing then the routine tries
-    to make an intelligent guess.
-    If \code{y} is a survival object, then \code{method = "exp"} is assumed,
-    if \code{y} has 2 columns then \code{method = "poisson"} is assumed,
-    if \code{y} is a factor then \code{method = "class"} is assumed,
-    otherwise \code{method = "anova"} is assumed.
-    It is wisest to specify the method directly, especially as more
-    criteria may added to the function in future.
-
-    Alternatively, \code{method} can be a list of functions named
-    \code{init}, \code{split} and \code{eval}.  Examples are given in
-    the file \file{tests/usersplits.R} in the sources, and in the
-    vignettes \sQuote{User Written Split Functions}.}
+    or \code{"exp"}, same as the options of \code{method} in \pkg{rpart}. In this version, only \code{"anova"} is avaible for \code{method}, so we set it defaultly.}
+    
+    \item{split.option}{causal tree split options, one of \code{"CT"} and \code{"TOT"}, two splitting rules in the paper.}
+    
+    \item{cv.option}{cross validation options, one of \code{"TOT"} and \code{"matching"}, two cross validation rules in the paper.}
+    
+    \item{minsize}{the minimum number of both treated cases and controlled cases in the terminal nodes of the tree, and the default value is 2.}
   
   \item{model}{if logical: keep a copy of the model frame in the result?
     If the input value for \code{model} is a model frame (likely from an
@@ -53,23 +48,13 @@ causalTree(formula, data, weights, subset, na.action = na.causalTree, method,
   \item{y}{keep a copy of the dependent variable in the result.  If
     missing and \code{model} is supplied this defaults to \code{FALSE}.}
   
-  \item{parms}{optional parameters for the splitting function.\cr
-    Anova splitting has no parameters.\cr
-    Poisson splitting has a single parameter, the coefficient of variation of
-    the prior distribution on the rates.  The default value is 1.\cr
-    Exponential splitting has the same parameter as Poisson.\cr
-    For classification splitting, the list can contain any of:
-    the vector of prior probabilities (component \code{prior}), the loss matrix
-    (component \code{loss}) or the splitting index (component
-    \code{split}).  The priors must be positive and sum to 1.  The loss
-    matrix must have zeros on the diagonal and positive off-diagonal
-    elements.  The splitting index can be \code{gini} or
-    \code{information}.  The default priors are proportional to the data
-    counts, the losses default to 1, and the split defaults to
-    \code{gini}.}
-  
+  \item{parms}{optional parameters for the splitting function.
+  same as the parms in \code{rpart}.}
+    
+    \item{p}{propensity scores used in \code{"TOT"} splitting method and \code{"TOT"} cross validation. The default value is the proportion of treated cases in all cases.}
+    
   \item{control}{a list of options that control details of the
-    \code{causalTree} algorithm.  See \code{\link{causalTree.control}}.}
+    \code{rpart} algorithm.  See \code{\link{rpart.control}}.}
   
   \item{cost}{a vector of non-negative costs, one for each variable in
     the model. Defaults to one for all variables.  These are scalings to
@@ -77,43 +62,42 @@ causalTree(formula, data, weights, subset, na.action = na.causalTree, method,
     on a variable is divided by its cost in deciding which split to
     choose.}
   
-  \item{\dots}{arguments to \code{\link{causalTree.control}} may also be
+  \item{\dots}{arguments to \code{\link{rpart.control}} may also be
     specified in the call to \code{causalTree}.  They are checked against the
     list of valid arguments.}
 }
 
 \details{
-  This differs from the \code{tree} function in S mainly in its handling
-  of surrogate variables.  In most details it follows Breiman
-  \emph{et. al} (1984) quite closely.  \R package \pkg{tree} provides a
-  re-implementation of \code{tree}.
+  CausalTree differs from \code{rpart} function in \pkg{rpart} package in splitting rules and cross validation methods. Please check Susan and Guido's paper \emph{Machine Learning Methods for Estimating Heterogeneous Causal Effects} (2015) for detials.
 }
 
 \value{
-  An object of class \code{causalTree}.  See \code{\link{causalTree.object}}.
+  An object of class \code{rpart}.  See \code{\link{rpart.object}}.
 }
 
 \references{
   Breiman L., Friedman J. H., Olshen R. A., and Stone, C. J. (1984)
   \emph{Classification and Regression Trees.}
   Wadsworth.
+  
+  Susan A., Guido I. (2015)  \emph{Machine Learning Methods for Estimating Heterogeneous Causal Effects}.
+  
 }
 
 \seealso{
-  \code{\link{causalTree.control}}, \code{\link{causalTree.object}},
-  \code{\link{summary.causalTree}}, \code{\link{print.causalTree}}
+  \code{\link{rpart.control}}, \code{\link{rpart.object}},
+  \code{\link{summary.rpart}}, \code{\link{print.rpart}}
 }
 
 \examples{
-fit <- causalTree(Kyphosis ~ Age + Number + Start, data = kyphosis)
-fit2 <- causalTree(Kyphosis ~ Age + Number + Start, data = kyphosis,
-              parms = list(prior = c(.65,.35), split = "information"))
-fit3 <- causalTree(Kyphosis ~ Age + Number + Start, data = kyphosis,
-              control = causalTree.control(cp = 0.05))
-par(mfrow = c(1,2), xpd = NA) # otherwise on some devices the text is clipped
-plot(fit)
-text(fit, use.n = TRUE)
-plot(fit2)
-text(fit2, use.n = TRUE)
+fit <- causalTree(y ~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10, 
+data = simulation.1, treatment = simulation.1$treatment, split.option = "CT", 
+cv.option = "matching", cp = 0, minsize = 5, minbucket = 5)
+
+opcp <- fit$cptable[,1][which.min(fit$cptable[,4])]
+
+opfit <- prune(fit, opcp)
+
+rpart.plot(opfit)
 }
-\keyword{tree}
+\keyword{tree, causal effects?}

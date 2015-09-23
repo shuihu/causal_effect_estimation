@@ -1,61 +1,44 @@
 # only suitable for full binary tree:
-get.descendant.leaves <- function(parent, leaves) {
-  max <- floor(log(max(leaves), 2))
-  result <- get.descendant.leaves.helper(parent, leaves, 0, max)
+sons <- function(parent, leaf) {
+  max <- floor(log(max(leaf), 2))
+  result <- sonshelper(parent, leaf, 0, max)
   return (result)
 }
 
-get.descendant.leaves.helper <- function(parent, leaves, count, maxdepth) {
+sonshelper <- function(parent, leaf, count, maxdepth) {
   if (count > maxdepth) {
     # rarely happens
     stop ("This node is not in the tree.")
   } else {
-    if (!is.na(match(parent, leaves))) {
+    if (!is.na(match(parent, leaf))) {
       return (parent)
     } else {
       left_son <- 2 * parent
       right_son <-  2 * parent + 1
-      left_sons <- get.descendant.leaves.helper(left_son, leaves, count + 1, maxdepth)
-      right_sons <- get.descendant.leaves.helper(right_son, leaves, count + 1, maxdepth)
+      left_sons <- sonshelper(left_son, leaf, count + 1, maxdepth)
+      right_sons <- sonshelper(right_son, leaf, count + 1, maxdepth)
       result <- c(left_sons, right_sons)
     }
     return(result)    
   } 
 }
 
-estimate.leaf.tau <- function(leaf.assignments, treat, control, Y, leaves, leaf) {
-  index <- which(leaf.assignments == leaf)
-  index1 <- intersect(index, treat)
-  index0 <- intersect(index, control)    
-  tau <- mean(Y[index1]) - mean(Y[index0])
-  parent <- leaf
-  while(is.na(tau)){
-    # go back to parent node who can compute the value:
-    parent <- floor(parent / 2)
-    descendant.leaves <- get.descendant.leaves(parent, leaves)
-    obs.in.parent<- which(leaf.assignments %in% descendant.leaves)
-    index1 <- intersect(obs.in.parent, treat)
-    index0 <- intersect(obs.in.parent, control)
-    tau <- mean(Y[index1]) - mean(Y[index0])
-  }
-  tau
-}
 
 #' Estimate the causal effects using honest tree model.
 #' 
 #' @param object A tree-structured fit object.
 #' @param formula A regression formula.
 #' @param data New observations.
-#' @param weights The treatment status of new observations
+#' @param treatment The treatment status of new observations
 #' @return The estimated causal effects of \code{data}.
 #' Notice here when the leaf contains only treated or control cases, the function will trace back to the leaf's parent mnode recursively until the parent can be used to compute causal effect.
 #' 
 ## estimate function for honest causal tree:
-estimate.causalTree <- function(object, formula, data, weights, na.action = na.pass)
+estimate.causalTree <- function(object, formula, data, treatment, na.action = na.pass)
 {
   if (!inherits(object, "rpart")) stop("Not a legitimate \"rpart\" object")
   Call <- match.call()
-  indx <- match(c("formula", "data", "weights"),
+  indx <- match(c("formula", "data", "treatment"),
                 names(Call), nomatch = 0L)
   if (indx[1] == 0L) stop("a 'formula' argument is required")
   temp <- Call[c(1L, indx)]      # only keep the arguments we wanted
@@ -64,15 +47,15 @@ estimate.causalTree <- function(object, formula, data, weights, na.action = na.p
   m <- eval.parent(temp)
   Y <- model.response(m)
   n <- nrow(m)
-  # check the weights condition:
-  if (missing(weights)) stop("You should import the treatment status for data.")
-  if (length(weights) != n) 
+  # check the treatment condition:
+  if (missing(treatment)) stop("You should import the treatment status for data.")
+  if (length(treatment) != n) 
     stop("The length of treatment status vector should be same as number
          of observations.")
-  if (length(which(weights == 0)) == 0 || length(which(weights == 1)) == 0)
+  if (length(which(treatment == 0)) == 0 || length(which(treatment == 1)) == 0)
     stop("Can't make estimation since no treated cases or no control cases.")
   # get the leaf of the object
-  leaves <- as.numeric(row.names(object$frame)[which(object$frame$var == "<leaf>")])
+  leaf <- as.numeric(row.names(object$frame)[which(object$frame$var == "<leaf>")])
   
   # get the node id for each observation.
   where <- {
@@ -88,11 +71,25 @@ estimate.causalTree <- function(object, formula, data, weights, na.action = na.p
   
   unique_leaf <- unique(where)
   causal_estimation <- rep(0, n)
-  treat <- which(weights == 1)
-  control<- which(weights == 0)
-  for (leaf in unique_leaf) {
-    index <- which(where == leaf)
-    causal_estimation[as.numeric(index)] <- estimate.leaf.tau(where, treat, control, Y, leaves, leaf)
+  treat <- which(treatment == 1)
+  control<- which(treatment == 0)
+  for (i in 1:length(unique_leaf)) {
+    leaf_id <- unique_leaf[i]
+    index <- which(where == leaf_id)
+    index1 <- intersect(index, treat)
+    index0 <- intersect(index, control)    
+    effect <- mean(Y[index1]) - mean(Y[index0])
+    parent_node_id <- leaf_id
+    while(is.na(effect)){
+      ## go back to parent node who can compute the value:
+      parent_node_id <- floor(parent_node_id / 2)
+      sons_node_id <- sons(parent_node_id, leaf)
+      obs_in_parent<- which(where %in% sons_node_id)
+      index1 <- intersect(obs_in_parent, treat)
+      index0 <- intersect(obs_in_parent, control)
+      effect <- mean(Y[index1]) - mean(Y[index0])
+    }
+    causal_estimation[as.numeric(index)] = effect
   }
   return(causal_estimation)  
 }

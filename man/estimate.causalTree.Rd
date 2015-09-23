@@ -2,24 +2,50 @@
 % Please edit documentation in R/estimate.causalTree.R
 \name{estimate.causalTree}
 \alias{estimate.causalTree}
-\title{Estimate the causal effects using honest tree model.}
-\usage{
-estimate.causalTree(object, formula, data, weights, na.action = na.pass)
-}
-\arguments{
-\item{object}{A tree-structured fit object.}
-
-\item{formula}{A regression formula.}
-
-\item{data}{New observations.}
-
-\item{weights}{The treatment status of new observations}
-}
-\value{
-The estimated causal effects of \code{data}.
-Notice here when the leaf contains only treated or control cases, the function will trace back to the leaf's parent mnode recursively until the parent can be used to compute causal effect.
-}
+\title{Estimate the causal effects using honest tree model based on \code{causalTree} fit.}
 \description{
 Estimate the causal effects using honest tree model.
 }
+\usage{
+estimate.causalTree(object, formula, data, treatment, na.action = na.pass)
+}
+\arguments{
+\item{object}{A tree-structured fit object, and here is specified as \code{causalTree} fit.}
 
+\item{formula}{a \link{formula}, with a response but no interaction
+    terms.  If this a a data frome, that is taken as the model frame
+    (see \code{\link{model.frame}}).}
+
+\item{data}{New data frame in which to interact the variables named in the formula.}
+
+\item{treatment}{The treatment status of new observations, 1 represents treated and 0 represents controlled.}
+}
+
+\details{The \code{estimate.causalTree} differs from \code{predict} in using the new data frame values to compute the causal effects. When the leaf contains only treated or control cases, the function will trace back to the leaf's parent node recursively until the parent can be used to compute causal effect.
+Please check Susan and Guido's paper \emph{Machine Learning Methods for Estimating Heterogeneous Causal Effects} (2015) for detials.
+}
+
+\value{
+a numeric vector indicating the estimated causal effects.
+}
+
+\references{
+Susan A., Guido I. (2015)  \emph{Machine Learning Methods for Estimating Heterogeneous Causal Effects}.
+}
+
+\seealso{
+  \code{\link{predict.rpart}},
+}
+
+\examples{
+fit <- causalTree(y ~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10, 
+data = simulation.1, treatment = simulation.1$treatment, split.option = "CT", 
+cv.option = "matching", cp = 0, minsize = 5, minbucket = 5)
+
+opcp <- fit$cptable[,1][which.min(fit$cptable[,4])]
+
+opfit <- prune(fit, opcp)
+
+estimation <- estimate.causalTree(opfit, y ~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10,
+data = simulation.2, treatment = simulation.2$treatment)
+}
