@@ -10,7 +10,7 @@ source("simulations/init.named.list.R")
 source("simulations/compute.tree.stats.R")
 source("simulations/generate.counterfactual.input.for.all.designs.R")
 
-run.full.simulation <- function(num.replications = 1000, num.designs = 4, model.names = c('ST', 'TT', 'TOT', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, seed) {
+run.full.simulation <- function(num.replications = 1000, num.designs = 5, model.names = c('ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, seed) {
   if (!missing(seed)) {
     set.seed(seed)
   }
@@ -34,7 +34,7 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 4, model.
     train.estimation.Y <- generate.output.for.all.designs(train.estimation.XW)
     
     for (design in 1:num.designs) {
-      # compute tree.stats for each model (ST, TT, TOT, CT)
+      # compute tree.stats for each model (ST, TT, TOT_split_xval_rpart, TOT_xval, CT)
       winning.models <- init.named.list(os.names, NULL)
       min.os.values <- init.named.list(os.names, -1)
       for (model.name in model.names) {

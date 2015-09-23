@@ -10,12 +10,14 @@ init.model <- function(model.name, propensity) {
     ST()
   } else if (model.name == 'TT') {
     TT()
-  } else if (model.name == "TOT") {
+  } else if (model.name == "TOT_split_xval_rpart") {
+    TOT(tree = tree, propensity = propensity)
+  } else if (model.name == "TOT_xval") {
     CT(tree = tree, cv.option = "TOT", propensity = propensity)
   } else if (model.name == "CT") {
     CT(tree = tree, cv.option = "matching")
   } else {
-    stop("model.name must be 'ST', 'TT', 'TOT', or 'CT'")
+    stop("model.name must be 'ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', or 'CT'")
   }
 }
 

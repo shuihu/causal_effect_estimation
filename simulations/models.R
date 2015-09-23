@@ -18,6 +18,14 @@ TT <- setClass(
   slots = c(tree1 = "rpart", tree0 = "rpart")
 )
 
+# class for TOT model using rpart
+# methods: train.model, reestimate.model, predict.model, count.leaves
+
+TOT <- setClass(
+  "TOT",
+  slots = c(tree = "rpart", propensity = "numeric")
+)
+
 # class for CT (causal tree) model
 # methods: train.model, reestimate.model, predict.model, count.leaves
 
@@ -56,7 +64,21 @@ create.data.frame.for.tt <- function(X, W, Y, treatment.level) {
   }
 }
 
-reestimate.causalTree.matching <- function(tree, X, W, Y) {
+create.data.frame.for.tot <- function(X, W, Y, propensity) {
+  if (!missing(W) && !missing(Y)) {
+    transformed.Y <- Y * (W - propensity) / (propensity * (1 - propensity))
+    data <- data.frame(X, transformed.Y)
+    names(data) <- c(paste("x", as.character(1:ncol(X)), sep = ""), "y")
+    data
+    data
+  } else {
+    data <- data.frame(X)
+    names(data) <- c(paste("x", as.character(1:ncol(X)), sep = ""))
+    data
+  }
+}
+
+reestimate.causalTree <- function(tree, X, W, Y) {
   leaf.assignments <- est.causalTree(tree, causalTree.matrix(create.data.frame(tree, X)))
   all.leaves <- get.all.leaves(tree)
   rownames <- as.numeric(rownames(tree$frame))
@@ -65,18 +87,6 @@ reestimate.causalTree.matching <- function(tree, X, W, Y) {
     relevant.W <- W[obs.in.leaf]
     relevant.Y <- Y[obs.in.leaf]
     tree$frame$yval[which(rownames == leaf)[1]] <- sum(relevant.Y * relevant.W / sum(relevant.W)) - sum(relevant.Y * (1 - relevant.W) / sum(1 - relevant.W))
-  }
-  tree
-}
-
-reestimate.causalTree.TOT <- function(tree, X, W, Y, propensity) {
-  leaf.assignments <- est.causalTree(tree, causalTree.matrix(create.data.frame(tree, X)))
-  all.leaves <- get.all.leaves(tree)
-  rownames <- as.numeric(rownames(tree$frame))
-  transformed.Y <- Y * (W - propensity) / (propensity * (1 - propensity))
-  for (leaf in all.leaves) {
-    obs.in.leaf <- recursive.which.in.leaf(leaf.assignments, leaf, all.leaves)
-    tree$frame$yval[which(rownames == leaf)[1]] <- mean(transformed.Y[obs.in.leaf])
   }
   tree
 }
@@ -124,6 +134,18 @@ setMethod(
 
 setMethod(
   f = "train.model",
+  signature("TOT", "matrix", "integer", "numeric"),
+  definition = function(model, X, W, Y) {
+    data <- create.data.frame.for.tot(X, W, Y, model@propensity)
+    unpruned.tree <- rpart(y ~ ., data = data, method = "anova", cp = 0)
+    optimal.cp <- get.optimal.cp(unpruned.tree)
+    model@tree <- prune(unpruned.tree, cp = optimal.cp)
+    model
+  }
+)
+
+setMethod(
+  f = "train.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     unpruned.tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), weights = W, method = "anova", parms = 2, cp = 0, cv.option = model@cv.option, p = 0.5)
@@ -164,13 +186,19 @@ setMethod(
 
 setMethod(
   f = "reestimate.model",
+  signature("TOT", "matrix", "integer", "numeric"),
+  definition = function(model, X, W, Y) {
+    data <- create.data.frame.for.tot(X, W, Y, model@propensity)
+    model@tree <- reestimate.rpart(model@tree, data, data$y)
+    model
+  }
+)
+
+setMethod(
+  f = "reestimate.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
-    if (model@cv.option == "matching") {
-      model@tree <- reestimate.causalTree.matching(model@tree, X, W, Y)
-    } else if (model@cv.option == "TOT") {
-      model@tree <- reestimate.causalTree.TOT(model@tree, X, W, Y, model@propensity)
-    }
+    model@tree <- reestimate.causalTree(model@tree, X, W, Y)
     model
   }
 )
@@ -205,6 +233,15 @@ setMethod(
 
 setMethod(
   f = "predict.model",
+  signature("TOT", "matrix"),
+  definition = function(model, X) {
+    data <- create.data.frame.for.tot(X)
+    predict(model@tree, data)
+  }
+)
+
+setMethod(
+  f = "predict.model",
   signature("CT", "matrix"),
   definition = function(model, X) {
     est.causalTree.tau(model@tree, X)
@@ -232,6 +269,14 @@ setMethod(
   signature("TT"),
   definition = function(model) {
     length(which(model@tree1$frame$var == "<leaf>")) + length(which(model@tree0$frame$var == "<leaf>"))
+  }
+)
+
+setMethod(
+  f = "count.leaves",
+  signature("TOT"),
+  definition = function(model) {
+    length(which(model@tree$frame$var == "<leaf>"))
   }
 )
 
