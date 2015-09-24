@@ -126,7 +126,7 @@ setMethod(
   f = "train.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
-    unpruned.tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), weights = W, method = "anova", parms = 2, cp = 0, cv.option = model@cv.option, p = 0.5)
+    unpruned.tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), treatment = W, method = "anova", parms = 2, cp = 0, cv.option = model@cv.option, split.option = "CT", p = 0.5)
     optimal.cp <- get.optimal.cp(unpruned.tree)
     model@tree <- prune(unpruned.tree, cp = optimal.cp)
     model
