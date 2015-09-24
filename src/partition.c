@@ -15,7 +15,7 @@
 
 int
 //partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2)
-partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int parms)
+partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int minsize)
 {
     pNode me;
     double tempcp;
@@ -23,30 +23,35 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
     double tempcp2;
     double left_risk, right_risk;
     int left_split, right_split;
-    double twt;
+    double twt, ttr;
     int nleft, nright;
     int n;
-    int min_node_size = parms;
+    int min_node_size = minsize;
 
     me = splitnode;
     n = n2 - n1;                /* total number of observations */
 
     if (nodenum > 1) {
       twt = 0;
+      ttr = 0;
 	    k = 0;
 	    for (i = n1; i < n2; i++) {
 	      j = ct.sorts[0][i]; /* any variable would do, use first */
 	      if (j < 0)
 		      j = -(1 + j);   /* if missing, value = -(1+ true index) */
 	      ct.wtemp[k] = ct.wt[j];
+        ct.trtemp[k] = ct.treatment[j];
+        //Rprintf("trtemp[%d] = %f\n", k, ct.trtemp[k]);
 	      ct.ytemp[k] = ct.ydata[j];
 	      twt += ct.wt[j];
+        ttr += ct.treatment[j];
 	      k++;
 	    }
 	    //(*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp);
-      (*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp, ct.max_y);
+      (*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp, ct.trtemp, ct.max_y);
 	    me->num_obs = n;
 	    me->sum_wt = twt;
+      me->sum_tr = ttr;
 	    tempcp = me->risk;
 	    if (tempcp > me->complexity)
 	      tempcp = me->complexity;
@@ -82,7 +87,7 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int par
     //bsplit(me, n1, n2);
     bsplit(me, n1, n2, min_node_size);
     if (!me->primary) {
-      //Rprintf("stop here!\n");
+     // Rprintf("stop here!\n");
 	/*
 	 * This is rather rare -- but I couldn't find a split worth doing
 	 */

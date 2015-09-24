@@ -7,14 +7,14 @@
 
 double
 //anovapred(double *y, double wt, double *yhat)
-anovapred(double *y, double wt, double *yhat, double p) // pass in ct.which
+anovapred(double *y, double wt, double treatment, double *yhat, double p) // pass in ct.which
 {
     double temp;
-    if (wt == 1)  temp = y[0] / p;
+    if (treatment == 1)  temp = y[0] / p;
     else temp = - y[0] / (1 - p);
       
     //double temp = y[0] - *yhat;
     temp -= *yhat;
     
-    return temp * temp;
+    return temp * temp * wt;
 }

@@ -3,7 +3,7 @@ causalTree.anova <- function(y, offset, parms, wt)
 {
     if (!is.null(offset)) y <- y - offset
     #list(y = y, parms = NULL, numresp = 1L, numy = 1L,
-      list(y = y, parms = parms, numresp = 1L, numy = 1L,
+      list(y = y, parms = NULL, numresp = 1L, numy = 1L,
 	 summary = function(yval, dev, wt, ylevel, digits) {
 	   # paste0("  mean=", formatg(yval, digits),
 	   #                  ", MSE=" , formatg(dev, digits))
