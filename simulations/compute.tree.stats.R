@@ -30,6 +30,9 @@ compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, t
     trained.prediction.model <- trained.split.model
   }
   test.preds <- predict.model(trained.prediction.model, test.XW$X)
+  #if (model.name == "CT") {
+  #  write.table(test.preds, "test.preds.csv", sep = ",", row.names = FALSE, col.names = FALSE)
+  #}
   num.leaves <- count.leaves(trained.prediction.model)
   os.to <- compute.os.to(test.XW, test.Y, test.preds, propensity)
   os.m <-compute.os.m(test.XW, test.Y, test.preds, matchIndices)

@@ -24,15 +24,17 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 5, model.
   # flip the W's
   counterfactual.test.XW <- generate.counterfactual.input.for.all.designs(test.XW)
   counterfactual.test.Y <- generate.output.for.all.designs(counterfactual.test.XW)
+  seeds <- sample(.Machine$integer.max, num.replications, replace = TRUE)
   for (repl in 1:num.replications) {
     print(paste("replication", as.character(repl)))
+    set.seed(seeds[repl])
     
     # generate the input for all the designs first
     train.split.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
     train.estimation.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
     train.split.Y <- generate.output.for.all.designs(train.split.XW)
     train.estimation.Y <- generate.output.for.all.designs(train.estimation.XW)
-    
+
     for (design in 1:num.designs) {
       # compute tree.stats for each model (ST, TT, TOT_split_xval_rpart, TOT_xval, CT)
       winning.models <- init.named.list(os.names, NULL)
