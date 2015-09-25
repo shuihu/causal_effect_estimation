@@ -21,6 +21,7 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 4, model.
   test.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
   test.Y <- generate.output.for.all.designs(test.XW)
   match.indices <- match.observations.for.all.designs(test.XW)
+  print(test.Y)
   # flip the W's
   counterfactual.test.XW <- generate.counterfactual.input.for.all.designs(test.XW)
   counterfactual.test.Y <- generate.output.for.all.designs(counterfactual.test.XW)
