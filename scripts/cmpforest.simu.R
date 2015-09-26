@@ -36,11 +36,11 @@ true.eff = apply(X.test, 1, effect)
 forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10)
 predictions <- predict(forest, X.test)
 
-plot(true.eff, predictions$aggregate, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
+plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
 abline(0, 1, col = 2, lwd = 2)
 
-minp = min(true.eff, forest$aggregate)
-maxp = max(true.eff, forest$aggregate)
+minp = min(true.eff, predictions)
+maxp = max(true.eff, predictions)
 rngp = maxp - minp
 
 ncol = 100
