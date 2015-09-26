@@ -33,13 +33,14 @@ n.test = 10000
 X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
 true.eff = apply(X.test, 1, effect)
 
-cmp = comparisonForest(Y, X, W, X.test = X.test, num.trees = ntree, sample.size = n / 10)
+forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10)
+predictions <- predict(forest, X.test)
 
-plot(true.eff, cmp$new.tau, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
+plot(true.eff, predictions$aggregate, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
 abline(0, 1, col = 2, lwd = 2)
 
-minp = min(true.eff, cmp$new.tau)
-maxp = max(true.eff, cmp$new.tau)
+minp = min(true.eff, forest$aggregate)
+maxp = max(true.eff, forest$aggregate)
 rngp = maxp - minp
 
 ncol = 100

@@ -2,13 +2,11 @@
 ## The notion we really want is that comparison forests implement
 ## a random forest like interface
 
-init.causalForest <- function(num.obs, num.trees) {
+init.causalForest <- function(x, y, w, num.trees) {
+  num.obs <- nrow(x)
   trees <- vector("list", num.trees)
-  y <- rep(0, num.obs)
-  pred.matrix <- matrix(0, num.obs, num.trees)
   inbag <- matrix(0, num.obs, num.trees)
-  variance <- rep(0, num.obs)
-  causalForest <- list(trees = trees, y = y, ntree = num.trees, inbag = inbag, pred.matrix = pred.matrix, variance = variance)
+  causalForest <- list(trees = trees, x = x, y = y, w = w, ntree = num.trees, inbag = inbag)
   class(causalForest) <- "causalForest"
   causalForest
 }
