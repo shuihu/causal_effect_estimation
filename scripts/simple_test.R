@@ -5,7 +5,7 @@ library(randomForestCI)
 
 rm(list = ls())
 
-n = 200
+n = 1000
 ntree = 200
 sigma = 0.1
 d = 6
