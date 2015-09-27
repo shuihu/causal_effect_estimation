@@ -1,6 +1,6 @@
 useDynLib(causalTree, .registration = TRUE, .fixes = "C_")
 
-export(na.causalTree, path.causalTree, prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, comparisonForest,
+export(na.causalTree, path.causalTree, prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, 
        estimate.causalTree, causalForest, predict.causalForest, randomForestInfJack, est.causalTree.tau)
 export(causalTree.exp)  # needed for one of the tests
 export(causalTree.matrix, create.data.frame, recursive.which.in.leaf, est.causalTree) # needed for the simulations
