@@ -1,14 +1,12 @@
 #install.packages("~/git_local/causal_effect_estimation", type = "source", repos = NULL)
 library(causalTree)
 library(Hmisc)
-library(mgcv)
-library(ggplot2)
 library(randomForestCI)
 
 rm(list = ls())
 
-n = 20000
-ntree = 5000
+n = 200
+ntree = 200
 sigma = 0.1
 d = 6
 k = 2
@@ -51,65 +49,23 @@ fit.scl = pmax(ceiling(ncol * (predictions - minp) / rngp), 1)
 
 hc = heat.colors(ncol)
 
-pdf("~/public_html/cate_true.pdf")
 plot(X.test[,1], X.test[,2], pch = 16, col = hc[true.scl], xlab = "x1", ylab = "x2")
-dev.off()
-
-pdf("~/public_html/cate_fit.pdf")
 plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.scl], xlab = "x1", ylab = "x2")
-dev.off()
 
-cmp.ci = randomForestInfJack(cmp, X.test, calibrate = TRUE)
+cmp.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 plot(cmp.ci)
 
 se.hat = sqrt(cmp.ci$var.hat)
 up.lim = predictions + 1.96 * se.hat
 down.lim = predictions - 1.96 * se.hat
 
-
-pdf("~/public_html/preds_rf.pdf")
 plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect")
 abline(0, 1, lwd = 2, col = 2)
-dev.off()
 
 n.errbar = 200
-pdf("~/public_html/preds_rf_errbar.pdf")
 errbar(true.eff[1:n.errbar], predictions[1:n.errbar], up.lim[1:n.errbar], down.lim[1:n.errbar], xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect", pch = ".", cex = 3)
 abline(0, 1, col = 2, lwd = 2)
-dev.off()
 
 covered = (true.eff <= up.lim) & (true.eff >= down.lim)
 
 mean(covered)
-
-#save.image("./cmpforest.RData")
-
-pdf("~/public_html/coverage.pdf")
-cov.fit = gam(covered ~ s(true.eff), sp = 0.001, family = binomial())
-plot(true.eff, predict(cov.fit, type = "response"))
-dev.off()
-
-source("~/causal_effect_estimation/scripts/knn.R")
-
-kk = c(1:10, seq(12, 32, by = 4))
-knn.mses = sapply(kk, function(k) {
-	tauhat = knn.cate(X, Y, W, X.test, k = k)
-	mean((true.eff - tauhat)^2)
-})
-
-knn.tau = knn.cate(X, Y, W, X.test, k = 8)
-
-pdf("~/public_html/preds_knn.pdf")
-plot(true.eff, knn.tau, xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect")
-abline(0, 1, lwd = 2, col = 2)
-dev.off()
-
-pdf("~/public_html/cate_knn.pdf")
-fit.knn = pmax(ceiling(ncol * (knn.tau- minp) / rngp), 1)
-plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.knn], xlab = "x1", ylab = "x2")
-dev.off()
-
-
-rf.mse = mean((true.eff - predictions)^2)
-knn.mse = mean((true.eff - knn.tau)^2)
-

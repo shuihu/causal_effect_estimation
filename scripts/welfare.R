@@ -70,7 +70,7 @@ tau.hat = predict(cmp, X)
 
 results = data.frame(income = X[,1], polviews = X[,2], CATE = -tau.hat)
 
-cmp.ci = randomForestInfJack(cmp, cmp$pred.matrix)
+cmp.ci = randomForestInfJack(cmp, X)
 
 save.image("~/welfare.RData")
 
