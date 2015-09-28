@@ -178,8 +178,12 @@ setMethod(
   definition = function(model, X, W, Y) {
     data1 <- create.data.frame.for.tt(X, W, Y, 1)
     data0 <- create.data.frame.for.tt(X, W, Y, 0)
-    model@tree1 <- reestimate.rpart(model@tree1, data1, data1$y)
-    model@tree0 <- reestimate.rpart(model@tree0, data0, data0$y)
+    y1 <- data1$y
+    y0 <- data0$y
+    data1$y <- NULL
+    data0$y <- NULL
+    model@tree1 <- reestimate.rpart(model@tree1, data1, y1)
+    model@tree0 <- reestimate.rpart(model@tree0, data0, y0)
     model
   }
 )
