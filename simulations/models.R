@@ -207,7 +207,7 @@ setMethod(
   f = "predict.model",
   signature("CT", "matrix"),
   definition = function(model, X) {
-    est.causalTree.tau(model@tree, X)
+    predict(model@tree, X)
   }
 )
 

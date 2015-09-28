@@ -1,7 +1,7 @@
 useDynLib(causalTree, .registration = TRUE, .fixes = "C_")
 
 export(na.causalTree, path.causalTree, prune.causalTree, causalTree, causalTree.control, rsq.causalTree, snip.causalTree, xpred.causalTree, 
-       estimate.causalTree, causalForest, predict.causalForest, est.causalTree.tau)
+       estimate.causalTree, causalForest)
 export(causalTree.exp)  # needed for one of the tests
 export(causalTree.matrix, create.data.frame, recursive.which.in.leaf, est.causalTree) # needed for the simulations
 
@@ -22,3 +22,4 @@ S3method(residuals, causalTree)
 S3method(summary, causalTree)
 S3method(text, causalTree)
 
+S3method(predict, causalForest)
