@@ -1,4 +1,10 @@
-# This returns the output values, tau, for input newdata and a causal tree.
+#' Evalute the estimates for tau made by an already-trained causalTree.
+#'
+#' @param tree.fit the fitted causalTree object
+#' @param newdata the new test points at which the causalTree predictions
+#'                are to be evaluated
+#'
+#' @return estimates for tau, corresponding to each row of newdata
 
 est.causalTree.tau <- function(tree.fit, newdata) {
   
