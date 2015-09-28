@@ -1,6 +1,8 @@
 #install.packages("~/git_local/causal_effect_estimation", type = "source", repos = NULL)
 library(causalTree)
 library(Hmisc)
+
+# note: this package can be downloaded from https://github.com/swager/randomForestCI
 library(randomForestCI)
 
 rm(list = ls())
@@ -33,7 +35,7 @@ X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
 true.eff = apply(X.test, 1, effect)
 
 forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10)
-predictions <- predict(forest, X.test)
+predictions = predict(forest, X.test)
 
 plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
 abline(0, 1, col = 2, lwd = 2)

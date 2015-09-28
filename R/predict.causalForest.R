@@ -14,8 +14,9 @@ predict.causalForest <- function(object, newdata, predict.all = FALSE) {
   
   ntree <- object$ntree
   individual <- matrix(0, nrow(newdata), ntree)
+  
   for (tree.index in 1:ntree) {
-    individual[, tree.index] <- causalTree:::est.causalTree.tau(object$trees[[tree.index]], newdata)
+    individual[, tree.index] <- est.causalTree.tau(object$trees[[tree.index]], newdata)
   }
   
   aggregate <- rowMeans(individual)
@@ -24,5 +25,4 @@ predict.causalForest <- function(object, newdata, predict.all = FALSE) {
   } else {
     aggregate
   }
-  
 }
