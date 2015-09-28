@@ -1,23 +1,17 @@
-predict.causalForest <- function(object, newdata, predict.all = FALSE) {
+#' Evalute the estimates for tau made by an already-trained causalForest.
+#'
+#' @param forest   the fitted causalForest object
+#' @param newdata  the new test points at which the causalForest predictions
+#'                 are to be evaluated
+#'
+#' @return estimates for tau, corresponding to each row of newdata
+
+predict.causalForest <- function(forest, newdata, predict.all = FALSE) {
   
-  if (any(is.na(newdata))) {
-    stop("There is mising data in the input.")
-  }
-  
-  #
-  # TODO: This is a symptom of a hack. Should be fixed.
-  #
-  
-  if (class(newdata) == "data.frame") {
-    colnames(newdata) <- 1:ncol(newdata)
-  }
-  
-  ntree <- object$ntree
-  individual <- matrix(0, nrow(newdata), ntree)
-  
-  for (tree.index in 1:ntree) {
-    individual[, tree.index] <- est.causalTree.tau(object$trees[[tree.index]], newdata)
-  }
+  test.data <- data.frame(X=newdata)
+  individual <- sapply(forest$trees, function(tree.fit) {
+  	predict(tree.fit, test.data)
+  })
   
   aggregate <- rowMeans(individual)
   if (predict.all) {
