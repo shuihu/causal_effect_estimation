@@ -7,8 +7,8 @@ print.comparisons.to.csv <- function(comparisons, filename) {
   model.names <- names(comparisons[[1]])
   num.models <- length(model.names)
   num.designs <- length(comparisons[[1]][[1]])
-  leaf.stats <- c("Mean", "Median", "Variance")
-  os.stats <- c("Q", "Q.Variance", "Share")
+  leaf.stats <- c("Mean", "Median", "Std", "Spread")
+  os.stats <- c("Q", "Q.Std", "Q.Spread", "Share")
   num.stats <- length(leaf.stats)
   num.rows <- 1 + num.criteria * (2 + num.models)
   num.cols <- 1 + num.designs * num.stats

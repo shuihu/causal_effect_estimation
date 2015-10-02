@@ -9,6 +9,8 @@ get.design.label <- function(design) {
     "Design IV" 
   } else if (design == 5) {
     "Design V" 
+  } else if (design == 6) {
+    "Design VI" 
   } else {
     stop("Invalid design")
   }
@@ -38,8 +40,10 @@ get.stats.label <- function(criterion, stats) {
       "-Q Median"
     } else if (stats == "Q") {
       "-Q Median"            #original paper only had Q Median
-    } else if (stats == "Q.Variance") {
-      "-Q Variance"
+    } else if (stats == "Q.Std") {
+      "-Q Std"
+    } else if (stats == "Q.Spread") {
+      "-Q Spread"
     } else if (stats == "Share") {
       "Share"
     } else {

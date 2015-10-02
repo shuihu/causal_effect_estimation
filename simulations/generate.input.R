@@ -16,7 +16,7 @@ generate.input <- function(num.obs, num.vars, seed) {
 generate.input.for.all.designs <- function(num.obs, num.vars.typical, num.designs, seed) {
   inputs <- vector("list", num.designs)
   for (design in 1:num.designs) {
-    if (design == 4 || design == 5) {
+    if (design == 4 || design == 5 || design == 6) {
       num.vars <- 2
     } else {
       num.vars <- num.vars.typical

@@ -12,7 +12,12 @@ compute.os.comparisons <- function(num.designs, model.names, os.name, all.tree.s
     for (model.name in model.names) {
       os.comparisons[[model.name]][[design]]$Q <- median(all.tree.stats[[model.name]][[os.name]][design,])
       os.comparisons[[model.name]][[design]]$Q.Mean <- mean(all.tree.stats[[model.name]][[os.name]][design,])
-      os.comparisons[[model.name]][[design]]$Q.Variance <- var(all.tree.stats[[model.name]][[os.name]][design,])
+      os.comparisons[[model.name]][[design]]$Q.Std <- sd(all.tree.stats[[model.name]][[os.name]][design,])
+      quantiles <- quantile(all.tree.stats[[model.name]][[os.name]][design,])
+      if (os.comparisons[[model.name]][[design]]$Q < 1) {
+        print(quantiles)
+      }
+      os.comparisons[[model.name]][[design]]$Q.Spread <- quantiles[["75%"]] - quantiles[["25%"]]
       os.comparisons[[model.name]][[design]]$Share <- all.winning.models[[design]][[os.name]][[model.name]] / num.replications
     }
   }

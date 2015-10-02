@@ -7,11 +7,11 @@ source("simulations/run.full.simulation.R")
 source("simulations/compare.results.R")
 source("simulations/print.comparisons.to.csv.R")
 
-full.simulation <- function(num.replications = 1000, num.designs = 5, model.names = c('ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, output.filename = "full.simulation.csv", seed) {
+full.simulation <- function(num.replications = 1000, num.designs = 6, model.names = c('ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, output.filename = "full.simulation.csv", data.path, seed) {
   if (missing(seed)) {
     seed <- 1L
   }
-  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, os.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, is.honest, seed)
+  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, os.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, is.honest, data.path, seed)
   comparisons <- compare.results(num.designs, model.names, simulation.results, num.replications, FALSE)
   print.comparisons.to.csv(comparisons, output.filename)
   comparisons

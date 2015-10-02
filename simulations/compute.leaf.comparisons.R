@@ -12,7 +12,9 @@ compute.leaf.comparisons <- function(num.designs, model.names, all.tree.stats) {
     for (model.name in model.names) {
       leaf.comparisons[[model.name]][[design]]$Mean <- mean(all.tree.stats[[model.name]]$num.leaves[design,])
       leaf.comparisons[[model.name]][[design]]$Median <- median(all.tree.stats[[model.name]]$num.leaves[design,])
-      leaf.comparisons[[model.name]][[design]]$Variance <- var(all.tree.stats[[model.name]]$num.leaves[design,])
+      leaf.comparisons[[model.name]][[design]]$Std <- sd(all.tree.stats[[model.name]]$num.leaves[design,])
+      quantiles <- quantile(all.tree.stats[[model.name]]$num.leaves[design,])
+      leaf.comparisons[[model.name]][[design]]$Spread <- quantiles[["75%"]] - quantiles[["25%"]]
     }
   }
   leaf.comparisons

@@ -10,7 +10,7 @@ source("simulations/init.named.list.R")
 source("simulations/compute.tree.stats.R")
 source("simulations/generate.counterfactual.input.for.all.designs.R")
 
-run.full.simulation <- function(num.replications = 1000, num.designs = 5, model.names = c('ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, seed) {
+run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.names = c('ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, data.path, seed) {
   if (!missing(seed)) {
     set.seed(seed)
   }
@@ -18,22 +18,39 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 5, model.
   all.tree.stats <- init.all.tree.stats(num.replications, num.designs, model.names, c('num.leaves', os.names))
   all.winning.models <- init.all.winning.models(num.designs, model.names, os.names)
 
-  test.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
-  test.Y <- generate.output.for.all.designs(test.XW)
-  match.indices <- match.observations.for.all.designs(test.XW)
-  # flip the W's
-  counterfactual.test.XW <- generate.counterfactual.input.for.all.designs(test.XW)
-  counterfactual.test.Y <- generate.output.for.all.designs(counterfactual.test.XW)
-  seeds <- sample(.Machine$integer.max, num.replications, replace = TRUE)
+  if (missing(data.path)) {
+    test.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
+    test.Y <- generate.output.for.all.designs(test.XW)
+    match.indices <- match.observations.for.all.designs(test.XW)
+    # flip the W's
+    counterfactual.test.XW <- generate.counterfactual.input.for.all.designs(test.XW)
+    counterfactual.test.Y <- generate.output.for.all.designs(counterfactual.test.XW)
+    seeds <- sample(.Machine$integer.max, num.replications, replace = TRUE)
+  } else {
+    test.XW <- read.input.for.all.designs(data.path)
+    test.Y <- read.input.for.all.designs(data.path)
+    match.indices <- read.match.observations.for.all.designs(data.path)
+    counterfactual.test.XW <- read.counterfactual.input.for.all.designs(data.path)
+    counterfactual.test.Y <- read.output.for.all.designs(data.path)
+  }
   for (repl in 1:num.replications) {
     print(paste("replication", as.character(repl)))
-    set.seed(seeds[repl])
+    if (missing(data.path)) {
+      set.seed(seeds[repl])
+    }
     
     # generate the input for all the designs first
-    train.split.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
-    train.estimation.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
-    train.split.Y <- generate.output.for.all.designs(train.split.XW)
-    train.estimation.Y <- generate.output.for.all.designs(train.estimation.XW)
+    if (missing(data.path)) {
+      train.split.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
+      train.estimation.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
+      train.split.Y <- generate.output.for.all.designs(train.split.XW)
+      train.estimation.Y <- generate.output.for.all.designs(train.estimation.XW)
+    } else {
+      train.split.XW <- read.input.for.all.designs(data.path)
+      train.estimation.XW <- read.input.for.all.designs(data.path)
+      train.split.Y <- read.output.for.all.designs(data.path)
+      train.estimation.Y <- read.output.for.all.designs(data.path)
+    }
 
     for (design in 1:num.designs) {
       # compute tree.stats for each model (ST, TT, TOT_split_xval_rpart, TOT_xval, CT)
