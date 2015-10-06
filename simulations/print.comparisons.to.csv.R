@@ -7,6 +7,7 @@ print.comparisons.to.csv <- function(comparisons, filename) {
   model.names <- names(comparisons[[1]])
   num.models <- length(model.names)
   num.designs <- length(comparisons[[1]][[1]])
+  conf.interval.stats <- c("honest.in.dishonest.95", "honest.in.dishonest.90", "dishonest.in.honest.95", "dishonest.in.honest.90")
   leaf.stats <- c("Mean", "Median", "Std", "Spread")
   os.stats <- c("Q", "Q.Std", "Q.Spread", "Share")
   num.stats <- length(leaf.stats)
@@ -18,6 +19,8 @@ print.comparisons.to.csv <- function(comparisons, filename) {
   }
   for (i in 1:num.criteria) {
     if (i == 1) {
+      stats <- conf.interval.stats
+    } else if (i == 2) {
       stats <- leaf.stats
     } else {
       stats <- os.stats
@@ -39,6 +42,8 @@ print.comparisons.to.csv <- function(comparisons, filename) {
         for (k in 1:num.stats) {
           criterion.label <- criteria[[i]]
           model.label <- model.names[j]
+          print(paste(criterion.label, model.label, design, stats[k]))
+          print(comparisons[[criterion.label]][[model.label]][[design]])
           table[content.row, 1 + (design - 1) * num.stats + k] <- as.character(round.to.hundredth(comparisons[[criterion.label]][[model.label]][[design]][[stats[k]]]))
         }
       }

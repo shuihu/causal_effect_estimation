@@ -3,11 +3,14 @@
 # designs.
 source("simulations/compute.leaf.comparisons.R")
 source("simulations/compute.os.comparisons.R")
+source("simulations/compute.conf.interval.comparisons.R")
 
 compare.results <- function(num.designs, model.names, simulation.results, num.replications, printOpt = TRUE) {
   all.tree.stats <- simulation.results$all.tree.stats
   all.winning.models <- simulation.results$all.winning.models
   
+  # compare conf.intervals
+  conf.interval.comparisons <- compute.conf.interval.comparisons(num.designs, model.names, all.tree.stats)
   # compare num.leaves
   leaf.comparisons <- compute.leaf.comparisons(num.designs, model.names, all.tree.stats)
   # compare os.to
@@ -18,6 +21,8 @@ compare.results <- function(num.designs, model.names, simulation.results, num.re
   os.infeasible.comparisons <- compute.os.comparisons(num.designs, model.names, "os.infeasible", all.tree.stats, all.winning.models, num.replications)
 
   if (isTRUE(printOpt)) {
+    print("Confidence Intervals")
+    print(conf.interval.comparisons)
     print("Leaves")
     print(leaf.comparisons)
     print("OS TO")
@@ -28,5 +33,5 @@ compare.results <- function(num.designs, model.names, simulation.results, num.re
     print(os.infeasible.comparisons)
   }
   
-  list(leaves = leaf.comparisons, os.to = os.to.comparisons, os.m = os.m.comparisons, os.infeasible = os.infeasible.comparisons)
+  list(conf.intervals = conf.interval.comparisons, leaves = leaf.comparisons, os.to = os.to.comparisons, os.m = os.m.comparisons, os.infeasible = os.infeasible.comparisons)
 }

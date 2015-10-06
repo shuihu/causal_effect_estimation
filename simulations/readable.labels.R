@@ -17,7 +17,9 @@ get.design.label <- function(design) {
 }
 
 get.criterion.label <- function(criterion) {
-  if (criterion == "leaves") {
+  if (criterion == "conf.intervals") {
+    "Confidence Intervals"
+  } else if (criterion == "leaves") {
     "Leaves"
   } else if (criterion == "os.to") {
     "TO criterion"
@@ -31,7 +33,7 @@ get.criterion.label <- function(criterion) {
 }
 
 get.stats.label <- function(criterion, stats) {
-  if (criterion == "leaves") {
+  if (criterion == "leaves" || criterion == "conf.intervals") {
     stats
   } else if (criterion == "os.to" || criterion == "os.m" || criterion == "os.infeasible") {
     if (stats == "Q.Mean") {

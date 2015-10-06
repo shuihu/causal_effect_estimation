@@ -82,8 +82,10 @@ reestimate.causalTree <- function(tree, X, W, Y) {
   leaf.assignments <- est.causalTree(tree, causalTree.matrix(create.data.frame(tree, X)))
   all.leaves <- get.all.leaves(tree)
   rownames <- as.numeric(rownames(tree$frame))
+  tree$where2 <- matrix(0, length(rownames), length(Y))
   for (leaf in all.leaves) {
     obs.in.leaf <- recursive.which.in.leaf(leaf.assignments, leaf, all.leaves, W)
+    tree$where2[which(rownames == leaf)[1], obs.in.leaf] <- 1
     relevant.W <- W[obs.in.leaf]
     relevant.Y <- Y[obs.in.leaf]
     tree$frame$yval[which(rownames == leaf)[1]] <- sum(relevant.Y * relevant.W / sum(relevant.W)) - sum(relevant.Y * (1 - relevant.W) / sum(1 - relevant.W))
@@ -193,7 +195,7 @@ setMethod(
   signature("TOT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data <- create.data.frame.for.tot(X, W, Y, model@propensity)
-    model@tree <- reestimate.rpart(model@tree, data, data$y)
+    model@tree <- reestimate.rpart(model@tree, data, data$y, W)
     model
   }
 )
