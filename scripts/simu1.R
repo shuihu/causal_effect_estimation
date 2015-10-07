@@ -10,7 +10,7 @@ rm(list = ls())
 n = 10000
 ntree = 5000
 sigma = 1
-d = 6
+d = 20
 k = 2
 
 # heterogeneous effect of treatment
@@ -91,7 +91,8 @@ knn.mses = sapply(kk, function(k) {
 	mean((true.eff - tauhat)^2)
 })
 
-knn.tau = knn.cate(X, Y, W, X.test, k = 32)
+k.opt = kk[which.min(knn.mses)]
+knn.tau = knn.cate(X, Y, W, X.test, k = k.opt)
 
 pdf("~/public_html/preds_knn.pdf")
 plot(true.eff, knn.tau, xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect")
