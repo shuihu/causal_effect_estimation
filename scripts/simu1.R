@@ -4,6 +4,7 @@ library(Hmisc)
 library(mgcv)
 library(ggplot2)
 library(randomForestCI)
+library(randomForest)
 
 rm(list = ls())
 
@@ -33,9 +34,6 @@ true.eff = apply(X.test, 1, effect)
 forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10)
 predictions = predict(forest, X.test)
 
-plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
-abline(0, 1, col = 2, lwd = 2)
-
 minp = min(true.eff, predictions)
 maxp = max(true.eff, predictions)
 rngp = maxp - minp
@@ -55,18 +53,17 @@ pdf("~/public_html/cate_fit.pdf")
 plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.scl], xlab = "x1", ylab = "x2")
 dev.off()
 
+pdf("~/public_html/preds_rf.pdf")
+plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect")
+abline(0, 1, lwd = 2, col = 2)
+dev.off()
+
 forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 plot(forest.ci)
 
 se.hat = sqrt(forest.ci$var.hat)
 up.lim = predictions + 1.96 * se.hat
 down.lim = predictions - 1.96 * se.hat
-
-
-pdf("~/public_html/preds_rf.pdf")
-plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect")
-abline(0, 1, lwd = 2, col = 2)
-dev.off()
 
 n.errbar = 200
 pdf("~/public_html/preds_rf_errbar.pdf")
@@ -81,6 +78,20 @@ mean(covered)
 pdf("~/public_html/coverage.pdf")
 cov.fit = gam(covered ~ s(true.eff), sp = 0.001, family = binomial())
 plot(true.eff, predict(cov.fit, type = "response"))
+dev.off()
+
+var.hat = forest.ci$var.hat
+var.forest = randomForest(X.test, var.hat, ntree = 100, nodesize = 200)
+se.smooth = sqrt(predict(var.forest))
+up.smooth = predictions + 1.96 * se.smooth
+down.smooth = predictions - 1.96 * se.smooth
+covered.smooth = (true.eff <= up.smooth) & (true.eff >= down.smooth)
+
+mean(covered.smooth)
+
+pdf("~/public_html/coverage.smooth.pdf")
+cov.fit.smooth = gam(covered.smooth ~ s(true.eff), sp = 0.001, family = binomial())
+plot(true.eff, predict(cov.fit.smooth, type = "response"))
 dev.off()
 
 source("~/causal_effect_estimation/scripts/knn.R")
