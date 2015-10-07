@@ -1,0 +1,150 @@
+#install.packages("~/git_local/causal_effect_estimation", type = "source", repos = NULL)
+library(causalTree)
+library(Hmisc)
+library(mgcv)
+library(ggplot2)
+library(randomForestCI)
+library(randomForest)
+
+rm(list = ls())
+
+n = 10000
+ntree = 5000
+sigma = 1
+d = 6
+k = 2
+
+# heterogeneous effect of treatment
+effect = function(x) {
+	4 * prod(sqrt(abs(x[1:k]))) * sum(sign(x[1:k])) + x[1] * abs(x[2])
+}
+
+baseline = function(x) {
+	5 * sum(x[1:k])
+}
+
+
+n.test = 10000
+X.test = matrix(runif(n.test * d, -1, 1), n.test, d)
+true.eff = apply(X.test, 1, effect)
+
+X = matrix(runif(n * d, -1, 1), n, d) # features
+W = rbinom(n, 1, 0.5) #treatment condition
+Y = apply(X, 1, baseline) +  (W - 0.5) * apply(X, 1, effect) + sigma * rnorm(n)
+
+forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10)
+predictions = predict(forest, X.test)
+
+minp = min(true.eff, predictions)
+maxp = max(true.eff, predictions)
+rngp = maxp - minp
+
+ncol = 100
+
+true.scl = pmax(ceiling(ncol * (true.eff - minp) / rngp), 1)
+fit.scl = pmax(ceiling(ncol * (predictions - minp) / rngp), 1)
+
+hc = terrain.colors(ncol)
+
+pdf("~/public_html/cate_true.pdf")
+plot(X.test[,1], X.test[,2], pch = 16, col = hc[true.scl], xlab = "x1", ylab = "x2")
+dev.off()
+
+pdf("~/public_html/cate_fit.pdf")
+plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.scl], xlab = "x1", ylab = "x2")
+dev.off()
+
+pdf("~/public_html/preds_rf.pdf")
+plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect")
+abline(0, 1, lwd = 2, col = 2)
+dev.off()
+
+forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
+plot(forest.ci)
+
+se.hat = sqrt(forest.ci$var.hat)
+up.lim = predictions + 1.96 * se.hat
+down.lim = predictions - 1.96 * se.hat
+
+n.errbar = 200
+pdf("~/public_html/preds_rf_errbar.pdf")
+errbar(true.eff[1:n.errbar], predictions[1:n.errbar], up.lim[1:n.errbar], down.lim[1:n.errbar], xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect", pch = ".", cex = 3)
+abline(0, 1, col = 2, lwd = 2)
+dev.off()
+
+covered = (true.eff <= up.lim) & (true.eff >= down.lim)
+
+mean(covered)
+
+pdf("~/public_html/coverage.pdf")
+cov.fit = gam(covered ~ s(true.eff), sp = 0.001, family = binomial())
+plot(true.eff, predict(cov.fit, type = "response"))
+dev.off()
+
+var.hat = forest.ci$var.hat
+var.forest = randomForest(X.test, var.hat, ntree = 100, nodesize = 200)
+se.smooth = sqrt(predict(var.forest))
+up.smooth = predictions + 1.96 * se.smooth
+down.smooth = predictions - 1.96 * se.smooth
+covered.smooth = (true.eff <= up.smooth) & (true.eff >= down.smooth)
+
+mean(covered.smooth)
+
+pdf("~/public_html/coverage.smooth.pdf")
+cov.fit.smooth = gam(covered.smooth ~ s(true.eff), sp = 0.001, family = binomial())
+plot(true.eff, predict(cov.fit.smooth, type = "response"))
+dev.off()
+
+##
+## True var
+##
+
+ntree.small = 20
+reps = 2000
+new.forests = lapply(1:reps, function(rr) {
+	X.mc = matrix(runif(n * d, -1, 1), n, d) # features
+	W.mc = rbinom(n, 1, 0.5) #treatment condition
+	Y.mc = apply(X.mc, 1, baseline) +  (W.mc - 0.5) * apply(X.mc, 1, effect) + sigma * rnorm(n)
+	
+	forest = causalForest(X.mc, Y.mc, W.mc, num.trees = ntree.small, sample.size = n / 10)
+	pred.all = predict(forest, X.test, predict.all = TRUE)
+	mc.var = apply(pred.all$individual, 1, var) / ntree.small
+	data.frame(PRED=pred.all$aggregate, MC.VAR=mc.var)
+})
+
+new.mean = Reduce(function(a, b) a + b, new.forests, init = 0) / length(new.forests)
+new.mean2 = Reduce(function(a, b) a + b^2, new.forests, init = 0) / length(new.forests)
+
+raw.var = new.mean2[,"PRED"] - new.mean[,"PRED"]^2
+mc.var = new.mean[,"MC.VAR"]
+rf.var = raw.var - mc.var
+
+##
+## KNN
+##
+
+source("~/causal_effect_estimation/scripts/knn.R")
+
+kk = c(1:10, seq(12, 32, by = 4))
+knn.mses = sapply(kk, function(k) {
+	tauhat = knn.cate(X, Y, W, X.test, k = k)
+	mean((true.eff - tauhat)^2)
+})
+
+k.opt = kk[which.min(knn.mses)]
+knn.tau = knn.cate(X, Y, W, X.test, k = k.opt)
+
+pdf("~/public_html/preds_knn.pdf")
+plot(true.eff, knn.tau, xlab = "True Treatment Effect", ylab = "Estimated Treatment Effect")
+abline(0, 1, lwd = 2, col = 2)
+dev.off()
+
+pdf("~/public_html/cate_knn.pdf")
+fit.knn = pmax(ceiling(ncol * (knn.tau- minp) / rngp), 1)
+plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.knn], xlab = "x1", ylab = "x2")
+dev.off()
+
+
+rf.mse = mean((true.eff - predictions)^2)
+knn.mse = mean((true.eff - knn.tau)^2)
+
