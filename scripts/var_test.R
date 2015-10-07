@@ -82,8 +82,9 @@ plot(true.eff, predict(cov.fit, type = "response"))
 dev.off()
 
 var.hat = forest.ci$var.hat
-var.forest = randomForest(X.test, var.hat, ntree = 100, nodesize = 200)
-se.smooth = sqrt(predict(var.forest))
+var.forest = randomForest(X.test, var.hat, nodesize = 50)
+var.smooth = predict(var.forest)
+se.smooth = sqrt(var.smooth)
 up.smooth = predictions + 1.96 * se.smooth
 down.smooth = predictions - 1.96 * se.smooth
 covered.smooth = (true.eff <= up.smooth) & (true.eff >= down.smooth)
@@ -118,6 +119,27 @@ new.mean2 = Reduce(function(a, b) a + b^2, new.forests, init = 0) / length(new.f
 raw.var = new.mean2[,"PRED"] - new.mean[,"PRED"]^2
 mc.var = new.mean[,"MC.VAR"]
 rf.var = raw.var - mc.var
+
+pdf("~/public_html/tmp.pdf")
+plot(sqrt(rf.var), sqrt(var.hat.plus))
+abline(0, 1)
+dev.off()
+
+heatcol = heat.colors(ncol)
+
+
+rf.se = sqrt(pmax(rf.var, 0))
+rf.var.col = pmax(1, ceiling(ncol * rf.se/max(rf.se, se.smooth)))
+var.hat.col = pmax(1, ceiling(ncol * se.hat/max(rf.se, se.smooth)))
+
+pdf("~/public_html/var_true.pdf")
+plot(X.test[,1], X.test[,2], pch = 16, col = heatcol[rf.var.col], xlab = "x1", ylab = "x2")
+dev.off()
+
+pdf("~/public_html/var_hat.pdf")
+plot(X.test[,1], X.test[,2], pch = 16, col = heatcol[var.hat.col], xlab = "x1", ylab = "x2")
+dev.off()
+
 
 ##
 ## KNN

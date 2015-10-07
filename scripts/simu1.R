@@ -8,10 +8,10 @@ library(randomForest)
 
 rm(list = ls())
 
-n = 10000
+n = 1000
 ntree = 5000
 sigma = 1
-d = 20
+d = 6
 k = 2
 
 # heterogeneous effect of treatment
@@ -62,8 +62,10 @@ forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 plot(forest.ci)
 
 se.hat = sqrt(forest.ci$var.hat)
-up.lim = predictions + 1.96 * se.hat
-down.lim = predictions - 1.96 * se.hat
+se.hat.plus = 1/(1 - mean(forest$inbag)) * se.hat
+
+up.lim = predictions + 1.96 * se.hat.plus
+down.lim = predictions - 1.96 * se.hat.plus
 
 n.errbar = 200
 pdf("~/public_html/preds_rf_errbar.pdf")
@@ -80,8 +82,8 @@ cov.fit = gam(covered ~ s(true.eff), sp = 0.001, family = binomial())
 plot(true.eff, predict(cov.fit, type = "response"))
 dev.off()
 
-var.hat = forest.ci$var.hat
-var.forest = randomForest(X.test, var.hat, ntree = 100, nodesize = 200)
+var.hat.plus = 1/(1 - mean(forest$inbag))^2 * forest.ci$var.hat
+var.forest = randomForest(X.test, var.hat.plus, ntree = 100, nodesize = 200)
 se.smooth = sqrt(predict(var.forest))
 up.smooth = predictions + 1.96 * se.smooth
 down.smooth = predictions - 1.96 * se.smooth
