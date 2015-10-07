@@ -7,7 +7,7 @@ causalForest <- function(X, Y, W, num.trees, sample.size = floor(length(Y) / 10)
     colnames(X) <- 1:ncol(X)
   }
   num.obs <-nrow(X)
-  causalForest.honest <- causalTree:::init.causalForest(X, Y, W, num.trees)
+  causalForest.honest <- init.causalForest(X, Y, W, num.trees)
   sample.size <- min(sample.size, floor(num.obs / 2))
   
   print("Building trees ...")
@@ -22,7 +22,7 @@ causalForest <- function(X, Y, W, num.trees, sample.size = floor(length(Y) / 10)
     
     tree.standard <- causalTree(Y ~ ., data = data.frame(X = X[train.idx,], Y = Y[train.idx]), treatment = W[train.idx], method = "anova", cp = 0, minbucket = nodesize, cv.option = "matching", split.option = "CT", xval = 0)
     
-    tree.honest <- causalTree:::reestimate.tau(tree.standard, Y[reestimation.idx], data.frame(X = X[reestimation.idx,]), W[reestimation.idx])
+    tree.honest <- reestimate.tau(tree.standard, Y[reestimation.idx], data.frame(X = X[reestimation.idx,]), W[reestimation.idx])
     
     causalForest.honest$trees[[tree.index]] <- tree.honest
     causalForest.honest$inbag[full.idx, tree.index] <- 1
