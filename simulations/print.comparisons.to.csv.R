@@ -42,8 +42,6 @@ print.comparisons.to.csv <- function(comparisons, filename) {
         for (k in 1:num.stats) {
           criterion.label <- criteria[[i]]
           model.label <- model.names[j]
-          print(paste(criterion.label, model.label, design, stats[k]))
-          print(comparisons[[criterion.label]][[model.label]][[design]])
           table[content.row, 1 + (design - 1) * num.stats + k] <- as.character(round.to.hundredth(comparisons[[criterion.label]][[model.label]][[design]][[stats[k]]]))
         }
       }

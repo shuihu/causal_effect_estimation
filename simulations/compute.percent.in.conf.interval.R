@@ -21,13 +21,13 @@ compute.percent.in.conf.interval <- function(test.tree, base.tree, y, w, conf.pe
     in.leaf.w1 <- in.leaf[which(w[in.leaf] == 1)]
     s1.sq <- mean((y[in.leaf.w1] - mean(y[in.leaf.w1]))^2)
     s0.sq <- mean((y[in.leaf.w0] - mean(y[in.leaf.w0]))^2)
-    if (is.na(s1.sq)) {
+    if (is.na(s1.sq) || is.infinite(s1.sq)) {
       avg.s1.sq <- 0
     } else {
       avg.s1.sq <- s1.sq / length(in.leaf.w1)
     }
-    if (is.na(s0.sq)) {
-      s0.sq <- 0
+    if (is.na(s0.sq) || is.infinite(s0.sq)) {
+      avg.s0.sq <- 0
     } else {
       avg.s0.sq <- s0.sq / length(in.leaf.w0)
     }

@@ -7,7 +7,7 @@ match.observations <- function(XW) {
   num.obs <- nrow(X)
   matches <- rep(0, num.obs)
   for (i in 1:num.obs) {
-    print(i)
+    #print(i)
     min.dist <- -1
     match <- 0
     for (j in 1:num.obs) {

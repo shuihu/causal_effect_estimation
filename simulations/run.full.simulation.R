@@ -11,7 +11,7 @@ source("simulations/compute.tree.stats.R")
 source("simulations/generate.counterfactual.input.for.all.designs.R")
 source("simulations/read.data.R")
 
-run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.names = c('ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, is.honest2 = FALSE, data.path, seed) {
+run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.names = c('ST', 'TT', 'TOT_split_xval_rpart', 'TOT_xval', 'CT'), os.names = c('os.to', 'os.m', 'os.infeasible'), num.obs.per.set = 500, num.vars.per.obs = 10, propensity = 0.5, xvals = 10, is.honest = TRUE, is.honest0.5 = FALSE, is.dishonest2 = FALSE, data.path, seed) {
   if (!missing(seed)) {
     set.seed(seed)
   }
@@ -58,7 +58,7 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.
       winning.models <- init.named.list(os.names, NULL)
       min.os.values <- init.named.list(os.names, -1)
       for (model.name in model.names) {
-        tree.stats <- compute.tree.stats(train.split.XW[[design]], train.split.Y[[design]], train.estimation.XW[[design]], train.estimation.Y[[design]], test.XW[[design]], test.Y[[design]], counterfactual.test.Y[[design]], model.name, propensity, match.indices[[design]], is.honest, is.honest2)
+        tree.stats <- compute.tree.stats(train.split.XW[[design]], train.split.Y[[design]], train.estimation.XW[[design]], train.estimation.Y[[design]], test.XW[[design]], test.Y[[design]], counterfactual.test.Y[[design]], model.name, propensity, match.indices[[design]], is.honest, is.honest0.5, is.dishonest2)
         # fill all.tree.stats with the stats for this (model, design, replication) triple
         all.tree.stats[[model.name]]$honest.in.dishonest.conf.intv.95[design, repl] <- tree.stats$honest.in.dishonest.conf.intv.95
         all.tree.stats[[model.name]]$honest.in.dishonest.conf.intv.90[design, repl] <- tree.stats$honest.in.dishonest.conf.intv.90

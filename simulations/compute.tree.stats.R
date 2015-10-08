@@ -22,25 +22,37 @@ init.model <- function(model.name, propensity) {
   }
 }
 
-compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, matchIndices, is.honest, is.honest2) {
+compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, test.XW, test.Y, counterfactual.test.Y, model.name, propensity, matchIndices, is.honest, is.honest0.5, is.dishonest2) {
+  if (is.dishonest2) {
+    if (is.honest || is.honest0.5) {
+      stop("if is.dishonest2 is TRUE, all other honest parameters must be FALSE")
+    }
+  }
   initial.model <- init.model(model.name, propensity)
-  if (!is.honest2) {
+  if (is.honest0.5) {
+    quarter.obs <- nrow(split.XW$X) / 4
+    split.indices <- append(1:quarter.obs, (2*quarter.obs+1):(3*quarter.obs))
+    estimation.indices <- append((quarter.obs+1):(2*quarter.obs), (3*quarter.obs+1):(4*quarter.obs))
+    splitx <- split.XW$X[split.indices,]
+    splitw <- split.XW$W[split.indices]
+    splity <- split.Y[split.indices]
+    estimationx <- split.XW$X[estimation.indices,]
+    estimationw <- split.XW$W[estimation.indices]
+    estimationy <- split.Y[estimation.indices]
+  } else if (is.dishonest2) {
+    splitx <- rbind(split.XW$X, estimation.XW$X)
+    splitw <- c(split.XW$W, estimation.XW$W)
+    splity <- c(split.Y, estimation.Y)
+    estimationx <- estimation.XW$X
+    estimationw <- estimation.XW$W
+    estimationy <- estimation.Y
+  } else {
     splitx <- split.XW$X
     splitw <- split.XW$W
     splity <- split.Y
     estimationx <- estimation.XW$X
     estimationw <- estimation.XW$W
     estimationy <- estimation.Y
-  } else {
-    quarter.obs <- nrow(split.XW$X) / 4
-    split.indices <- append(1:quarter.obs, (2*quarter.obs+1):(3*quarter.obs))
-    estimation.indices <- append((quarter.obs+1):(2*quarter.obs), (3*quarter.obs+1):(4*quarter.obs))
-    splitx <- split.XW$X[split.indices,]
-    splitw <- split.XW$W[split.indices,]
-    splity <- split.Y[split.indices]
-    estimationx <- split.XW$X[estimation.indices,]
-    estimationw <- split.XW$W[estimation.indices]
-    estimationy <- split.Y[estimation.indices]
   }
   trained.split.model <- train.model(initial.model, splitx, splitw, splity)
   trained.reestimated.model <- reestimate.model(trained.split.model, estimationx, estimationw, estimationy)
