@@ -3,9 +3,7 @@ causalForest <- function(X, Y, W, num.trees, sample.size = floor(length(Y) / 10)
   if (any(is.na(X)) || any(is.na(Y)) || any(is.na(W))) {
     stop("There are missing values in the input.")
   }
-  if (class(X) == "data.frame") {
-    colnames(X) <- 1:ncol(X)
-  }
+
   num.obs <-nrow(X)
   causalForest.honest <- init.causalForest(X, Y, W, num.trees)
   sample.size <- min(sample.size, floor(num.obs / 2))
