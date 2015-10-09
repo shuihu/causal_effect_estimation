@@ -8,8 +8,8 @@ library(FNN)
 
 rm(list = ls())
 
-n = 1000
-ntree = 5000
+n = 10000
+ntree = 40000
 sigma = 1
 d = 6
 k = 2
