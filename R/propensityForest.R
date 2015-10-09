@@ -1,4 +1,4 @@
-propensityForest <- function(X, Y, W, num.trees, sample.size = floor(length(Y) / 10), mtry = ceiling(ncol(X)/3), nodesize = 20) {
+propensityForest <- function(X, Y, W, num.trees, sample.size = floor(length(Y) / 10), mtry = ceiling(ncol(X)/3), nodesize = 1) {
   
   if (any(is.na(X)) || any(is.na(Y)) || any(is.na(W))) {
     stop("There are missing values in the input.")
