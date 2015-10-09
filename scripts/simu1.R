@@ -4,7 +4,7 @@ library(Hmisc)
 library(mgcv)
 library(ggplot2)
 library(randomForestCI)
-library(randomForest)
+library(FNN)
 
 rm(list = ls())
 
@@ -117,7 +117,16 @@ fit.knn = pmax(ceiling(ncol * (knn.tau- minp) / rngp), 1)
 plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.knn], xlab = "x1", ylab = "x2")
 dev.off()
 
-
 rf.mse = mean((true.eff - predictions)^2)
 knn.mse = mean((true.eff - knn.tau)^2)
+
+xplot = X.test[,1:2]
+cov.hat = knn.reg(xplot, y=covered, k = 200)
+toplot = data.frame(X = xplot, COV=cov.hat$pred)
+
+pdf("~/public_html/coverage_2d.pdf")
+ggplot(toplot, aes(x=X.1, y = X.2)) + geom_point(aes(color = COV)) + scale_color_continuous(name = "Coverage\n", low="yellow", high="red") + labs(x="", y = "") + theme_gray(base_size = 18)
+dev.off()
+
+
 
