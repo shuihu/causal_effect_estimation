@@ -14,8 +14,8 @@ sigma = 1
 
 n.test = 100
 
-dvals = c(2, 5, 10, 15, 20)
-simu.reps = 25
+dvals = c(2, 5, 10, 15, 20, 30, 40)
+simu.reps = 500
 
 baseline = function(x) {
 	2 * (x[1] - 0.5)
@@ -119,6 +119,6 @@ results.parsed = lapply(results.condensed, function(RR) {
 
 results.table = data.frame(cbind(d=dvals, Reduce(rbind, results.parsed)))
 
-results.table = results.table[,c(1, 2, 3, 6, 4, 9, 7)]
+results.table = results.table[,c(1, 3, 2, 6, 4, 9, 7)]
 xtab = xtable(results.table)
 print(xtab, include.rownames = FALSE)
