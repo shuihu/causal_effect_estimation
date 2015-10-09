@@ -113,7 +113,7 @@ save.image("~/causal_effect_estimation/causalforest_paper_simu/propensity.RData"
 
 results.parsed = lapply(results.condensed, function(RR) {
 	apply(RR, 2, function(arg) {
-		paste0(round(arg[1], 2), " (", round(100 * 1.96 * arg[2], 0), ")")
+		paste0(round(arg[1], 2), " (", round(100 * arg[2], 0), ")")
 	})
 })
 
