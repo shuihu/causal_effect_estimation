@@ -12,13 +12,13 @@ n = 2000
 ntree = 1000
 sigma = 1
 
-n.test = 100
+n.test = 1000
 
 dvals = c(2, 4, 6, 8, 10)
 simu.reps = 5
 
 effect = function(x) {
-	6 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
+	4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
 }
 
 simu.fun = function(d) {
@@ -48,7 +48,7 @@ rf.covered = mean(rf.cov)
 rf.covered.02 = mean(rf.cov[true.eff <= 0.2])
 rf.covered.1 = mean(rf.cov[true.eff <= 1])
 rf.covered.2 = mean(rf.cov[true.eff <= 2])
-rf.mse = mean(predictions^2)
+rf.mse = mean((predictions - true.eff)^2)
 
 k.small = 5
 knn.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.small)$pred
@@ -67,7 +67,7 @@ knn.covered = mean(knn.cov)
 knn.covered.02 = mean(knn.cov[true.eff <= 0.2])
 knn.covered.1 = mean(knn.cov[true.eff <= 1])
 knn.covered.2 = mean(knn.cov[true.eff <= 2])
-knn.mse = mean(knn.tau^2)
+knn.mse = mean((knn.tau - true.eff)^2)
 
 k.big = 25
 knnbig.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.big)$pred
@@ -86,7 +86,7 @@ knnbig.covered = mean(knnbig.cov)
 knnbig.covered.02 = mean(knnbig.cov[true.eff <= 0.2])
 knnbig.covered.1 = mean(knnbig.cov[true.eff <= 1])
 knnbig.covered.2 = mean(knnbig.cov[true.eff <= 2])
-knnbig.mse = mean(knnbig.tau^2)
+knnbig.mse = mean((knnbig.tau - true.eff)^2)
 
 
 c(rf.covered = rf.covered,
@@ -94,12 +94,12 @@ c(rf.covered = rf.covered,
            rf.covered.1 = rf.covered.1,
            rf.covered.2 = rf.covered.2,
            rf.mse = rf.mse,
-	   knn.covered = knn.covered, 
+	       knn.covered = knn.covered, 
            knn.covered.02 = knn.covered.02,
            knn.covered.1 = knn.covered.1,
            knn.covered.2 = knn.covered.2,
            knn.mse = knn.mse,
-	   knnbig.covered = knnbig.covered, 
+	       knnbig.covered = knnbig.covered, 
            knnbig.covered.02 = knnbig.covered.02,
            knnbig.covered.1 = knnbig.covered.1,
            knnbig.covered.2 = knnbig.covered.2,

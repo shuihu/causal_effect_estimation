@@ -49,10 +49,10 @@ plot(X.test[,1], X.test[,2], pch = 16, col = hc[fit.scl], xlab = "x1", ylab = "x
 
 plot(true.eff, predictions, xlab = "True Treatment Effect", ylab = "Fitted Treatment Effect")
 abline(0, 1, col = 2, lwd = 2)
-cmp.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
-plot(cmp.ci)
+forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
+plot(forest.ci)
 
-se.hat = sqrt(cmp.ci$var.hat)
+se.hat = sqrt(forest.ci$var.hat)
 up.lim = predictions + 1.96 * se.hat
 down.lim = predictions - 1.96 * se.hat
 
