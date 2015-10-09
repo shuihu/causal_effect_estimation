@@ -13,8 +13,8 @@ sigma = 1
 
 n.test = 100
 
-dvals = c(5, 10) #, 15, 20, 30, 40)
-simu.reps = 2
+dvals = c(2, 5, 10, 15, 20)
+simu.reps = 10
 
 # heterogeneous effect of treatment
 effect = function(x) {
@@ -22,7 +22,7 @@ effect = function(x) {
 }
 
 baseline = function(x) {
-	10 * (x[1] - 0.5)
+	2 * (x[1] - 0.5)
 }
 
 propensity = function(x) {
@@ -56,8 +56,13 @@ mean(covered)
 }
 
 results = sapply(dvals, function(d) {
-	replicate(simu.reps, simu.fun(d))
+	print(paste("NOW RUNNING:", d))
+	res.d = replicate(simu.reps, simu.fun(d))
+	print(paste("RESULT AT", d, "IS", mean(res.d)))
+	res.d
 })
 
+colnames(results) = dvals
+colMeans(results)
 
 save.image("~/causal_effect_estimation/causalforest_paper_simu/propensity.RData")
