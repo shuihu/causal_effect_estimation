@@ -9,13 +9,13 @@ library(xtable)
 rm(list = ls())
 
 n = 2000
-ntree = 1000
+ntree = 3000
 sigma = 1
 
 n.test = 1000
 
 dvals = c(2, 4, 6, 8, 10)
-simu.reps = 5
+simu.reps = 10
 
 effect = function(x) {
 	4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
@@ -69,7 +69,7 @@ knn.covered.1 = mean(knn.cov[true.eff <= 1])
 knn.covered.2 = mean(knn.cov[true.eff <= 2])
 knn.mse = mean((knn.tau - true.eff)^2)
 
-k.big = 25
+k.big = 50
 knnbig.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.big)$pred
 knnbig.1.mu = knn.reg(X[W==1,], X.test, Y[W==1], k = k.big)$pred
 
