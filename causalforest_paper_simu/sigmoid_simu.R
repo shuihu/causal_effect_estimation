@@ -8,17 +8,17 @@ library(xtable)
 
 rm(list = ls())
 
-n = 1000
-ntree = 2000
+n = 2000
+ntree = 1000
 sigma = 1
 
 n.test = 100
 
 dvals = c(2, 4, 6, 8, 10)
-simu.reps = 3
+simu.reps = 5
 
 effect = function(x) {
-	4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
+	6 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
 }
 
 simu.fun = function(d) {
@@ -63,6 +63,7 @@ knn.1.var = (knn.1.mu2 - knn.1.mu^2) / (k.small - 1)
 knn.tau = knn.1.mu - knn.0.mu
 knn.se = sqrt(knn.0.var + knn.1.var)
 knn.cov = abs(knn.tau - true.eff) <= 1.96 * knn.se
+knn.covered = mean(knn.cov)
 knn.covered.02 = mean(knn.cov[true.eff <= 0.2])
 knn.covered.1 = mean(knn.cov[true.eff <= 1])
 knn.covered.2 = mean(knn.cov[true.eff <= 2])
@@ -81,6 +82,7 @@ knnbig.1.var = (knnbig.1.mu2 - knnbig.1.mu^2) / (k.big - 1)
 knnbig.tau = knnbig.1.mu - knnbig.0.mu
 knnbig.se = sqrt(knnbig.0.var + knnbig.1.var)
 knnbig.cov = abs(knnbig.tau - true.eff) <= 1.96 * knnbig.se
+knnbig.covered = mean(knnbig.cov)
 knnbig.covered.02 = mean(knnbig.cov[true.eff <= 0.2])
 knnbig.covered.1 = mean(knnbig.cov[true.eff <= 1])
 knnbig.covered.2 = mean(knnbig.cov[true.eff <= 2])
@@ -92,10 +94,12 @@ c(rf.covered = rf.covered,
            rf.covered.1 = rf.covered.1,
            rf.covered.2 = rf.covered.2,
            rf.mse = rf.mse,
+	   knn.covered = knn.covered, 
            knn.covered.02 = knn.covered.02,
            knn.covered.1 = knn.covered.1,
            knn.covered.2 = knn.covered.2,
            knn.mse = knn.mse,
+	   knnbig.covered = knnbig.covered, 
            knnbig.covered.02 = knnbig.covered.02,
            knnbig.covered.1 = knnbig.covered.1,
            knnbig.covered.2 = knnbig.covered.2,
