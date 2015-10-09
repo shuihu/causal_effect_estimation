@@ -9,13 +9,13 @@ library(xtable)
 rm(list = ls())
 
 n = 1000
-ntree = 20
+ntree = 2000
 sigma = 1
 
 n.test = 100
 
 dvals = c(2, 4, 6, 8, 10)
-simu.reps = 5
+simu.reps = 3
 
 effect = function(x) {
 	4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
