@@ -8,13 +8,13 @@ library(Hmisc)
 rm(list = ls())
 
 n = 500
-ntree = 20 #1000
+ntree = 1000
 sigma = 1
 
 n.test = 100
 
 dvals = c(2, 5, 10, 15, 20)
-simu.reps = 10
+simu.reps = 25
 
 baseline = function(x) {
 	2 * (x[1] - 0.5)
