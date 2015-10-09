@@ -9,7 +9,7 @@ library(xtable)
 rm(list = ls())
 
 n = 1000
-ntree = 20
+ntree = 500
 sigma = 1
 
 n.test = 100
@@ -37,7 +37,7 @@ true.eff = apply(X.test, 1, effect)
 # random forest
 #
 
-forest = propensityForest(X, Y, W, num.trees = ntree, sample.size = n / 10, nodesize = 1)
+forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10, nodesize = 1)
 predictions = predict(forest, X.test)
 forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 
@@ -88,6 +88,9 @@ knnbig.mse = mean(knnbig.tau^2)
 
 
 c(rf.covered = rf.covered,
+           rf.covered.02 = rf.covered.02,
+           rf.covered.1 = rf.covered.1,
+           rf.covered.2 = rf.covered.2,
            rf.mse = rf.mse,
            knn.covered.02 = knn.covered.02,
            knn.covered.1 = knn.covered.1,
