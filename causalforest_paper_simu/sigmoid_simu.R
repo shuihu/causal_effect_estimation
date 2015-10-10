@@ -134,6 +134,6 @@ results.table = data.frame(cbind(d=dvals, Reduce(rbind, results.parsed)))
 results.table
 
 
-#results.table = results.table[,c(1, 3, 2, 6, 4, 9, 7)]
-#xtab = xtable(results.table)
-#print(xtab, include.rownames = FALSE)
+results.table = results.table[,c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)]
+xtab = xtable(results.table)
+print(xtab, include.rownames = FALSE)
