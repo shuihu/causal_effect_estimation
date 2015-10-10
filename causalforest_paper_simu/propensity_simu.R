@@ -119,6 +119,6 @@ results.parsed = lapply(results.condensed, function(RR) {
 
 results.table = data.frame(cbind(d=dvals, Reduce(rbind, results.parsed)))
 
-results.table = results.table[,c(1, 3, 2, 6, 4, 9, 7)]
+results.table = results.table[,c(1, 3, 6, 9, 2, 4, 7)]
 xtab = xtable(results.table)
 print(xtab, include.rownames = FALSE)
