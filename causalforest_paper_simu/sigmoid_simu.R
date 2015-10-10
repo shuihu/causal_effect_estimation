@@ -14,8 +14,8 @@ sigma = 1
 
 n.test = 1000
 
-dvals = c(2, 4, 6, 8, 10)
-simu.reps = 10
+dvals = c(2, 4, 6, 8)
+simu.reps = 100
 
 effect = function(x) {
 	4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
@@ -50,7 +50,7 @@ rf.covered.1 = mean(rf.cov[true.eff <= 1])
 rf.covered.2 = mean(rf.cov[true.eff <= 2])
 rf.mse = mean((predictions - true.eff)^2)
 
-k.small = 5
+k.small = 10
 knn.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.small)$pred
 knn.1.mu = knn.reg(X[W==1,], X.test, Y[W==1], k = k.small)$pred
 
