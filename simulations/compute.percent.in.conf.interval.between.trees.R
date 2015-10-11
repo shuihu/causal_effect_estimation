@@ -1,6 +1,6 @@
 # here percent really means proportion, i.e. all percents lie between 0 and 1, inclusive.
 
-compute.percent.in.conf.interval <- function(test.tree, base.tree, y, w, conf.percent) {
+compute.percent.in.conf.interval.between.trees <- function(test.tree, base.tree, y, w, conf.percent) {
   if (conf.percent == 0.95) {
     thresh <- 1.96
   } else if (conf.percent == 0.9) {

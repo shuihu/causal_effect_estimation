@@ -2,7 +2,8 @@ source("simulations/models.R")
 source("simulations/compute.os.m.R")
 source("simulations/compute.os.to.R")
 source("simulations/compute.os.infeasible.R")
-source("simulations/compute.percent.in.conf.interval.R")
+source("simulations/compute.percent.in.conf.interval.between.trees.R")
+source("simulations/compute.percent.in.conf.interval.for.data.R")
 
 init.model <- function(model.name, propensity) {
   tree <- list()
@@ -28,6 +29,7 @@ compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, t
       stop("if is.dishonest2 is TRUE, all other honest parameters must be FALSE")
     }
   }
+  
   initial.model <- init.model(model.name, propensity)
   if (is.honest0.5) {
     quarter.obs <- nrow(split.XW$X) / 4
@@ -62,20 +64,28 @@ compute.tree.stats <- function(split.XW, split.Y, estimation.XW, estimation.Y, t
     trained.prediction.model <- trained.split.model
   }
   if (model.name == "TOT_split_xval_rpart" || model.name == "TOT_xval" || model.name == "CT") {
-    honest.in.dishonest.conf.intv.95 <- compute.percent.in.conf.interval(trained.reestimated.model@tree, trained.split.model@tree, splity, splitw, 0.95)
-    honest.in.dishonest.conf.intv.90 <- compute.percent.in.conf.interval(trained.reestimated.model@tree, trained.split.model@tree, splity, splitw, 0.9)
-    dishonest.in.honest.conf.intv.95 <- compute.percent.in.conf.interval(trained.split.model@tree, trained.reestimated.model@tree, estimationy, estimationw, 0.95)
-    dishonest.in.honest.conf.intv.90 <- compute.percent.in.conf.interval(trained.split.model@tree, trained.reestimated.model@tree, estimationy, estimationw, 0.9)
+    honest.in.dishonest.conf.intv.95 <- compute.percent.in.conf.interval.between.trees(trained.reestimated.model@tree, trained.split.model@tree, splity, splitw, 0.95)
+    honest.in.dishonest.conf.intv.90 <- compute.percent.in.conf.interval.between.trees(trained.reestimated.model@tree, trained.split.model@tree, splity, splitw, 0.9)
+    dishonest.in.honest.conf.intv.95 <- compute.percent.in.conf.interval.between.trees(trained.split.model@tree, trained.reestimated.model@tree, estimationy, estimationw, 0.95)
+    dishonest.in.honest.conf.intv.90 <- compute.percent.in.conf.interval.between.trees(trained.split.model@tree, trained.reestimated.model@tree, estimationy, estimationw, 0.9)
+    test.in.dishonest.conf.intv.95 <- compute.percent.in.conf.interval.for.data(test.XW$X, test.XW$W, test.Y, trained.split.model, splitw, splity, 0.95)
+    test.in.dishonest.conf.intv.90 <- compute.percent.in.conf.interval.for.data(test.XW$X, test.XW$W, test.Y, trained.split.model, splitw, splity, 0.9)
+    test.in.honest.conf.intv.95 <- compute.percent.in.conf.interval.for.data(test.XW$X, test.XW$W, test.Y, trained.reestimated.model, estimationw, estimationy, 0.95)
+    test.in.honest.conf.intv.90 <- compute.percent.in.conf.interval.for.data(test.XW$X, test.XW$W, test.Y, trained.reestimated.model, estimationw, estimationy, 0.9)
   } else {
     honest.in.dishonest.conf.intv.95 <- NA
     honest.in.dishonest.conf.intv.90 <- NA
     dishonest.in.honest.conf.intv.95 <- NA
     dishonest.in.honest.conf.intv.90 <- NA
+    test.in.dishonest.conf.intv.95 <- NA
+    test.in.dishonest.conf.intv.90 <- NA
+    test.in.honest.conf.intv.95 <- NA
+    test.in.honest.conf.intv.90 <- NA
   }
   test.preds <- predict.model(trained.prediction.model, test.XW$X)
   num.leaves <- count.leaves(trained.prediction.model)
   os.to <- compute.os.to(test.XW, test.Y, test.preds, propensity)
   os.m <-compute.os.m(test.XW, test.Y, test.preds, matchIndices)
   os.infeasible <- compute.os.infeasible(test.XW, test.Y, test.preds, counterfactual.test.Y)
-  list(honest.in.dishonest.conf.intv.95 = honest.in.dishonest.conf.intv.95, honest.in.dishonest.conf.intv.90 = honest.in.dishonest.conf.intv.90, dishonest.in.honest.conf.intv.95 = dishonest.in.honest.conf.intv.95, dishonest.in.honest.conf.intv.90 = dishonest.in.honest.conf.intv.90, num.leaves = num.leaves, os.to = os.to, os.m = os.m, os.infeasible = os.infeasible)
+  list(honest.in.dishonest.conf.intv.95 = honest.in.dishonest.conf.intv.95, honest.in.dishonest.conf.intv.90 = honest.in.dishonest.conf.intv.90, dishonest.in.honest.conf.intv.95 = dishonest.in.honest.conf.intv.95, dishonest.in.honest.conf.intv.90 = dishonest.in.honest.conf.intv.90, test.in.dishonest.conf.intv.95 = test.in.dishonest.conf.intv.95, test.in.dishonest.conf.intv.90 = test.in.dishonest.conf.intv.90, test.in.honest.conf.intv.95 = test.in.honest.conf.intv.95, test.in.honest.conf.intv.90 = test.in.honest.conf.intv.90, num.leaves = num.leaves, os.to = os.to, os.m = os.m, os.infeasible = os.infeasible)
 }

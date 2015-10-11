@@ -1,8 +1,12 @@
-compute.conf.interval.comparisons <- function(num.designs, model.names, all.tree.stats) {
+compute.conf.interval.comparisons <- function(num.designs, model.names, stats.names, all.tree.stats) {
   supported.model.names <- c('TOT_split_xval_rpart', 'TOT_xval', 'CT')
   conf.interval.comp.per.model <- vector("list", num.designs)
   for (design in 1:num.designs) {
-    conf.interval.comp.per.model[[design]] <- list(honest.in.dishonest.95 = NA, honest.in.dishonest.90 = NA, dishonest.in.honest.95 = NA, dishonest.in.honest.90 = NA)
+    conf.interval.comps <- list()
+    for (stats.name in stats.names) {
+      conf.interval.comps[[stats.name]] <- NA
+    }
+    conf.interval.comp.per.model[[design]] <- conf.interval.comps
   }
   conf.interval.comparisons <- vector("list", length(model.names))
   names(conf.interval.comparisons) <- model.names
@@ -11,11 +15,20 @@ compute.conf.interval.comparisons <- function(num.designs, model.names, all.tree
   }
   for (design in 1:num.designs) {
     for (model.name in intersect(model.names, supported.model.names)) {
-      conf.interval.comparisons[[model.name]][[design]]$honest.in.dishonest.95 <- mean(all.tree.stats[[model.name]]$honest.in.dishonest.conf.intv.95[design,])
-      conf.interval.comparisons[[model.name]][[design]]$honest.in.dishonest.90 <- mean(all.tree.stats[[model.name]]$honest.in.dishonest.conf.intv.90[design,])
-      conf.interval.comparisons[[model.name]][[design]]$dishonest.in.honest.95 <- mean(all.tree.stats[[model.name]]$dishonest.in.honest.conf.intv.95[design,])
-      conf.interval.comparisons[[model.name]][[design]]$dishonest.in.honest.90 <- mean(all.tree.stats[[model.name]]$dishonest.in.honest.conf.intv.90[design,])
+      for (stats.name in stats.names) {
+        conf.interval.comparisons[[model.name]][[design]][[stats.name]] <- mean(all.tree.stats[[model.name]][[stats.name]][design,])
+      }
     }
   }
   conf.interval.comparisons
+}
+
+compute.conf.interval.comparisons.between.trees <- function(num.designs, model.names, all.tree.stats) {
+  stats.names <- c('honest.in.dishonest.conf.intv.95', 'honest.in.dishonest.conf.intv.90', 'dishonest.in.honest.conf.intv.95', 'dishonest.in.honest.conf.intv.90')
+  compute.conf.interval.comparisons(num.designs, model.names, stats.names, all.tree.stats)
+}
+
+compute.conf.interval.comparisons.for.test.data <- function(num.designs, model.names, all.tree.stats) {
+  stats.names <- c('test.in.dishonest.conf.intv.95', 'test.in.dishonest.conf.intv.90', 'test.in.honest.conf.intv.95', 'test.in.honest.conf.intv.90')
+  compute.conf.interval.comparisons(num.designs, model.names, stats.names, all.tree.stats)
 }

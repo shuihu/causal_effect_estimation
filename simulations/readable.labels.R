@@ -17,8 +17,10 @@ get.design.label <- function(design) {
 }
 
 get.criterion.label <- function(criterion) {
-  if (criterion == "conf.intervals") {
-    "Confidence Intervals"
+  if (criterion == "conf.intervals.between.trees") {
+    "Honest-Dishonest Confidence Intervals"
+  } else if (criterion == "conf.intervals.for.test.data") {
+    "Test Data in Confidence Intervals"
   } else if (criterion == "leaves") {
     "Leaves"
   } else if (criterion == "os.to") {
@@ -33,7 +35,7 @@ get.criterion.label <- function(criterion) {
 }
 
 get.stats.label <- function(criterion, stats) {
-  if (criterion == "leaves" || criterion == "conf.intervals") {
+  if (criterion == "leaves" || criterion == "conf.intervals.between.trees" || criterion == "conf.intervals.for.test.data") {
     stats
   } else if (criterion == "os.to" || criterion == "os.m" || criterion == "os.infeasible") {
     if (stats == "Q.Mean") {

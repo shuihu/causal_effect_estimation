@@ -7,7 +7,8 @@ print.comparisons.to.csv <- function(comparisons, filename) {
   model.names <- names(comparisons[[1]])
   num.models <- length(model.names)
   num.designs <- length(comparisons[[1]][[1]])
-  conf.interval.stats <- c("honest.in.dishonest.95", "honest.in.dishonest.90", "dishonest.in.honest.95", "dishonest.in.honest.90")
+  conf.interval.stats.between.trees <- c("honest.in.dishonest.conf.intv.95", "honest.in.dishonest.conf.intv.90", "dishonest.in.honest.conf.intv.95", "dishonest.in.honest.conf.intv.90")
+  conf.interval.stats.for.test.data <- c("test.in.dishonest.conf.intv.95", "test.in.dishonest.conf.intv.90", "test.in.honest.conf.intv.95", "test.in.honest.conf.intv.90")
   leaf.stats <- c("Mean", "Median", "Std", "Spread")
   os.stats <- c("Q", "Q.Std", "Q.Spread", "Share")
   num.stats <- length(leaf.stats)
@@ -19,8 +20,10 @@ print.comparisons.to.csv <- function(comparisons, filename) {
   }
   for (i in 1:num.criteria) {
     if (i == 1) {
-      stats <- conf.interval.stats
+      stats <- conf.interval.stats.between.trees
     } else if (i == 2) {
+      stats <- conf.interval.stats.for.test.data
+    } else if (i == 3) {
       stats <- leaf.stats
     } else {
       stats <- os.stats

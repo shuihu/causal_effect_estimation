@@ -9,8 +9,10 @@ compare.results <- function(num.designs, model.names, simulation.results, num.re
   all.tree.stats <- simulation.results$all.tree.stats
   all.winning.models <- simulation.results$all.winning.models
   
-  # compare conf.intervals
-  conf.interval.comparisons <- compute.conf.interval.comparisons(num.designs, model.names, all.tree.stats)
+  # compare conf.intervals between honest and dishonest trees
+  conf.interval.comparisons.between.trees <- compute.conf.interval.comparisons.between.trees(num.designs, model.names, all.tree.stats)
+  # compare conf.intervals for the test data
+  conf.interval.comparisons.for.test.data <- compute.conf.interval.comparisons.for.test.data(num.designs, model.names, all.tree.stats)
   # compare num.leaves
   leaf.comparisons <- compute.leaf.comparisons(num.designs, model.names, all.tree.stats)
   # compare os.to
@@ -21,8 +23,10 @@ compare.results <- function(num.designs, model.names, simulation.results, num.re
   os.infeasible.comparisons <- compute.os.comparisons(num.designs, model.names, "os.infeasible", all.tree.stats, all.winning.models, num.replications)
 
   if (isTRUE(printOpt)) {
-    print("Confidence Intervals")
-    print(conf.interval.comparisons)
+    print("Honest-Dishonest Confidence Intervals")
+    print(conf.interval.comparisons.between.trees)
+    print("Test Data Confidence Intervals")
+    print(conf.interval.comparisons.for.test.data)
     print("Leaves")
     print(leaf.comparisons)
     print("OS TO")
@@ -33,5 +37,5 @@ compare.results <- function(num.designs, model.names, simulation.results, num.re
     print(os.infeasible.comparisons)
   }
   
-  list(conf.intervals = conf.interval.comparisons, leaves = leaf.comparisons, os.to = os.to.comparisons, os.m = os.m.comparisons, os.infeasible = os.infeasible.comparisons)
+  list(conf.intervals.between.trees = conf.interval.comparisons.between.trees, conf.intervals.for.test.data = conf.interval.comparisons.for.test.data, leaves = leaf.comparisons, os.to = os.to.comparisons, os.m = os.m.comparisons, os.infeasible = os.infeasible.comparisons)
 }

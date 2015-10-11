@@ -111,7 +111,6 @@ setMethod(
   signature("ST", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data <- create.data.frame.for.st(X, W, Y)
-    print(length(data$y))
     unpruned.tree <- rpart(y ~ ., data = data, method = "anova", cp = 0, control = rpart.control())
     optimal.cp <- get.optimal.cp(unpruned.tree)
     model@tree <- prune(unpruned.tree, cp = optimal.cp)

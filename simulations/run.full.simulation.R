@@ -16,7 +16,7 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.
     set.seed(seed)
   }
   
-  all.tree.stats <- init.all.tree.stats(num.replications, num.designs, model.names, c('honest.in.dishonest.conf.intv.95', 'honest.in.dishonest.conf.intv.90', 'dishonest.in.honest.conf.intv.95', 'dishonest.in.honest.conf.intv.90', 'num.leaves', os.names))
+  all.tree.stats <- init.all.tree.stats(num.replications, num.designs, model.names, c('honest.in.dishonest.conf.intv.95', 'honest.in.dishonest.conf.intv.90', 'dishonest.in.honest.conf.intv.95', 'dishonest.in.honest.conf.intv.90', 'test.in.dishonest.conf.intv.95', 'test.in.dishonest.conf.intv.90', 'test.in.honest.conf.intv.95', 'test.in.honest.conf.intv.90', 'num.leaves', os.names))
   all.winning.models <- init.all.winning.models(num.designs, model.names, os.names)
 
   if (missing(data.path)) {
@@ -64,6 +64,10 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.
         all.tree.stats[[model.name]]$honest.in.dishonest.conf.intv.90[design, repl] <- tree.stats$honest.in.dishonest.conf.intv.90
         all.tree.stats[[model.name]]$dishonest.in.honest.conf.intv.95[design, repl] <- tree.stats$dishonest.in.honest.conf.intv.95
         all.tree.stats[[model.name]]$dishonest.in.honest.conf.intv.90[design, repl] <- tree.stats$dishonest.in.honest.conf.intv.90
+        all.tree.stats[[model.name]]$test.in.dishonest.conf.intv.95[[design, repl]] <- tree.stats$test.in.dishonest.conf.intv.95
+        all.tree.stats[[model.name]]$test.in.dishonest.conf.intv.90[[design, repl]] <- tree.stats$test.in.dishonest.conf.intv.90
+        all.tree.stats[[model.name]]$test.in.honest.conf.intv.95[[design, repl]] <- tree.stats$test.in.honest.conf.intv.95
+        all.tree.stats[[model.name]]$test.in.honest.conf.intv.90[[design, repl]] <- tree.stats$test.in.honest.conf.intv.90
         all.tree.stats[[model.name]]$num.leaves[design, repl] <- tree.stats$num.leaves
         for (os.name in os.names) {
           all.tree.stats[[model.name]][[os.name]][design, repl] <- tree.stats[[os.name]]
