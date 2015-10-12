@@ -100,3 +100,4 @@ c(rf.covered = rf.covered,
            knnbig.covered.2 = knnbig.covered.2,
            knnbig.mse = knnbig.mse)
 }
+
