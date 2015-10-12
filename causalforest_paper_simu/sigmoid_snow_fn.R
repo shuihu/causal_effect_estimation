@@ -1,27 +1,24 @@
 #install.packages("~/git_local/causal_effect_estimation", type = "source", repos = NULL)
 library(causalTree)
-library(mgcv)
 library(randomForestCI)
 library(FNN)
-library(Hmisc)
-library(xtable)
-
-rm(list = ls())
 
 n = 10000
 ntree = 10000
 sigma = 1
 
-n.test = 1000
+k.small = 10
+k.big = 100
 
-dvals = c(2, 4, 6, 8)
-simu.reps = 20
+n.test = 1000
 
 effect = function(x) {
 	4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
 }
 
-simu.fun = function(d) {
+simu.fun = function(seed.idx, d) {
+
+set.seed(seed.idx)
 
 X = matrix(runif(n * d, 0, 1), n, d) # features
 e = 0.5
@@ -50,7 +47,6 @@ rf.covered.1 = mean(rf.cov[true.eff <= 1])
 rf.covered.2 = mean(rf.cov[true.eff <= 2])
 rf.mse = mean((predictions - true.eff)^2)
 
-k.small = 10
 knn.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.small)$pred
 knn.1.mu = knn.reg(X[W==1,], X.test, Y[W==1], k = k.small)$pred
 
@@ -69,7 +65,6 @@ knn.covered.1 = mean(knn.cov[true.eff <= 1])
 knn.covered.2 = mean(knn.cov[true.eff <= 2])
 knn.mse = mean((knn.tau - true.eff)^2)
 
-k.big = 50
 knnbig.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.big)$pred
 knnbig.1.mu = knn.reg(X[W==1,], X.test, Y[W==1], k = k.big)$pred
 
@@ -105,35 +100,3 @@ c(rf.covered = rf.covered,
            knnbig.covered.2 = knnbig.covered.2,
            knnbig.mse = knnbig.mse)
 }
-
-results.raw = lapply(dvals, function(d) {
-	print(paste("NOW RUNNING:", d))
-	res.d = sapply(1:simu.reps, function(iter) simu.fun(d))
-	res.fixed = data.frame(t(res.d))
-	print(paste("RESULT AT", d, "IS", colMeans(res.fixed)))
-	res.fixed
-})
-
-results.condensed = lapply(results.raw, function(RR) {
-	RR.mu = colMeans(RR)
-	RR.var = sapply(RR, var) / (nrow(RR) - 1)
-	rbind("mu"=RR.mu, "se"=sqrt(RR.var))
-})
-
-results.condensed
-
-save.image("~/causal_effect_estimation/causalforest_paper_simu/sigmoid.RData")
-
-results.parsed = lapply(results.condensed, function(RR) {
-	apply(RR, 2, function(arg) {
-		paste0(round(arg[1], 2), " (", round(100 * arg[2], 0), ")")
-	})
-})
-
-results.table = data.frame(cbind(d=dvals, Reduce(rbind, results.parsed)))
-results.table
-
-
-results.table = results.table[,c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)]
-xtab = xtable(results.table)
-print(xtab, include.rownames = FALSE)
