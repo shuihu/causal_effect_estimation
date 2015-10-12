@@ -34,51 +34,58 @@ sonshelper <- function(parent, leaf, count, maxdepth) {
 #' Notice here when the leaf contains only treated or control cases, the function will trace back to the leaf's parent mnode recursively until the parent can be used to compute causal effect.
 #' 
 ## estimate function for honest causal tree:
-estimate.causalTree <- function(object, formula, data, treatment, na.action = na.causalTree)
+estimate.causalTree <- function(object, data, treatment, na.action = na.causalTree)
 {
   if (!inherits(object, "rpart")) stop("Not a legitimate \"rpart\" object")
-  Call <- match.call()
-  indx <- match(c("formula", "data", "treatment"),
-                names(Call), nomatch = 0L)
-  if (indx[1] == 0L) stop("a 'formula' argument is required")
+  
+  #Call <- match.call()
+  #indx <- match(c("formula", "data", "treatment"),
+  #              names(Call), nomatch = 0L)
+  #if (indx[1] == 0L) stop("a 'formula' argument is required")
+  
+  # temp <- Call[c(1L, indx)]      # only keep the arguments we wanted
+  #temp$na.action <- na.action    # This one has a default
+  #temp[[1L]] <- quote(stats::model.frame) # change the function called
  
-  temp <- Call[c(1L, indx)]      # only keep the arguments we wanted
-  temp$na.action <- na.action    # This one has a default
-  temp[[1L]] <- quote(stats::model.frame) # change the function called
+ # m <- eval.parent(temp)
 
-  m <- eval.parent(temp)
-
-  Y <- model.response(m)
-  treatment <- m$`(treatment)`
+  #Y <- model.response(m)
+  #treatment <- m$`(treatment)`
 
  
-  n <- nrow(m)
+  #n <- nrow(m)
 
-  # check the treatment condition:
-  if (missing(treatment)) stop("You should import the treatment status for data.")
-  if (length(treatment) != n) 
-    stop("The length of treatment status vector should be same as number
-         of observations.")
-  if (length(which(treatment == 0)) == 0 || length(which(treatment == 1)) == 0)
-    stop("Can't make estimation since no treated cases or no control cases.")
   
 
   # get the leaf of the object
   leaf <- as.numeric(row.names(object$frame)[which(object$frame$var == "<leaf>")])
   
   # get the node id for each observation.
-  where <- {
     
-      Terms <- delete.response(object$terms)
-      #data <- model.frame(Terms, data, na.action = na.action,
-      data <- model.frame(Terms, data, na.action = na.action, treatment = treatment,
-                             xlev = attr(object, "xlevels"))
+  #Terms <- delete.response(object$terms)
+  Terms <- object$terms
+  #data <- model.frame(Terms, data, na.action = na.action,
+  data <- model.frame(Terms, data, na.action = na.action, treatment = treatment, 
+                     xlev = attr(object, "xlevels"))
       #print (data)
-      if (!is.null(cl <- attr(Terms, "dataClasses")))
+      
+  if (!is.null(cl <- attr(Terms, "dataClasses")))
         .checkMFClasses(cl, data, TRUE)
-    
-    est.causalTree(object, causalTree.matrix(data))
-  }
+  
+  treatment <- data$`(treatment)`
+  n <- nrow(data)
+  Y <- model.response(data)
+  where <- est.causalTree(object, causalTree.matrix(data))
+  #print (where)
+ 
+ 
+ #check the treatment condition:
+   if (missing(treatment)) stop("You should import the treatment status for data.")
+ if (length(treatment) != n) 
+   stop("The length of treatment status vector should be same as number
+         of observations.")
+ if (length(which(treatment == 0)) == 0 || length(which(treatment == 1)) == 0)
+   stop("Can't make estimation since no treated cases or no control cases.")
 
   
   unique_leaf <- unique(where)

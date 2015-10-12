@@ -82,11 +82,11 @@ causalTree <-
       #formula.left <- paste(formula.left, "*", "trp")
       #myformula <- as.formula(paste(formula.left, "~", formula.right))
       ans <- if (missing(subset))
-                rpart(formula = myformula, data = data, weights = wt,
+                rpart(data = data, weights = wt,
                    na.action = na.rpart, method = method, model = m, x = x, y = y, 
                    parms = parms, control = control, cost = cost, ...)
               else
-                rpart(formula = myformula, data = data, weights = wt, subset = subset,
+                rpart(data = data, weights = wt, subset = subset,
                       na.action = na.rpart, method = method, model = m, x = x, y = y, 
                       parms = parms, control = control, cost = cost, ...)
           
@@ -319,7 +319,8 @@ causalTree <-
     } else catmat <- ctfit$csplit
 
     ## NB: package adabag depends on 'var' being a factor.
-    if (nsplit == 0L) {                    # tree with no splits
+    if (nsplit == 0L) {   
+      # tree with no splits
 	frame <- data.frame(row.names = 1L,
 			    var = "<leaf>",
 			    n = ctfit$inode[, 5L],
@@ -359,6 +360,9 @@ causalTree <-
 	frame$yval2 <- cbind(yval2, yprob, nodeprob)
     } else if (init$numresp > 1L)
         frame$yval2 <- ctfit$dnode[, -(1L:3L), drop = FALSE]
+        #print("frame$yval2:")
+        #print(frame$yval2)
+        
 
     if (is.null(init$summary))
         stop("Initialization routine is missing the 'summary' function")
