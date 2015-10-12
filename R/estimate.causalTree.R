@@ -64,6 +64,8 @@ estimate.causalTree <- function(object, data, treatment, na.action = na.causalTr
     
   #Terms <- delete.response(object$terms)
   Terms <- object$terms
+  ## temporarily change the formate of data
+  data <- cbind(data, treatment)
   #data <- model.frame(Terms, data, na.action = na.action,
   data <- model.frame(Terms, data, na.action = na.action, treatment = treatment, 
                      xlev = attr(object, "xlevels"))

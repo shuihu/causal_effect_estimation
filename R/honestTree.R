@@ -14,9 +14,11 @@ honestTree <- function(object, data, treatment, na.action = na.causalTree) {
   num <- length(nodes)
   Terms <- object$terms
   #data <- model.frame(Terms, data, na.action = na.action,
+  ## temporarily change the formate of data
+  data <- cbind(data, treatment)
   data <- model.frame(Terms, data, na.action = na.action, treatment = treatment, 
                       xlev = attr(object, "xlevels"))
-  #print (data)
+  #print ('test!')
   
   if (!is.null(cl <- attr(Terms, "dataClasses")))
     .checkMFClasses(cl, data, TRUE)
@@ -24,6 +26,9 @@ honestTree <- function(object, data, treatment, na.action = na.causalTree) {
   treatment <- data$`(treatment)`
   n <- nrow(data)
   Y <- model.response(data)
+  
+  #fix the bug in 
+  #Terms <- delete.response(object$terms)
   where <- est.causalTree(object, causalTree.matrix(data))
   #wt <- model.weights(data)
   
