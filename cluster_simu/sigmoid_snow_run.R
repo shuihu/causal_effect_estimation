@@ -8,11 +8,12 @@ args=(commandArgs(TRUE))
 d = as.numeric(args[1])
 print(d)
 
-NREP = 25
+NCLUST = 5
+NREP = 10
 
-cl <- makeSOCKcluster(rep("localhost", NREP)) 
+cl <- makeSOCKcluster(rep("localhost", NCLUST)) 
 clusterEvalQ(cl, source("sigmoid_snow_fn.R"))
-raw_rets = clusterApply(cl, 1:NREP, simu.fun, d);
+raw_rets = clusterApply(cl, 1234 + 1:NREP, simu.fun, d);
 stopCluster(cl);
 
 proc.time();

@@ -1,6 +1,10 @@
-for ((d=2;d<=8;d++)) 
+for ((d=2; d<=8 ;d++)) 
 do
+  if [ $d -eq 7 ]
+  then
+    d=8
+  fi
   fnm="progress$d.out"
   echo $fnm
-  R CMD BATCH --no-save --no-restore "--args $d" sigmoid_snow_run.R $fnm &
+  nohup nice R CMD BATCH --no-save --no-restore "--args $d" sigmoid_snow_run.R $fnm &
 done
