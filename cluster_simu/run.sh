@@ -6,5 +6,5 @@ do
   fi
   fnm="progress$d.out"
   echo $fnm
-  nohup nice R CMD BATCH --no-save --no-restore "--args $d" sigmoid_snow_run.R $fnm &
+  nohup nice R CMD BATCH --no-save --no-restore "--args $d" sigmoid_serial_run.R $fnm &
 done
