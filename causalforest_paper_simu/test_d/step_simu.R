@@ -11,19 +11,23 @@ proc.time()
 start.time = as.numeric(Sys.time())
 start.time
 
-NREP = 5
+NREP = 25
 
-n = 10000
-ntree = 10000
+n = 5000
+ntree = 2000
 sigma = 1
 
-k.small = 10
-k.big = 100
+k.small = 7
+k.big = 50
 
 n.test = 1000
 
+#effect = function(x) {
+#  10 * as.numeric(x[1] > 1/3) * x[2]
+#}
+
 effect = function(x) {
-	10 * pmax(0, min(1, 4 * x[1] - 1)) * pmax(0, min(1, 4 * x[2] - 1))
+    (1 + 1 / (1 + exp(-20 * (x[1] - 1/3)))) * (1 + 1/(1 + exp(-20 * (x[2] - 1/3))))
 }
 
 simu.fun = function(seed.idx, d) {
@@ -44,7 +48,7 @@ true.eff = apply(X.test, 1, effect)
 # random forest
 #
 
-forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10, nodesize = 1)
+forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 4, nodesize = 1)
 predictions = predict(forest, X.test)
 forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 
