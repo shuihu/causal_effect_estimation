@@ -11,7 +11,7 @@ full.simulation <- function(num.replications = 1000, num.designs = 6, model.name
   if (missing(seed)) {
     seed <- 1L
   }
-  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, os.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, is.honest, is.honest0.5, is.dishonest2, data.path, seed)
+  simulation.results <- run.full.simulation(num.replications, num.designs, model.names, os.names, num.obs.per.set, num.vars.per.obs, propensity, xvals, is.honest, is.honest0.5, is.dishonest2, data.path, output.filename, seed)
   comparisons <- compare.results(num.designs, model.names, simulation.results, num.replications, FALSE)
   print.comparisons.to.csv(comparisons, output.filename)
   comparisons

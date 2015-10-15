@@ -32,3 +32,8 @@ compute.conf.interval.comparisons.for.test.data <- function(num.designs, model.n
   stats.names <- c('test.in.dishonest.conf.intv.95', 'test.in.dishonest.conf.intv.90', 'test.in.honest.conf.intv.95', 'test.in.honest.conf.intv.90')
   compute.conf.interval.comparisons(num.designs, model.names, stats.names, all.tree.stats)
 }
+
+compute.weighted.conf.interval.comparisons.for.test.data <- function(num.designs, model.names, all.tree.stats) {
+  stats.names <- c('weighted.test.in.dishonest.conf.intv.95', 'weighted.test.in.dishonest.conf.intv.90', 'weighted.test.in.honest.conf.intv.95', 'weighted.test.in.honest.conf.intv.90')
+  compute.conf.interval.comparisons(num.designs, model.names, stats.names, all.tree.stats)
+}

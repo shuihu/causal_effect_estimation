@@ -21,6 +21,8 @@ get.criterion.label <- function(criterion) {
     "Honest-Dishonest Confidence Intervals"
   } else if (criterion == "conf.intervals.for.test.data") {
     "Test Data in Confidence Intervals"
+  } else if (criterion == "weighted.conf.intervals.for.test.data") {
+    "Weighted Test Data in Confidence Intervals"
   } else if (criterion == "leaves") {
     "Leaves"
   } else if (criterion == "os.to") {
@@ -35,8 +37,44 @@ get.criterion.label <- function(criterion) {
 }
 
 get.stats.label <- function(criterion, stats) {
-  if (criterion == "leaves" || criterion == "conf.intervals.between.trees" || criterion == "conf.intervals.for.test.data") {
+  if (criterion == "leaves") {
     stats
+  } else if (criterion == "conf.intervals.between.trees") {
+    if (stats == "honest.in.dishonest.conf.intv.95") {
+      "Honest in Dishonest 95%"
+    } else if (stats == "honest.in.dishonest.conf.intv.90") {
+      "Honest in Dishonest 90%"
+    } else if (stats == "dishonest.in.honest.conf.intv.95") {
+      "Dishonest in Honest 95%"
+    } else if (stats == "dishonest.in.honest.conf.intv.90") {
+      "Dishonest in Honest 90%"
+    } else {
+      stop("Invalid stats")
+    }
+  } else if (criterion == "conf.intervals.for.test.data") {
+    if (stats == "test.in.dishonest.conf.intv.95") {
+      "Test in Dishonest 95%"
+    } else if (stats == "test.in.dishonest.conf.intv.90") {
+      "Test in Dishonest 90%"
+    } else if (stats == "test.in.honest.conf.intv.95") {
+      "Test in Honest 95%"
+    } else if (stats == "test.in.honest.conf.intv.90") {
+      "Test in Honest 90%"
+    } else {
+      stop("Invalid stats")
+    }
+  } else if (criterion == "weighted.conf.intervals.for.test.data") {
+    if (stats == "weighted.test.in.dishonest.conf.intv.95") {
+      "Test in Dishonest 95%"
+    } else if (stats == "weighted.test.in.dishonest.conf.intv.90") {
+      "Test in Dishonest 90%"
+    } else if (stats == "weighted.test.in.honest.conf.intv.95") {
+      "Test in Honest 95%"
+    } else if (stats == "weighted.test.in.honest.conf.intv.90") {
+      "Test in Honest 90%"
+    } else {
+      stop("Invalid stats")
+    }
   } else if (criterion == "os.to" || criterion == "os.m" || criterion == "os.infeasible") {
     if (stats == "Q.Mean") {
       "-Q Mean"

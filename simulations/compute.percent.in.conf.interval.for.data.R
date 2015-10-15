@@ -1,7 +1,7 @@
 # computes for what proportion of the leaves in a tree does the causal effect estimated from the data (difference between the average
 # Y of W = 0 and W = 1 observations from the data that got assigned to the leaf) fall within the confidence interval for that leaf.
 
-compute.percent.in.conf.interval.for.data <- function(data.X, data.W, data.Y, model, train.W, train.Y, conf.percent) {
+compute.percent.in.conf.interval.for.data <- function(data.X, data.W, data.Y, model, train.W, train.Y, conf.percent, weighted = FALSE) {
   if (conf.percent == 0.95) {
     thresh <- 1.96
   } else if (conf.percent == 0.9) {
@@ -15,7 +15,7 @@ compute.percent.in.conf.interval.for.data <- function(data.X, data.W, data.Y, mo
   model@tree$frame$yval <- 1:length(model@tree$frame$yval)
   leaf.assignments <- predict.model(model, data.X)
   model@tree$frame$yval <- yval
-  num.in.interval <- 0
+  percent.in.interval <- 0
   
   for (leaf in leaves) {
     data.in.leaf <- which(leaf.assignments == leaf)
@@ -46,8 +46,12 @@ compute.percent.in.conf.interval.for.data <- function(data.X, data.W, data.Y, mo
     #print(c(estimate.from.data, model@tree$frame$yval[leaf]))
     diff <- abs((estimate.from.data - model@tree$frame$yval[leaf]) / standard.error)
     if (!is.na(diff) && !is.infinite(diff) && diff <= thresh) {
-      num.in.interval <- num.in.interval + 1
+      if (weighted) {
+        percent.in.interval <- percent.in.interval + length(data.in.leaf) / length(leaf.assignments)
+      } else {
+        percent.in.interval <- percent.in.interval + 1 / length(leaves)
+      }
     }
   }
-  num.in.interval / length(leaves)
+  percent.in.interval
 }

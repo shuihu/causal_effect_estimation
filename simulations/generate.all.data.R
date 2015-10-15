@@ -4,7 +4,7 @@ source("simulations/generate.output.R")
 source("simulations/match.observations.R")
 source("simulations/generate.counterfactual.input.for.all.designs.R")
 
-generate.all.data <- function(num.replications = 1000, num.designs = 6, num.obs.per.set = 500, num.vars.per.obs = 10, data.dir = "data", seed) {
+generate.all.data <- function(num.replications = 1000, num.designs = 6, num.obs.per.set = 500, num.vars.per.obs = 10, data.dir = "data_500", seed) {
   if (!missing(seed)) {
     set.seed(seed)
   }
