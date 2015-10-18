@@ -5,6 +5,7 @@ library(FNN)
 library(Hmisc)
 library(xtable)
 
+# dir_tp <- setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/R/")
 rm(list = ls())
 
 n = 500 #10000
@@ -36,8 +37,8 @@ simu.fun = function(d) {
   # random forest
   #
   
-  forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.2, Jsample.fraction = 0.5)
-#   forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10, nodesize = 1)
+#   forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.2, Jsample.fraction = 0.5)
+  forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10, nodesize = 1)
   predictions = predict(forest, X.test)
   forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
   
