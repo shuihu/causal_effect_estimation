@@ -1,27 +1,26 @@
-library(causalTree)
-library(mgcv)
-library(randomForestCI)
-library(FNN)
-library(Hmisc)
-library(xtable)
+# library(causalTree)
+# library(mgcv)
+# library(randomForestCI)
+# library(FNN)
+# library(Hmisc)
+# library(xtable)
 
-# dir_tp <- setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/R/")
 rm(list = ls())
 
-n = 500 #10000
-ntree = 1000 #10000
+n = 10000
+ntree = 10000
 sigma = 1
 
-n.test = 100 #1000
+n.test = 1000
 
 dvals = c(2, 3, 4, 5, 6, 8)
-simu.reps = 1 #20
+simu.reps = 20
 
 effect = function(x) {
   4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
 }
 
-simu.fun = function(d) {
+simu.fun = function(d, JsamFrac) {
   
   X = matrix(runif(n * d, 0, 1), n, d) # features
   e = 0.5
@@ -37,8 +36,7 @@ simu.fun = function(d) {
   # random forest
   #
   
-#   forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.2, Jsample.fraction = 0.5)
-  forest = causalForest(X, Y, W, num.trees = ntree, sample.size = n / 10, nodesize = 1)
+  forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.5, Jsample.fraction = JsamFrac)
   predictions = predict(forest, X.test)
   forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
   
@@ -107,34 +105,37 @@ simu.fun = function(d) {
     knnbig.mse = knnbig.mse)
 }
 
-results.raw = lapply(dvals, function(d) {
-  print(paste("NOW RUNNING:", d))
-  res.d = sapply(1:simu.reps, function(iter) simu.fun(d))
-  res.fixed = data.frame(t(res.d))
-  print(paste("RESULT AT", d, "IS", colMeans(res.fixed)))
-  res.fixed
-})
-
-results.condensed = lapply(results.raw, function(RR) {
-  RR.mu = colMeans(RR)
-  RR.var = sapply(RR, var) / (nrow(RR) - 1)
-  rbind("mu"=RR.mu, "se"=sqrt(RR.var))
-})
-
-results.condensed
-
-save.image(paste0("~/output_paper1014_3_", 0.2, "_0.5", ".RData"))
-
-results.parsed = lapply(results.condensed, function(RR) {
-  apply(RR, 2, function(arg) {
-    paste0(round(arg[1], 2), " (", round(100 * arg[2], 0), ")")
+for (i in 1:9) {
+  JsamFrac <- i / 10
+  results.raw = lapply(dvals, function(d) {
+    print(paste("NOW RUNNING:", d))
+    res.d = sapply(1:simu.reps, function(iter) simu.fun(d, JsamFrac))
+    res.fixed = data.frame(t(res.d))
+    print(paste("RESULT AT", d, "IS", colMeans(res.fixed)))
+    res.fixed
   })
-})
-
-results.table = data.frame(cbind(d=dvals, Reduce(rbind, results.parsed)))
-results.table
-
-
-results.table = results.table[,c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)]
-xtab = xtable(results.table)
-print(xtab, include.rownames = FALSE)
+  
+  results.condensed = lapply(results.raw, function(RR) {
+    RR.mu = colMeans(RR)
+    RR.var = sapply(RR, var) / (nrow(RR) - 1)
+    rbind("mu"=RR.mu, "se"=sqrt(RR.var))
+  })
+  
+  results.condensed
+  
+  save.image(paste0("~/output_paper1014_3_0.5_", JsamFrac, ".RData"))
+  
+  results.parsed = lapply(results.condensed, function(RR) {
+    apply(RR, 2, function(arg) {
+      paste0(round(arg[1], 2), " (", round(100 * arg[2], 0), ")")
+    })
+  })
+  
+  results.table = data.frame(cbind(d=dvals, Reduce(rbind, results.parsed)))
+  results.table
+  
+  
+  results.table = results.table[,c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)]
+  xtab = xtable(results.table)
+#   print(xtab, include.rownames = FALSE)
+}

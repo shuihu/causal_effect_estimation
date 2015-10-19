@@ -5,9 +5,6 @@ library(FNN)
 library(Hmisc)
 library(xtable)
 
-dir_tp <- setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
-
-
 rm(list = ls())
 
 n = 500
@@ -17,7 +14,7 @@ sigma = 1
 n.test = 100
 
 dvals = c(2, 5, 10, 15, 20, 30)
-simu.reps = 1 # 500 --> true version
+simu.reps = 20  #500 --> true version (extremely slow)
 
 baseline = function(x) {
   2 * (x[1] - 0.5)
@@ -113,7 +110,6 @@ for (i in 1:9) {
   
   results.condensed
   
-#   save.image(paste0("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/output_paper1014_1_", alpha, "_0.5", ".RData"))
   save.image(paste0("~/output_paper1014_1_", alpha, "_0.5", ".RData"))
   
   results.parsed = lapply(results.condensed, function(RR) {
