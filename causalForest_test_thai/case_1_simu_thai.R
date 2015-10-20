@@ -5,6 +5,8 @@ library(FNN)
 library(Hmisc)
 library(xtable)
 
+setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+
 rm(list = ls())
 
 n = 500
@@ -110,7 +112,7 @@ for (i in 1:9) {
   
   results.condensed
   
-  save.image(paste0("~/output_paper1014_1_", alpha, "_0.5", ".RData"))
+  save.image(paste0("Test_Run_Results/output_paper1014_1_", alpha, "_0.5", ".RData"))
   
   results.parsed = lapply(results.condensed, function(RR) {
     apply(RR, 2, function(arg) {

@@ -1,20 +1,27 @@
-# library(causalTree)
-# library(mgcv)
-# library(randomForestCI)
-# library(FNN)
-# library(Hmisc)
-# library(xtable)
+library(causalTree)
+library(mgcv)
+library(randomForestCI)
+library(FNN)
+library(Hmisc)
+library(xtable)
 
-rm(list = ls())
+# setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+# setwd("/farmshare/user_data/thaipham/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+source("causalForest_Thai.R")
+
+# rm(list = ls())
 
 n = 10000
 ntree = 10000
 sigma = 1
 
+k.small = 10
+k.big = 100
+
 n.test = 1000
 
 dvals = c(2, 3, 4, 5, 6, 8)
-simu.reps = 20
+simu.reps = 1 #20
 
 effect = function(x) {
   4 / ((1 + exp(-12 * (x[1] - 0.5))) * (1 + exp(-12 * (x[2] - 0.5)))) 
@@ -49,7 +56,6 @@ simu.fun = function(d, JsamFrac) {
   rf.covered.2 = mean(rf.cov[true.eff <= 2])
   rf.mse = mean((predictions - true.eff)^2)
   
-  k.small = 10
   knn.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.small)$pred
   knn.1.mu = knn.reg(X[W==1,], X.test, Y[W==1], k = k.small)$pred
   
@@ -68,7 +74,6 @@ simu.fun = function(d, JsamFrac) {
   knn.covered.2 = mean(knn.cov[true.eff <= 2])
   knn.mse = mean((knn.tau - true.eff)^2)
   
-  k.big = 50
   knnbig.0.mu = knn.reg(X[W==0,], X.test, Y[W==0], k = k.big)$pred
   knnbig.1.mu = knn.reg(X[W==1,], X.test, Y[W==1], k = k.big)$pred
   
@@ -123,7 +128,7 @@ for (i in 1:9) {
   
   results.condensed
   
-  save.image(paste0("~/output_paper1014_3_0.5_", JsamFrac, ".RData"))
+  save.image(paste0("Test_Run_Results/output_paper1014_3_0.5_", JsamFrac, ".RData"))
   
   results.parsed = lapply(results.condensed, function(RR) {
     apply(RR, 2, function(arg) {
