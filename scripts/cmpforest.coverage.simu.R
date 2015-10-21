@@ -1,3 +1,7 @@
+#
+# TODO: need to use new causalForest interface
+#
+
 #install.packages("~/git_local/causal_effect_estimation", type = "source", repos = NULL)
 
 #setwd("~/git_local/causal_effect_estimation/scripts")

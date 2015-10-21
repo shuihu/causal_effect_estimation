@@ -23,6 +23,11 @@ compute.conf.interval.comparisons <- function(num.designs, model.names, stats.na
   conf.interval.comparisons
 }
 
+compute.conf.interval.comparisons.true <- function(num.designs, model.names, all.tree.stats) {
+  stats.names <- c('dishonest.in.dishonest.conf.intv.95', 'dishonest.in.dishonest.conf.intv.90', 'honest.in.honest.conf.intv.95', 'honest.in.honest.conf.intv.90')
+  compute.conf.interval.comparisons(num.designs, model.names, stats.names, all.tree.stats) 
+}
+
 compute.conf.interval.comparisons.between.trees <- function(num.designs, model.names, all.tree.stats) {
   stats.names <- c('honest.in.dishonest.conf.intv.95', 'honest.in.dishonest.conf.intv.90', 'dishonest.in.honest.conf.intv.95', 'dishonest.in.honest.conf.intv.90')
   compute.conf.interval.comparisons(num.designs, model.names, stats.names, all.tree.stats)

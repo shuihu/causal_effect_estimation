@@ -17,12 +17,16 @@ get.design.label <- function(design) {
 }
 
 get.criterion.label <- function(criterion) {
-  if (criterion == "conf.intervals.between.trees") {
+  if (criterion == "conf.intervals.true") {
+    "Confidence Interval Check"
+  } else if (criterion == "conf.intervals.between.trees") {
     "Honest-Dishonest Confidence Intervals"
   } else if (criterion == "conf.intervals.for.test.data") {
     "Test Data in Confidence Intervals"
   } else if (criterion == "weighted.conf.intervals.for.test.data") {
     "Weighted Test Data in Confidence Intervals"
+  } else if (criterion == "full.trees") {
+    "Full Trees"
   } else if (criterion == "leaves") {
     "Leaves"
   } else if (criterion == "os.to") {
@@ -39,6 +43,18 @@ get.criterion.label <- function(criterion) {
 get.stats.label <- function(criterion, stats) {
   if (criterion == "leaves") {
     stats
+  } else if (criterion == "conf.intervals.true") {
+    if (stats == "dishonest.in.dishonest.conf.intv.95") {
+      "Dishonest in Dishonest 95%"
+    } else if (stats == "dishonest.in.dishonest.conf.intv.90") {
+      "Dishonest in Dishonest 90%"
+    } else if (stats == "honest.in.honest.conf.intv.95") {
+      "Honest in Honest 95%"
+    } else if (stats == "honest.in.honest.conf.intv.90") {
+      "Honest in Honest 90%"
+    } else {
+      stop("Invalid stats")
+    }
   } else if (criterion == "conf.intervals.between.trees") {
     if (stats == "honest.in.dishonest.conf.intv.95") {
       "Honest in Dishonest 95%"
@@ -72,6 +88,12 @@ get.stats.label <- function(criterion, stats) {
       "Test in Honest 95%"
     } else if (stats == "weighted.test.in.honest.conf.intv.90") {
       "Test in Honest 90%"
+    } else {
+      stop("Invalid stats")
+    }
+  } else if (criterion == "full.trees") {
+    if (stats == "Proportion") {
+      "Proportion"
     } else {
       stop("Invalid stats")
     }

@@ -15,7 +15,7 @@
 
 void
 //bsplit(pNode me, int n1, int n2)
-bsplit(pNode me, int n1, int n2, int parm)
+bsplit(pNode me, int n1, int n2, int minsize)
 {
 	int i, j, k;
 	int kk;
@@ -28,10 +28,12 @@ bsplit(pNode me, int n1, int n2, int parm)
 								 * "ct.xtemp", etc */
 	double **ytemp;
 	double *wtemp;
+  double *trtemp;
 
 	xtemp = ct.xtemp;
 	ytemp = ct.ytemp;
 	wtemp = ct.wtemp;
+  trtemp = ct.trtemp;
 
 	/*
 	 * test out the variables 1 at at time
@@ -48,10 +50,12 @@ bsplit(pNode me, int n1, int n2, int parm)
 			//if (kk >= 0 && ct.wt[kk] > 0) {
 			//}
 			/* x data not missing and wt > 0 */
-			if(kk >= 0 ) { // here we can assgin the weight to be 0, kk >= 0 means x data not missing
+			if(kk >= 0 && ct.wt[kk] > 0) { // here we can assgin the weight to be 0, kk >= 0 means x data not missing
 				xtemp[k] = ct.xdata[i][kk];
 				ytemp[k] = ct.ydata[kk];
 				wtemp[k] = ct.wt[kk];
+        trtemp[k] = ct.treatment[kk];
+        //Rprintf("trtemp[%d] = %f\n", k, trtemp[k]);
 				k++;
 			}
 		}
@@ -63,7 +67,7 @@ bsplit(pNode me, int n1, int n2, int parm)
 		//(*ct_choose) (k, ytemp, xtemp, nc, ct.min_node, &improve,
 		//	      &split, ct.csplit, me->risk, wtemp);
 		(*ct_choose) (k, ytemp, xtemp, nc, ct.min_node, &improve,
-				&split, ct.csplit, me->risk, wtemp, parm);
+				&split, ct.csplit, me->risk, wtemp, trtemp, minsize);
         
         //Rprintf("%d predictor has improve = %f\n", i, improve);
 

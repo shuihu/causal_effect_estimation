@@ -22,6 +22,7 @@ typedef struct node {
     double risk;                /* risk for the node */
     double complexity;          /* complexity at which it will collapse */
     double sum_wt;              /* sum of the weights for the node  */
+    double sum_tr;
     pSplit primary, surrogate;
     struct node *rightson;
     struct node *leftson;

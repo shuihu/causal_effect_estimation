@@ -65,11 +65,12 @@ colnames(X) = 1:ncol(X)
 Y = as.numeric(welfare$y)[ok.idx]
 W = as.numeric(welfare$w)[ok.idx]
 
-cmp = comparisonForest(Y, X, W, num.trees=500)
+cmp = causalForest(X, Y, W, num.trees=500)
+tau.hat = predict(cmp, X)
 
-results = data.frame(income = X[,1], polviews = X[,2], CATE = -cmp$tau)
+results = data.frame(income = X[,1], polviews = X[,2], CATE = -tau.hat)
 
-cmp.ci = randomForestInfJack(cmp, cmp$pred.matrix)
+cmp.ci = randomForestInfJack(cmp, X)
 
 save.image("~/welfare.RData")
 

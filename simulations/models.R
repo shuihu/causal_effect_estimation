@@ -78,6 +78,12 @@ create.data.frame.for.tot <- function(X, W, Y, propensity) {
   }
 }
 
+create.data.frame.for.ct <- function(X) {
+  data <- data.frame(X)
+  names(data) <- c(paste("X", as.character(1:ncol(X)), sep = "."))
+  data
+}
+
 reestimate.causalTree <- function(tree, X, W, Y) {
   leaf.assignments <- est.causalTree(tree, causalTree.matrix(create.data.frame(tree, X)))
   all.leaves <- get.all.leaves(tree)
@@ -112,7 +118,7 @@ setMethod(
   definition = function(model, X, W, Y) {
     model@is.full.tree <- FALSE
     data <- create.data.frame.for.st(X, W, Y)
-    unpruned.tree <- rpart(y ~ ., data = data, method = "anova", control = rpart.control(cp = 0, minbucket = 50))
+    unpruned.tree <- rpart(y ~ ., data = data, method = "anova", control = rpart.control(cp = 0, minbucket = 20, minsplit = 60))
     optimal.cp <- get.optimal.cp(unpruned.tree)
     model@tree <- prune(unpruned.tree, cp = optimal.cp)
     model@is.full.tree <- (unpruned.tree$cp[nrow(unpruned.tree$cp), 'CP'] == optimal.cp) && (length(which(unpruned.tree$frame$var == "<leaf>")) > 20)
@@ -126,12 +132,12 @@ setMethod(
   definition = function(model, X, W, Y) {
     data1 <- create.data.frame.for.tt(X, W, Y, 1)
     data0 <- create.data.frame.for.tt(X, W, Y, 0)
-    unpruned.tree1 <- rpart(y ~ ., data = data1, method = "anova", control = rpart.control(cp = 0, minbucket = 50))
+    unpruned.tree1 <- rpart(y ~ ., data = data1, method = "anova", control = rpart.control(cp = 0, minbucket = 20, minsplit = 60))
     optimal.cp1 <- get.optimal.cp(unpruned.tree1)
     model@tree1 <- prune(unpruned.tree1, cp = optimal.cp1)
     model@is.full.tree <- (unpruned.tree1$cp[nrow(unpruned.tree1$cp), 'CP'] == optimal.cp1) && (length(which(unpruned.tree1$frame$var == "<leaf>")) > 20)
     
-    unpruned.tree0 <- rpart(y ~ ., data = data0, method = "anova",control = rpart.control(cp = 0, minbucket = 50))
+    unpruned.tree0 <- rpart(y ~ ., data = data0, method = "anova",control = rpart.control(cp = 0, minbucket = 20, minsplit = 60))
     optimal.cp0 <- get.optimal.cp(unpruned.tree0)
     model@tree0 <- prune(unpruned.tree0, cp = optimal.cp0)
     if (!(model@is.full.tree)) {
@@ -146,7 +152,7 @@ setMethod(
   signature("TOT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
     data <- create.data.frame.for.tot(X, W, Y, model@propensity)
-    unpruned.tree <- rpart(y ~ ., data = data, method = "anova", control = rpart.control(cp = 0, minbucket = 50))
+    unpruned.tree <- rpart(y ~ ., data = data, method = "anova", control = rpart.control(cp = 0, minbucket = 20, minsplit = 60))
     optimal.cp <- get.optimal.cp(unpruned.tree)
     model@tree <- prune(unpruned.tree, cp = optimal.cp)
     model@is.full.tree <- (unpruned.tree$cp[nrow(unpruned.tree$cp), 'CP'] == optimal.cp) && (length(which(unpruned.tree$frame$var == "<leaf>")) > 20)
@@ -158,8 +164,7 @@ setMethod(
   f = "train.model",
   signature("CT", "matrix", "integer", "numeric"),
   definition = function(model, X, W, Y) {
-    unpruned.tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), weights = W, method = "anova", parms = 50, cv.option = model@cv.option, p = 0.5, control = causalTree.control(cp = 0, minbucket = 50))
-    write.table(unpruned.tree$cp, "cptable.txt")
+    unpruned.tree <- causalTree(Y~., data = data.frame(X = X, Y = Y), treatment = W, method = "anova", split.option = "CT", minsize = 10, cv.option = model@cv.option, p = 0.5, control = causalTree.control(cp = 0, minbucket = 20, minsplit = 60))
     optimal.cp <- get.optimal.cp(unpruned.tree)
     model@tree <- prune(unpruned.tree, cp = optimal.cp)
     model@is.full.tree <- (unpruned.tree$cp[nrow(unpruned.tree$cp), 'CP'] == optimal.cp) && (length(which(unpruned.tree$frame$var == "<leaf>")) > 20)
@@ -260,7 +265,8 @@ setMethod(
   f = "predict.model",
   signature("CT", "matrix"),
   definition = function(model, X) {
-    est.causalTree.tau(model@tree, X)
+    data <- create.data.frame.for.ct(X)
+    predict(model@tree, data)
   }
 )
 

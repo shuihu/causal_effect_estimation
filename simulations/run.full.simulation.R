@@ -16,7 +16,7 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.
     set.seed(seed)
   }
   
-  all.tree.stats <- init.all.tree.stats(num.replications, num.designs, model.names, c('honest.in.dishonest.conf.intv.95', 'honest.in.dishonest.conf.intv.90', 'dishonest.in.honest.conf.intv.95', 'dishonest.in.honest.conf.intv.90', 'test.in.dishonest.conf.intv.95', 'test.in.dishonest.conf.intv.90', 'test.in.honest.conf.intv.95', 'test.in.honest.conf.intv.90', 'weighted.test.in.dishonest.conf.intv.95', 'weighted.test.in.dishonest.conf.intv.90', 'weighted.test.in.honest.conf.intv.95', 'weighted.test.in.honest.conf.intv.90', 'num.leaves', os.names))
+  all.tree.stats <- init.all.tree.stats(num.replications, num.designs, model.names, c('dishonest.in.dishonest.conf.intv.95', 'dishonest.in.dishonest.conf.intv.90', 'honest.in.honest.conf.intv.95', 'honest.in.honest.conf.intv.90', 'honest.in.dishonest.conf.intv.95', 'honest.in.dishonest.conf.intv.90', 'dishonest.in.honest.conf.intv.95', 'dishonest.in.honest.conf.intv.90', 'test.in.dishonest.conf.intv.95', 'test.in.dishonest.conf.intv.90', 'test.in.honest.conf.intv.95', 'test.in.honest.conf.intv.90', 'weighted.test.in.dishonest.conf.intv.95', 'weighted.test.in.dishonest.conf.intv.90', 'weighted.test.in.honest.conf.intv.95', 'weighted.test.in.honest.conf.intv.90', 'is.full.tree', 'num.leaves', os.names))
   all.winning.models <- init.all.winning.models(num.designs, model.names, os.names)
 
   if (missing(data.path)) {
@@ -52,6 +52,12 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.
       train.split.Y <- read.output.for.all.designs(paste(data.path, "/train_split_repl_", as.character(repl), "_design_", sep = ""), 1:num.designs)
       train.estimation.Y <- read.output.for.all.designs(paste(data.path, "/train_estimation_repl_", as.character(repl), "_design_", sep = ""), 1:num.designs)
     }
+    
+    # generate the counterfactuals for the split and estimation samples
+    counterfactual.train.split.XW <- generate.counterfactual.input.for.all.designs(train.split.XW)
+    counterfactual.train.split.Y <- generate.output.for.all.designs(counterfactual.train.split.XW)
+    counterfactual.train.estimation.XW <- generate.counterfactual.input.for.all.designs(train.estimation.XW)
+    counterfactual.train.estimation.Y <- generate.output.for.all.designs(counterfactual.train.estimation.XW)
 
     for (design in 1:num.designs) {
       # compute tree.stats for each model (ST, TT, TOT_split_xval_rpart, TOT_xval, CT)
@@ -63,9 +69,28 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.
         } else {
           full.tree.path <- paste(substr(full.tree.path.prefix, 1, nchar(full.tree.path.prefix)- 4), "repl", as.character(repl), "design", as.character(design), "model", model.name, sep = "_")
         }
-        tree.stats <- compute.tree.stats(train.split.XW[[design]], train.split.Y[[design]], train.estimation.XW[[design]], train.estimation.Y[[design]], test.XW[[design]], test.Y[[design]], counterfactual.test.Y[[design]], model.name, propensity, match.indices[[design]], is.honest, is.honest0.5, is.dishonest2, full.tree.path)
+        tree.stats <- compute.tree.stats(train.split.XW[[design]],
+                                         train.split.Y[[design]],
+                                         train.estimation.XW[[design]],
+                                         train.estimation.Y[[design]],
+                                         test.XW[[design]],
+                                         test.Y[[design]],
+                                         counterfactual.test.Y[[design]],
+                                         model.name,
+                                         propensity,
+                                         match.indices[[design]],
+                                         is.honest,
+                                         is.honest0.5,
+                                         is.dishonest2,
+                                         full.tree.path,
+                                         counterfactual.train.split.Y[[design]],
+                                         counterfactual.train.estimation.Y[[design]])
         
         # fill all.tree.stats with the stats for this (model, design, replication) triple
+        all.tree.stats[[model.name]]$dishonest.in.dishonest.conf.intv.95[design, repl] <- tree.stats$dishonest.in.dishonest.conf.intv.95
+        all.tree.stats[[model.name]]$dishonest.in.dishonest.conf.intv.90[design, repl] <- tree.stats$dishonest.in.dishonest.conf.intv.90
+        all.tree.stats[[model.name]]$honest.in.honest.conf.intv.95[design, repl] <- tree.stats$honest.in.honest.conf.intv.95
+        all.tree.stats[[model.name]]$honest.in.honest.conf.intv.90[design, repl] <- tree.stats$honest.in.honest.conf.intv.90
         all.tree.stats[[model.name]]$honest.in.dishonest.conf.intv.95[design, repl] <- tree.stats$honest.in.dishonest.conf.intv.95
         all.tree.stats[[model.name]]$honest.in.dishonest.conf.intv.90[design, repl] <- tree.stats$honest.in.dishonest.conf.intv.90
         all.tree.stats[[model.name]]$dishonest.in.honest.conf.intv.95[design, repl] <- tree.stats$dishonest.in.honest.conf.intv.95
@@ -78,6 +103,7 @@ run.full.simulation <- function(num.replications = 1000, num.designs = 6, model.
         all.tree.stats[[model.name]]$weighted.test.in.dishonest.conf.intv.90[[design, repl]] <- tree.stats$weighted.test.in.dishonest.conf.intv.90
         all.tree.stats[[model.name]]$weighted.test.in.honest.conf.intv.95[[design, repl]] <- tree.stats$weighted.test.in.honest.conf.intv.95
         all.tree.stats[[model.name]]$weighted.test.in.honest.conf.intv.90[[design, repl]] <- tree.stats$weighted.test.in.honest.conf.intv.90
+        all.tree.stats[[model.name]]$is.full.tree[[design, repl]] <- tree.stats$is.full.tree
         all.tree.stats[[model.name]]$num.leaves[design, repl] <- tree.stats$num.leaves
         for (os.name in os.names) {
           all.tree.stats[[model.name]][[os.name]][design, repl] <- tree.stats[[os.name]]
