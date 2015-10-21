@@ -16,6 +16,3 @@ library(randomForestCI)
 # install.packages('xtable', repos='http://cran.us.r-project.org')
 library(FNN)
 library(xtable)
-
-# install_packages('snow', repos='http://cran.us.r-project.org')
-library(snow)

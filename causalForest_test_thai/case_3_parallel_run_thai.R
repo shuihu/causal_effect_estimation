@@ -19,6 +19,7 @@ for (j in 1:length(JsamFracVals)) {
     
     cl <- makeSOCKcluster(rep("localhost", NREP)) 
     clusterEvalQ(cl, source("case_3_parallel_func_thai.R"))
+#     clusterExport(cl, list("d", "JsamFrac"))
     raw_rets = clusterApply(cl, 1:NREP, simu.fun, d, JsamFrac)
     stopCluster(cl);
     

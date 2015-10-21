@@ -1,14 +1,16 @@
 library(xtable)
 
-dd = c(2, 3, 4, 5, 6, 8)
-JsamFracVals = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+setwd("/farmshare/user_data/thaipham/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
 
-for (i in 1:length(JsamFracVals)) {
-  JsamFrac = JsamFracVals[i]
+dd = c(2, 3, 4, 5, 6, 8)
+JsamVals = c(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+for (i in 1:length(JsamVals)) {
+  Jsam = JsamVals[i]
   
-  dlist = lapply(dd, function(JsamFrac, d) {
+  dlist = lapply(dd, function(d) {
     all.res = list()
-    fnm = paste0("Test_Run_Results/output_paper1014_3_0.5_", JsamFrac, "_", d, "_", ".RData")
+    fnm = paste0("Test_Run_Results/output_paper1014_3_0.5_0.", Jsam, "_", d, ".RData")
     load(fnm)
     all.res = c(all.res, raw_rets)
     all.res
@@ -26,7 +28,7 @@ for (i in 1:length(JsamFracVals)) {
     })
   })
   
-  save.image(paste0("Test_Run_Results/output_paper1014_3_0.5_", JsamFrac, ".RData"))
+  save.image(paste0("Test_Run_Results/output_paper1014_3_0.5_0.", Jsam, ".RData"))
   
   results.pretty = data.frame(cbind("d"=dd, Reduce(rbind, res.short)))
   
@@ -34,5 +36,7 @@ for (i in 1:length(JsamFracVals)) {
   results.table = results.pretty[,idxvec]
   names(results.table) = names(results.pretty)[idxvec]
   xtab = xtable(results.table)
-#   print(xtab, include.rownames = FALSE)
+  cat("Test 3 Result - Jsample.fraction = 0.", Jsam, "\n")
+  #print(xtable(results.table, caption = 'Test 3 Result - Jsample.fraction = 0.'Jsam'), caption.placement = 'top', include.rownames = FALSE)
+  print(xtab, include.rownames = FALSE)
 }
