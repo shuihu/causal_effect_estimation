@@ -19,7 +19,7 @@ start.time
 NREP = 2
 
 n = 10000
-ntree = 10000
+ntree = 5000 #10000
 sigma = 1
 
 k.small = 10
