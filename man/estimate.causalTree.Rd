@@ -7,14 +7,10 @@
 Estimate the causal effects using honest tree model.
 }
 \usage{
-estimate.causalTree(object, formula, data, treatment, na.action = na.pass)
+estimate.causalTree(object, data, treatment, na.action = na.pass)
 }
 \arguments{
 \item{object}{A tree-structured fit object, and here is specified as \code{causalTree} fit.}
-
-\item{formula}{a \link{formula}, with a response but no interaction
-    terms.  If this a a data frome, that is taken as the model frame
-    (see \code{\link{model.frame}}).}
 
 \item{data}{New data frame in which to interact the variables named in the formula.}
 
@@ -46,6 +42,5 @@ opcp <- fit$cptable[,1][which.min(fit$cptable[,4])]
 
 opfit <- prune(fit, opcp)
 
-estimation <- estimate.causalTree(opfit, y ~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10,
-data = simulation.2, treatment = simulation.2$treatment)
+estimation <- estimate.causalTree(opfit, data = simulation.2, treatment = simulation.2$treatment)
 }
