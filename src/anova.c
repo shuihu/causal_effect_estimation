@@ -1,12 +1,11 @@
 /*
-* The four routines for anova + sample variance splitting:
+* The four routines for anova splitting
 */
 #include "causalTree.h"
 #include "causalTreeproto.h"
 
 static double *mean, *sums, *wtsums;
 static double *wts, *trs, *trsums;
-static double *wtsqrsums, *wttrsqrsums;
 static int *countn;
 static int *tsplit;
 
@@ -17,7 +16,7 @@ static int *tsplit;
 
 
 int
-anovainit2(int n, double *y[], int maxcat, char **error,
+anovainit(int n, double *y[], int maxcat, char **error,
 	  double *parm, int *size, int who, double *wt, double *treatment)
 {
   if (who == 1 && maxcat > 0) {
@@ -42,7 +41,7 @@ anovainit2(int n, double *y[], int maxcat, char **error,
 * The anova evaluation function.  Return the mean and the ss.
 */
 void
-anovass2(int n, double *y[], double *value, double *risk, double *wt, double *treatment, double max_y)
+anovass(int n, double *y[], double *value, double *risk, double *wt, double *treatment, double max_y)
 {
     int i;
     double temp = 0., temp0 = 0., temp1 = 0., twt = 0.; /* sum of the weights */ 
@@ -89,7 +88,7 @@ void
 //      double myrisk, double *wt)
 // the ct_choose function:
 
-anova2(int n, double *y[], double *x, int nclass,
+anova(int n, double *y[], double *x, int nclass,
     int edge, double *improve, double *split, int *csplit,
      double myrisk, double *wt, double *treatment, int minsize)
 {
@@ -97,11 +96,6 @@ anova2(int n, double *y[], double *x, int nclass,
     double temp;
     double left_sum, right_sum;
     double left_tr_sum, right_tr_sum;
-    // add squared sum:
-    double left_tr_sqr_sum, right_tr_sqr_sum;
-    double left_sqr_sum, right_sqr_sum;
-    double tr_var, con_var;
-    double left_tr_var, left_con_var, right_tr_var, right_con_var;
     double left_tr, right_tr;
     double left_wt, right_wt;
     int left_n, right_n;
@@ -117,26 +111,17 @@ anova2(int n, double *y[], double *x, int nclass,
     right_tr = 0;
     right_sum = 0;
     right_tr_sum = 0;
-    right_sqr_sum = 0;
-    right_tr_sqr_sum = 0;
     right_n = n;
     for (i = 0; i < n; i++) {
       right_wt += wt[i];
       right_tr += wt[i] * treatment[i];
       right_sum += *y[i] * wt[i];
       right_tr_sum += *y[i] * wt[i] * treatment[i];
-      right_sqr_sum += (*y[i]) * (*y[i]) * wt[i];
-      right_tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i];
      // Rprintf("treatment[%d] = %f,", i, treatment[i] );
     }
     
     temp = right_tr_sum / right_tr - (right_sum - right_tr_sum) / (right_wt - right_tr);
-    tr_var = right_tr_sqr_sum / right_tr - right_tr_sum * right_tr_sum / (right_tr * right_tr);
-    con_var = (right_sqr_sum - right_tr_sqr_sum) / (right_wt - right_tr)
-              - (right_sum - right_tr_sum) * (right_sum - right_tr_sum) / ((right_wt - right_tr) * (right_wt - right_tr));
-    //node_effect = temp * temp * n
-    node_effect = temp * temp * n - 2 * (tr_var + con_var) * n;
-    
+    node_effect = temp * temp * n;
     //Rprintf("n = %d, node_effect = %f\n", n, node_effect);
     
     
@@ -147,8 +132,6 @@ anova2(int n, double *y[], double *x, int nclass,
       left_n = 0;
       left_sum = 0;
       left_tr_sum = 0;
-      left_sqr_sum = 0;
-      left_tr_sqr_sum = 0;
     
 	    best = 0;
       
@@ -169,14 +152,6 @@ anova2(int n, double *y[], double *x, int nclass,
         left_sum += *y[i] * wt[i];
         right_sum -= *y[i] * wt[i];
         
-        temp = (*y[i]) * (*y[i]) * wt[i] * treatment[i];
-        left_tr_sqr_sum += temp;
-        right_tr_sqr_sum -= temp;
-        
-        temp = (*y[i]) * (*y[i]) * wt[i];
-        left_sqr_sum += temp;
-        right_sqr_sum -= temp;
-        
         //Rprintf("left_n = %d, edge = %d\n", left_n, edge);
         //Rprintf("left_tr = %d, left_wt = %d, right_tr = %d, right_wt = %d\n", left_tr, left_wt, right_tr, right_wt);
         //Rprintf("minsize = %d\n", min_node_size);
@@ -192,22 +167,13 @@ anova2(int n, double *y[], double *x, int nclass,
               //temp = (left_tr_sum - left_sum * taumean) /
               //((1 - taumean) * left_tr);
               left_temp = left_tr_sum / left_tr - (left_sum - left_tr_sum) / (left_wt - left_tr);
-              left_tr_var = left_tr_sqr_sum / left_tr - left_tr_sum  * left_tr_sum / (left_tr * left_tr);
-              left_con_var = (left_sqr_sum - left_tr_sqr_sum) / (left_wt - left_tr) 
-                             - (left_sum - left_tr_sum) * (left_sum - left_tr_sum)/ ((left_wt - left_tr) * (left_wt - left_tr));        
-              
-              left_effect = left_temp * left_temp * left_n
-              - 2 * (left_tr_var + left_con_var) * left_n;
+              left_effect = left_temp * left_temp * left_n;
               
               //taumean = right_tr / right_wt;
               //temp = (right_tr_sum - right_sum * taumean) /
               //((1 - taumean) * right_tr);
               right_temp = right_tr_sum / right_tr - (right_sum - right_tr_sum) / (right_wt - right_tr);
-              right_tr_var = right_tr_sqr_sum / right_tr - right_tr_sum * right_tr_sum / (right_tr * right_tr);
-              right_con_var = (right_sqr_sum - right_tr_sqr_sum) / (right_wt - right_tr)
-                             - (right_sum - right_tr_sum) * (right_sum - right_tr_sum) / ((right_wt - right_tr) * (right_wt - right_tr));
-              right_effect = right_temp * right_temp * right_n
-              - 2 * (right_tr_var + right_con_var) * right_n;    
+              right_effect = right_temp * right_temp * right_n;
               
               temp = left_effect + right_effect - node_effect;
               //Rprintf("at %f,leftn: %d, lefteffect: %f, rightn: %d, righteffect: %f\n", x[i], left_n, left_effect,right_n, right_effect, node_effect);
@@ -237,7 +203,10 @@ anova2(int n, double *y[], double *x, int nclass,
 	      csplit[0] = direction;
         *split = (x[where] + x[where + 1]) / 2; /* where to split!!!!!!!!! */ 
         }
-    }
+  }
+  
+  
+  
   
     /*
      * Categorical predictor
@@ -250,8 +219,6 @@ anova2(int n, double *y[], double *x, int nclass,
         sums[i] = 0;
         wtsums[i] = 0;
         trsums[i] = 0;
-        wtsqrsums[i] = 0;
-        wttrsqrsums[i] = 0;
 	    }
 
        /* rank the classes by their mean y value */
@@ -267,8 +234,6 @@ anova2(int n, double *y[], double *x, int nclass,
           // adding part
           wtsums[j] += *y[i] * wt[i];
           trsums[j] += *y[i] * wt[i] * treatment[i];
-          wtsqrsums[j] += (*y[i]) * (*y[i]) * wt[i];
-          wttrsqrsums[j] += (*y[i]) * (*y[i]) * wt[i] * treatment[i];
 	    }
       
     	for (i = 0; i < nclass; i++) {
@@ -291,9 +256,7 @@ anova2(int n, double *y[], double *x, int nclass,
   left_n = 0;
 	left_sum = 0;
   left_tr_sum = 0;
-  left_sqr_sum = 0;
-  left_tr_sqr_sum = 0;
-  
+
 	best = 0;
 	where = 0;
 	while ((j = graycode()) < nclass) {
@@ -313,12 +276,6 @@ anova2(int n, double *y[], double *x, int nclass,
       
       left_tr_sum += trsums[j];
       right_tr_sum -= trsums[j];
-      
-      left_sqr_sum += wtsqrsums[j];
-      right_sqr_sum -= wtsqrsums[j];
-      
-      left_tr_sqr_sum += wttrsqrsums[j];
-      right_tr_sqr_sum -= wttrsqrsums[j];
 
       
 	    if (left_n >= edge && right_n >= edge &&
@@ -328,19 +285,13 @@ anova2(int n, double *y[], double *x, int nclass,
           right_wt - right_tr >= min_node_size) {
             
             left_temp = left_tr_sum / left_tr - (left_sum - left_tr_sum) / (left_wt - left_tr);
-            left_tr_var = left_tr_sqr_sum / left_tr - left_tr_sum  * left_tr_sum / (left_tr * left_tr);
-            left_con_var = (left_sqr_sum - left_tr_sqr_sum) / (left_wt - left_tr) 
-                             - (left_sum - left_tr_sum) * (left_sum - left_tr_sum)/ ((left_wt - left_tr) * (left_wt - left_tr));        
-            left_effect = left_temp * left_temp * left_n
-              - 2 * (left_tr_var + left_con_var) * left_n;
+            left_effect = left_temp * left_temp * left_n;
             
-             //Rprintf("left_sum = %f, left_wt_sum = %f, left_wt = %f, left_n = %d\n", left_sum, left_wt_sum, left_wt, left_n);             
+             //Rprintf("left_sum = %f, left_wt_sum = %f, left_wt = %f, left_n = %d\n", left_sum, left_wt_sum, left_wt, left_n);
+              
              right_temp = right_tr_sum / right_tr - (right_sum - right_tr_sum) / (right_wt - right_tr);
-             right_tr_var = right_tr_sqr_sum / right_tr - right_tr_sum * right_tr_sum / (right_tr * right_tr);
-             right_con_var = (right_sqr_sum - right_tr_sqr_sum) / (right_wt - right_tr)
-                             - (right_sum - right_tr_sum) * (right_sum - right_tr_sum) / ((right_wt - right_tr) * (right_wt - right_tr));
-             right_effect = right_temp * right_temp * right_n
-              - 2 * (right_tr_var + right_con_var) * right_n; 
+             right_effect = right_temp * right_temp * right_n;
+              
           
              temp = left_effect + right_effect - node_effect;
             //Rprintf("left_n= %d, lefteffect = %f, right_n = %d, righteffect = %f\n", left_n, left_effect, right_n, right_effect);    
