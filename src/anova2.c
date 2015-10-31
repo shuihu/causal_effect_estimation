@@ -50,6 +50,7 @@ anovass2(int n, double *y[], double *value, double *risk, double *wt, double *tr
     double effect;
     double tr_var, con_var;
     double con_sqr_sum = 0., tr_sqr_sum = 0.;
+    double varweight = 1000;
     // double ss;
 
     for (i = 0; i < n; i++) {
@@ -78,7 +79,7 @@ anovass2(int n, double *y[], double *value, double *risk, double *wt, double *tr
     //*risk = 4 * n * MAX * MAX - effect * effect * n;
     //*risk = n * MAX * MAX - effect * effect * n;
     //max_y = MAX;
-    *risk = 4 * n * max_y * max_y - n * effect * effect +  2 * n * (tr_var /ttreat  + con_var / (twt - ttreat));
+    *risk = 4 * n * max_y * max_y - n * effect * effect +  varweight * 2 * n * (tr_var /ttreat  + con_var / (twt - ttreat));
 }
 
 /*
@@ -117,6 +118,7 @@ anova2(int n, double *y[], double *x, int nclass,
     double left_temp, right_temp;
    // double min_node_size = parm[0];
     int min_node_size = minsize;
+    double varweight = 1000;
     
     right_wt = 0;
     right_tr = 0;
@@ -140,7 +142,7 @@ anova2(int n, double *y[], double *x, int nclass,
     con_var = (right_sqr_sum - right_tr_sqr_sum) / (right_wt - right_tr)
               - (right_sum - right_tr_sum) * (right_sum - right_tr_sum) / ((right_wt - right_tr) * (right_wt - right_tr));
     //node_effect = temp * temp * n
-    node_effect = temp * temp * n - 2 * n * (tr_var / right_tr  + con_var / (right_wt - right_tr));
+    node_effect = temp * temp * n - varweight * 2 * n * (tr_var / right_tr  + con_var / (right_wt - right_tr));
     
     //Rprintf("n = %d, node_effect = %f\n", n, node_effect);
     
@@ -202,7 +204,7 @@ anova2(int n, double *y[], double *x, int nclass,
                              - (left_sum - left_tr_sum) * (left_sum - left_tr_sum)/ ((left_wt - left_tr) * (left_wt - left_tr));        
               
               left_effect = left_temp * left_temp * left_n
-              - 2 * left_n * (left_tr_var / left_tr + left_con_var / (left_wt - left_tr));
+              - varweight * 2 * left_n * (left_tr_var / left_tr + left_con_var / (left_wt - left_tr));
               
               //taumean = right_tr / right_wt;
               //temp = (right_tr_sum - right_sum * taumean) /
@@ -212,7 +214,7 @@ anova2(int n, double *y[], double *x, int nclass,
               right_con_var = (right_sqr_sum - right_tr_sqr_sum) / (right_wt - right_tr)
                              - (right_sum - right_tr_sum) * (right_sum - right_tr_sum) / ((right_wt - right_tr) * (right_wt - right_tr));
               right_effect = right_temp * right_temp * right_n
-              - 2 * right_n * (right_tr_var / right_tr + right_con_var / (right_wt - right_tr));    
+              - varweight * 2 * right_n * (right_tr_var / right_tr + right_con_var / (right_wt - right_tr));    
               
               temp = left_effect + right_effect - node_effect;
               //Rprintf("at %f,leftn: %d, lefteffect: %f, rightn: %d, righteffect: %f\n", x[i], left_n, left_effect,right_n, right_effect, node_effect);
@@ -338,7 +340,7 @@ anova2(int n, double *y[], double *x, int nclass,
             left_con_var = (left_sqr_sum - left_tr_sqr_sum) / (left_wt - left_tr) 
                              - (left_sum - left_tr_sum) * (left_sum - left_tr_sum)/ ((left_wt - left_tr) * (left_wt - left_tr));        
             left_effect = left_temp * left_temp * left_n
-              - 2 * left_n * (left_tr_var / left_tr + left_con_var / (left_wt - left_tr));
+              - varweight * 2 * left_n * (left_tr_var / left_tr + left_con_var / (left_wt - left_tr));
             
              //Rprintf("left_sum = %f, left_wt_sum = %f, left_wt = %f, left_n = %d\n", left_sum, left_wt_sum, left_wt, left_n);             
              right_temp = right_tr_sum / right_tr - (right_sum - right_tr_sum) / (right_wt - right_tr);
@@ -346,7 +348,7 @@ anova2(int n, double *y[], double *x, int nclass,
              right_con_var = (right_sqr_sum - right_tr_sqr_sum) / (right_wt - right_tr)
                              - (right_sum - right_tr_sum) * (right_sum - right_tr_sum) / ((right_wt - right_tr) * (right_wt - right_tr));
              right_effect = right_temp * right_temp * right_n
-              - 2 * right_n * (right_tr_var / right_tr + right_con_var / (right_wt - right_tr)); 
+              - varweight * 2 * right_n * (right_tr_var / right_tr + right_con_var / (right_wt - right_tr)); 
           
              temp = left_effect + right_effect - node_effect;
             //Rprintf("left_n= %d, lefteffect = %f, right_n = %d, righteffect = %f\n", left_n, left_effect, right_n, right_effect);    
