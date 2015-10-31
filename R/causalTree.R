@@ -7,7 +7,7 @@
 causalTree <-
  #   function(formula, data, weights, subset, na.action = na.causalTree, method,
   function(formula, data, weights, treatment, subset, na.action = na.causalTree, method = "anova", 
-           split.option, cv.option, minsize = 2L, model = FALSE, x = FALSE, y = TRUE, parms, p, control, cost, ...) 
+           split.option, cv.option, minsize = 2L, model = FALSE, x = FALSE, y = TRUE, parms, p, control, alpha = 0.5, cost, ...) 
     # p := propensity score
     # split.option := CT or TOT, splitting rule
     # cv.option := cross validation option, TOT or matching
@@ -270,7 +270,8 @@ causalTree <-
                    treatment,
                    as.integer(init$numy),
                    as.double(cost),
-                   as.double(xvar))
+                   as.double(xvar),
+                   as.double(alpha))
 
     nsplit <- nrow(ctfit$isplit) # total number of splits, primary and surrogate
     ## total number of categorical splits

@@ -23,7 +23,7 @@ extern int usersplit_init(int n, double *y[], int maxcat, char **error,
 extern void anovass(int n, double *y[], double *value, double *risk,
   	    double *wt, double *treatment, double max_y);
 extern void anovass2(int n, double *y[], double *value, double *risk,
-		    double *wt, double *treatment, double max_y);
+		    double *wt, double *treatment, double max_y, double alpha);
 extern void poissondev(int n, double *y[], double *value, double *risk,
 		       double *wt);
 extern void ginidev(int n, double *y[], double *value, double *risk,
@@ -36,7 +36,7 @@ extern void anova(int n, double *y[], double *x, int nclass,
 		  double myrisk, double *wt, double *treatment, int minsize);
 extern void anova2(int n, double *y[], double *x, int nclass,
 		  int edge, double *improve, double *split, int *csplit,
-		  double myrisk, double *wt, double *treatment, int minsize);
+		  double myrisk, double *wt, double *treatment, int minsize, double alpha);
 extern void poisson(int n, double *y[], double *x, int nclass,
 		    int edge, double *improve, double *split, int *csplit,
 		    double myrisk, double *wt);
