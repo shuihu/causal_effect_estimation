@@ -18,7 +18,7 @@ compute.percent.in.conf.interval.for.true <- function(model.name, tree, y, w, co
     }
     in.leaf.w0 <- in.leaf[which(w[in.leaf] == 0)]
     in.leaf.w1 <- in.leaf[which(w[in.leaf] == 1)]
-    true.tau <- mean(y[in.leaf.w1] + counterfactual.y[in.leaf.w0]) - mean(y[in.leaf.w0] + counterfactual.y[in.leaf.w1])
+    true.tau <- mean(c(y[in.leaf.w1] - y[in.leaf.w0], counterfactual.y[in.leaf.w0] - y[in.leaf.w0]))
     
     if (model.name == "TOT_split_xval_rpart") {
       standard.error <- sqrt(mean((transformed.y[in.leaf] - mean(transformed.y[in.leaf]))^2) / length(in.leaf))

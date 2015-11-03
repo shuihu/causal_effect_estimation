@@ -1,6 +1,6 @@
-compute.num.full.trees <- function(num.designs, model.names, all.tree.stats) {
-  full.trees.per.model <- vector("list", num.designs)
-  for (design in 1:num.designs) {
+compute.num.full.trees <- function(designs, model.names, all.tree.stats) {
+  full.trees.per.model <- vector("list", max(designs))
+  for (design in designs) {
     full.trees.per.model[[design]] <- list(Proportion = 0)
   }
   full.trees <- vector("list", length(model.names))
@@ -8,7 +8,7 @@ compute.num.full.trees <- function(num.designs, model.names, all.tree.stats) {
   for (model.name in model.names) {
     full.trees[[model.name]] <- full.trees.per.model
   }
-  for (design in 1:num.designs) {
+  for (design in designs) {
     for (model.name in model.names) {
       full.trees[[model.name]][[design]]$Proportion <- mean(all.tree.stats[[model.name]]$is.full.tree[design,])
     }

@@ -7,7 +7,7 @@ match.observations <- function(XW) {
   num.obs <- nrow(X)
   matches <- rep(0, num.obs)
   for (i in 1:num.obs) {
-    #print(i)
+    print(i)
     min.dist <- -1
     match <- 0
     for (j in 1:num.obs) {
@@ -26,6 +26,9 @@ match.observations.for.all.designs <- function(XW) {
   num.designs <- length(XW)
   matches <- vector("list", num.designs)
   for (design in 1:num.designs) {
+    if (is.null(XW[[design]])) {
+      next()
+    }
     matches[[design]] <- match.observations(XW[[design]])
   }
   matches

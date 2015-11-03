@@ -4,13 +4,16 @@ source("simulations/generate.output.R")
 source("simulations/match.observations.R")
 source("simulations/generate.counterfactual.input.for.all.designs.R")
 
-generate.all.data <- function(num.replications = 1000, num.designs = 6, num.obs.per.set = 500, num.vars.per.obs = 10, data.dir = "data_500", seed) {
+generate.all.data <- function(num.replications = 1000, designs = 9, num.obs.per.set = 500, num.vars.per.obs = 10, data.dir = "data_500", seed) {
   if (!missing(seed)) {
     set.seed(seed)
   }
+  if (!is.array(designs)) {
+    designs <- array(1:designs)
+  }
   
   print("test.XW")
-  test.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
+  test.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, designs)
   print("test.Y")
   test.Y <- generate.output.for.all.designs(test.XW)
   print("match.indices")
@@ -18,7 +21,7 @@ generate.all.data <- function(num.replications = 1000, num.designs = 6, num.obs.
   # flip the W's
   counterfactual.test.XW <- generate.counterfactual.input.for.all.designs(test.XW)
   counterfactual.test.Y <- generate.output.for.all.designs(counterfactual.test.XW)
-  for (design in 1:num.designs) {
+  for (design in designs) {
     write.table(test.XW[[design]]$X, paste(data.dir, "/test_design_", as.character(design), "_x", ".csv", sep = ""), sep = ",", col.names = FALSE, row.names = FALSE)
     write.table(test.XW[[design]]$W, paste(data.dir, "/test_design_", as.character(design), "_w", ".csv", sep = ""), sep = ",", col.names = FALSE, row.names = FALSE)
     write.table(test.Y[[design]], paste(data.dir, "/test_design_", as.character(design), "_y", ".csv", sep = ""), sep = ",", col.names = FALSE, row.names = FALSE)
@@ -31,11 +34,11 @@ generate.all.data <- function(num.replications = 1000, num.designs = 6, num.obs.
   print("train")
   for (repl in 1:num.replications) {
     print(paste("replication:", as.character(repl)))
-    train.split.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
-    train.estimation.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, num.designs)
+    train.split.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, designs)
+    train.estimation.XW <- generate.input.for.all.designs(num.obs.per.set, num.vars.per.obs, designs)
     train.split.Y <- generate.output.for.all.designs(train.split.XW)
     train.estimation.Y <- generate.output.for.all.designs(train.estimation.XW)
-    for (design in 1:num.designs) {
+    for (design in designs) {
       write.table(train.split.XW[[design]]$X, paste(data.dir, "/train_split_repl_", as.character(repl), "_design_", as.character(design), "_x", ".csv", sep = ""), sep = ",", col.names = FALSE, row.names = FALSE)
       write.table(train.split.XW[[design]]$W, paste(data.dir, "/train_split_repl_", as.character(repl), "_design_", as.character(design), "_w", ".csv", sep = ""), sep = ",", col.names = FALSE, row.names = FALSE)
       write.table(train.estimation.XW[[design]]$X, paste(data.dir, "/train_estimation_repl_", as.character(repl), "_design_", as.character(design), "_x", ".csv", sep = ""), sep = ",", col.names = FALSE, row.names = FALSE)

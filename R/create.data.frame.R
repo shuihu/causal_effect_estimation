@@ -9,8 +9,9 @@ create.data.frame <- function(fit, X) {
   if (is.null(attr(data, "terms"))) {
     Terms <- delete.response(fit$terms)
     data <- model.frame(Terms, data, na.action = na.pass, xlev = attr(fit, "xlevels"))
-    if (!is.null(cl <- attr(Terms, "dataClasses")))
+    if (!is.null(cl <- attr(Terms, "dataClasses"))) {
       .checkMFClasses(cl, data, TRUE)
+    }
   }
   data
 }

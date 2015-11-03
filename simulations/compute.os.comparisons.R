@@ -1,6 +1,6 @@
-compute.os.comparisons <- function(num.designs, model.names, os.name, all.tree.stats, all.winning.models, num.replications) {
-  os.comp.per.model <- vector("list", num.designs)
-  for (design in 1:num.designs) {
+compute.os.comparisons <- function(designs, model.names, os.name, all.tree.stats, all.winning.models, num.replications) {
+  os.comp.per.model <- vector("list", max(designs))
+  for (design in designs) {
     os.comp.per.model[[design]] <- list(Q = 0, Share = 0)
   }
   os.comparisons <- vector("list", length(model.names))
@@ -8,7 +8,7 @@ compute.os.comparisons <- function(num.designs, model.names, os.name, all.tree.s
   for (model.name in model.names) {
     os.comparisons[[model.name]] <- os.comp.per.model
   }
-  for (design in 1:num.designs) {
+  for (design in designs) {
     for (model.name in model.names) {
       os.comparisons[[model.name]][[design]]$Q <- median(all.tree.stats[[model.name]][[os.name]][design,])
       os.comparisons[[model.name]][[design]]$Q.Mean <- mean(all.tree.stats[[model.name]][[os.name]][design,])

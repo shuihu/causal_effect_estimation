@@ -6,28 +6,28 @@ source("simulations/compute.os.comparisons.R")
 source("simulations/compute.conf.interval.comparisons.R")
 source("simulations/compute.num.full.trees.R")
 
-compare.results <- function(num.designs, model.names, simulation.results, num.replications, printOpt = TRUE) {
+compare.results <- function(designs, model.names, simulation.results, num.replications, printOpt = TRUE) {
   all.tree.stats <- simulation.results$all.tree.stats
   all.winning.models <- simulation.results$all.winning.models
   
   # check the conf.intervals for each tree using its training data
-  conf.intervals.true <- compute.conf.interval.comparisons.true(num.designs, model.names, all.tree.stats)
+  conf.intervals.true <- compute.conf.interval.comparisons.true(designs, model.names, all.tree.stats)
   # compare conf.intervals between honest and dishonest trees
-  conf.interval.comparisons.between.trees <- compute.conf.interval.comparisons.between.trees(num.designs, model.names, all.tree.stats)
+  conf.interval.comparisons.between.trees <- compute.conf.interval.comparisons.between.trees(designs, model.names, all.tree.stats)
   # compare conf.intervals for the test data
-  conf.interval.comparisons.for.test.data <- compute.conf.interval.comparisons.for.test.data(num.designs, model.names, all.tree.stats)
+  conf.interval.comparisons.for.test.data <- compute.conf.interval.comparisons.for.test.data(designs, model.names, all.tree.stats)
   # compare weighted conf.intervals for the test data
-  weighted.conf.interval.comparisons.for.test.data <- compute.weighted.conf.interval.comparisons.for.test.data(num.designs, model.names, all.tree.stats)
+  weighted.conf.interval.comparisons.for.test.data <- compute.weighted.conf.interval.comparisons.for.test.data(designs, model.names, all.tree.stats)
   # number of replications where cross-validation picked the maximum tree
-  full.trees <- compute.num.full.trees(num.designs, model.names, all.tree.stats)
+  full.trees <- compute.num.full.trees(designs, model.names, all.tree.stats)
   # compare num.leaves
-  leaf.comparisons <- compute.leaf.comparisons(num.designs, model.names, all.tree.stats)
+  leaf.comparisons <- compute.leaf.comparisons(designs, model.names, all.tree.stats)
   # compare os.to
-  os.to.comparisons <- compute.os.comparisons(num.designs, model.names, "os.to", all.tree.stats, all.winning.models, num.replications)
+  os.to.comparisons <- compute.os.comparisons(designs, model.names, "os.to", all.tree.stats, all.winning.models, num.replications)
   # compare os.m
-  os.m.comparisons <- compute.os.comparisons(num.designs, model.names, "os.m", all.tree.stats, all.winning.models, num.replications)
+  os.m.comparisons <- compute.os.comparisons(designs, model.names, "os.m", all.tree.stats, all.winning.models, num.replications)
   # compare os.infeasible
-  os.infeasible.comparisons <- compute.os.comparisons(num.designs, model.names, "os.infeasible", all.tree.stats, all.winning.models, num.replications)
+  os.infeasible.comparisons <- compute.os.comparisons(designs, model.names, "os.infeasible", all.tree.stats, all.winning.models, num.replications)
 
   if (isTRUE(printOpt)) {
     print("Confidence Interval Check (true data)")

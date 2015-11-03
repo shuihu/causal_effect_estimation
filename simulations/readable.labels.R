@@ -11,6 +11,12 @@ get.design.label <- function(design) {
     "Design V" 
   } else if (design == 6) {
     "Design VI" 
+  } else if (design == 7) {
+    "Design VII"
+  } else if (design == 8) {
+    "Design VIII"
+  } else if (design == 9) {
+    "Design IX"
   } else {
     stop("Invalid design")
   }

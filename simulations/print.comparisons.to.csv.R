@@ -59,7 +59,11 @@ print.comparisons.to.csv <- function(comparisons, filename) {
           criterion.label <- criteria[[i]]
           model.label <- model.names[j]
           if (k <= length(stats)) {
-            table[content.row, 1 + (design - 1) * num.stats + k] <- as.character(round.to.hundredth(comparisons[[criterion.label]][[model.label]][[design]][[stats[k]]]))
+            if (is.null(comparisons[[criterion.label]][[model.label]][[design]])) {
+              table[content.row, 1 + (design - 1) * num.stats + k] <- NA
+            } else {
+              table[content.row, 1 + (design - 1) * num.stats + k] <- as.character(round.to.hundredth(comparisons[[criterion.label]][[model.label]][[design]][[stats[k]]]))
+            }
           } else {
             table[content.row, 1 + (design - 1) * num.stats + k] <- ""
           }

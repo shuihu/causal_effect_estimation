@@ -2,11 +2,11 @@
 # on the os (out-of-sample criterion).  This is used for producing the "Share" column in the comparison table.
 source("simulations/init.named.list.R")
 
-init.all.winning.models <- function(num.designs, model.names, os.names) {
+init.all.winning.models <- function(designs, model.names, os.names) {
   winning.model.per.design.and.os.name <- init.named.list(model.names, 0) 
   winning.model.per.design <- init.named.list(os.names, winning.model.per.design.and.os.name)
-  all.winning.models <- vector("list", num.designs)
-  for (design in 1:num.designs) {
+  all.winning.models <- vector("list", max(designs))
+  for (design in designs) {
     all.winning.models[[design]] <- winning.model.per.design
   }
   all.winning.models
