@@ -5,6 +5,7 @@
  */
 #include <R.h>
 #include <Rinternals.h>
+#include <math.h>
 
 #ifdef ENABLE_NLS
 #include <libintl.h>

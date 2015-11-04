@@ -13,6 +13,8 @@ extern int anovainit(int n, double *y[], int maxcat, char **error,
   	     double *parm, int *size, int who, double *wt, double *treatment);
 extern int anovainit2(int n, double *y[], int maxcat, char **error,
 		     double *parm, int *size, int who, double *wt, double *treatment);
+extern int tstatsinit(int n, double *y[], int maxcat, char **error,
+  	     double *parm, int *size, int who, double *wt, double *treatment);
 extern int poissoninit(int n, double *y[], int maxcat, char **error,
 		       double *parm, int *size, int who, double *wt);
 extern int giniinit(int n, double *y[], int maxcat, char **error,
@@ -24,6 +26,8 @@ extern void anovass(int n, double *y[], double *value, double *risk,
   	    double *wt, double *treatment, double max_y);
 extern void anovass2(int n, double *y[], double *value, double *risk,
 		    double *wt, double *treatment, double max_y, double alpha);
+extern void tstatsss(int n, double *y[], double *value, double *risk,
+  	    double *wt, double *treatment, double max_y, double alpha);
 extern void poissondev(int n, double *y[], double *value, double *risk,
 		       double *wt);
 extern void ginidev(int n, double *y[], double *value, double *risk,
@@ -36,6 +40,9 @@ extern void anova(int n, double *y[], double *x, int nclass,
 		  double myrisk, double *wt, double *treatment, int minsize);
 extern void anova2(int n, double *y[], double *x, int nclass,
 		  int edge, double *improve, double *split, int *csplit,
+		  double myrisk, double *wt, double *treatment, int minsize, double alpha);
+extern void tstats(int n, double *y[], double *x, int nclass,
+  	  int edge, double *improve, double *split, int *csplit,
 		  double myrisk, double *wt, double *treatment, int minsize, double alpha);
 extern void poisson(int n, double *y[], double *x, int nclass,
 		    int edge, double *improve, double *split, int *csplit,
@@ -62,7 +69,8 @@ static struct {
     {poissoninit, poisson, poissondev, poissonpred},
     {giniinit, gini, ginidev, ginipred},
     {usersplit_init, usersplit, usersplit_eval, usersplit_pred},
-    {anovainit2, anova2, anovass2, anovapred}
+    {anovainit2, anova2, anovass2, anovapred},
+    {tstatsinit, tstats, tstatsss, anovapred}
 };
 
-#define NUM_METHODS 5           /* size of the above structure */
+#define NUM_METHODS 6         /* size of the above structure */

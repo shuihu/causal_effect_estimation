@@ -138,7 +138,7 @@ xval(int n_xval, CpTable cptable_head, int *x_grp,
 		xtree->num_obs = k;
 		(*ct_init) (k, ct.ytemp, maxcat, errmsg, parms, &temp, 2, ct.wtemp, ct.trtemp);
 		//(*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp);
-    if (method ==5)
+    if (method ==5 || method == 6) // anova2 or tstats
       (*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp, ct.trtemp, ct.max_y, alpha);
     else 
       (*ct_eval) (k, ct.ytemp, xtree->response_est, &(xtree->risk), ct.wtemp, ct.trtemp, ct.max_y);

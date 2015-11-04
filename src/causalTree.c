@@ -6,6 +6,7 @@
  *      method  = 1 - anova
  *                2 - exponential survival
                   3 - anova2
+                  4 - tstats
  *		  3 - classification
  *	          4 - user defright_wt_sum / right_wt- (right_sum - right_wt_sum) / (right_n - right_wt);ined callback
  *      opt     = vector of options.  Same order as causalTree.control, as a vector
@@ -249,7 +250,7 @@ causalTree(SEXP ncat2, SEXP method2, SEXP opt2,
     // add ct.maxx_y inside the evaluation funciton
     // (*ct_eval) (n, ct.ydata, tree->response_est, &(tree->risk), wt)
     // here I am now >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    if (method == 5) // anova2:
+    if (method == 5 || method == 6) // anova2 or tstats:
       (*ct_eval) (n, ct.ydata, tree->response_est, &(tree->risk), wt, treatment, ct.max_y, alpha);
     else 
       (*ct_eval) (n, ct.ydata, tree->response_est, &(tree->risk), wt, treatment, ct.max_y);

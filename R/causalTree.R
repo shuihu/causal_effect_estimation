@@ -129,9 +129,9 @@ causalTree <-
     	parms <- init$parms
     } else { 
       # not user function
-	    method.int <- pmatch(method, c("anova", "poisson", "class", "exp", "anova2"))
+	    method.int <- pmatch(method, c("anova", "poisson", "class", "exp", "anova2", "tstats"))
 	    if (is.na(method.int)) stop("Invalid method")
-	    method <- c("anova", "poisson", "class", "exp", "anova2")[method.int]
+	    method <- c("anova", "poisson", "class", "exp", "anova2", "tstats")[method.int]
     	if (method.int == 4L) method.int <- 2L
 
         ## If this function is being retrieved from the causalTree package, then

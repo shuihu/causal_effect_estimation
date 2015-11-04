@@ -48,7 +48,7 @@ partition(int nodenum, pNode splitnode, double *sumrisk, int n1, int n2, int min
 	      k++;
 	    }
 	    //(*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp);
-      if (method == 5)
+      if (method == 5 || method == 6) // anova2 or tstats
         (*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp, ct.trtemp, ct.max_y, alpha);
       else
         (*ct_eval) (n, ct.ytemp, me->response_est, &(me->risk), ct.wtemp, ct.trtemp, ct.max_y);

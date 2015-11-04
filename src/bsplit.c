@@ -66,7 +66,7 @@ bsplit(pNode me, int n1, int n2, int minsize, int method, double alpha)
 
 		//(*ct_choose) (k, ytemp, xtemp, nc, ct.min_node, &improve,
 		//	      &split, ct.csplit, me->risk, wtemp);
-    if (method == 5)
+    if (method == 5 || method == 6) // anova2 or tstats
       (*ct_choose) (k, ytemp, xtemp, nc, ct.min_node, &improve,
 				&split, ct.csplit, me->risk, wtemp, trtemp, minsize, alpha);
 	  else 	
