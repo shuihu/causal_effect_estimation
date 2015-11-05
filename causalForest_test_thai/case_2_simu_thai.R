@@ -5,7 +5,8 @@ library(FNN)
 library(Hmisc)
 library(xtable)
 
-setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+#setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+setwd("/farmshare/user_data/thaipham/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
 
 rm(list = ls())
 
@@ -19,7 +20,7 @@ k.small = 7
 k.big = 50
 
 dvals = c(2, 3, 4, 5, 6, 8)
-simu.reps = 20
+simu.reps = 25
 
 effect = function(x) {
   (1 + 1/(1 + exp(-20 * (x[1] - 1/3)))) * (1 + 1/(1 + exp(-20 * (x[2] - 1/3)))) 
@@ -122,9 +123,7 @@ results.condensed = lapply(results.raw, function(RR) {
   rbind("mu"=RR.mu, "se"=sqrt(RR.var))
 })
 
-results.condensed
-
-save.image(paste0("Test_Run_Results/output_paper1014_2_0.5_", 0.5, ".RData"))
+save.image(paste0("Test_Run_Results/output_paper1014_2_0.5_0.5.RData"))
 
 results.parsed = lapply(results.condensed, function(RR) {
   apply(RR, 2, function(arg) {
@@ -133,9 +132,7 @@ results.parsed = lapply(results.condensed, function(RR) {
 })
 
 results.table = data.frame(cbind(d=dvals, Reduce(rbind, results.parsed)))
-results.table
-
 
 results.table = results.table[,c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)]
 xtab = xtable(results.table)
-# print(xtab, include.rownames = FALSE)
+print(xtab, include.rownames = FALSE)

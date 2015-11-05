@@ -11,8 +11,8 @@ source("causalForest_Thai.R")
 
 # rm(list = ls())
 
-n = 10000
-ntree = 10000
+n = 1000 #10000
+ntree = 1000 # 10000
 sigma = 1
 
 k.small = 10

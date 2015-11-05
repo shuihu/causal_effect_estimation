@@ -16,10 +16,10 @@ proc.time()
 start.time = as.numeric(Sys.time())
 start.time
 
-NREP = 2
+NREP = 10
 
-n = 10000
-ntree = 5000 #10000
+n = 5000
+ntree = 5000
 sigma = 1
 
 k.small = 10
@@ -51,7 +51,7 @@ true.eff = apply(X.test, 1, effect)
 
 JsamFrac = Jsam / 10
 
-forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.5, Jsample.fraction = JsamFrac, nodesize = 1)
+forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.1, Jsample.fraction = JsamFrac, nodesize = 1)
 predictions = predict(forest, X.test)
 forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 
@@ -122,7 +122,7 @@ raw_rets = lapply(start.time + 1:NREP, simu.fun, d, Jsam);
 
 proc.time();
 
-save.image(paste0("Test_Run_Results/output_paper1014_3_0.5_0.", Jsam, "_", d, ".RData"))
+save.image(paste0("Test_Run_Results/output_paper1027_3_0.1_0.", Jsam, "_", d, ".RData"))
 
 results.mat = Reduce(rbind, raw_rets)
 rownames(results.mat) = 1:nrow(results.mat)
@@ -147,9 +147,9 @@ results.pretty = c(d, prettyprint(results.condensed))
 
 results.pretty
 
-idxvec = c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)
-results.table = results.pretty[idxvec]
-results.table = data.frame(matrix(results.table, 1, 10))
-names(results.table) = names(results.pretty)[c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)]
-xtab = xtable(results.table)
-print(xtab, include.rownames = FALSE)
+#idxvec = c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)
+#results.table = results.pretty[idxvec]
+#results.table = data.frame(matrix(results.table, 1, 10))
+#names(results.table) = names(results.pretty)[c(1, 6, 11, 16, 2, 7, 12, 5, 10, 15)]
+#xtab = xtable(results.table)
+#print(xtab, include.rownames = FALSE)

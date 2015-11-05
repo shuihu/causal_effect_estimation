@@ -1,4 +1,4 @@
-for ((Jsam=1; Jsam<=9; Jsam++))
+for ((Jsam=4; Jsam<=8; Jsam++))
 do
     for ((d=2; d<=8 ; d++)) 
     do
@@ -6,8 +6,8 @@ do
         then
             d=8
         fi
-        fnm="/Test_Run_Results/progress_step$d$Jsam.out"
+        fnm="Test_Run_Results/Test_case_3_1027_step_0.5_$d$Jsam.out"
         echo $fnm
-        nohup nice R CMD BATCH --no-save --no-restore "--args $d $Jsam" step_simu.R $fnm &
+        nohup nice R CMD BATCH --no-save --no-restore "--args $d $Jsam" step_simu_3.R $fnm &
     done
 done

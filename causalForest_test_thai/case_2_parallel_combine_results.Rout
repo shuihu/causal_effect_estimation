@@ -1,0 +1,188 @@
+
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> library(xtable)
+> 
+> setwd("/farmshare/user_data/thaipham/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+> 
+> n = 10000 #1000, 2000, 5000, 10000
+> dd = c(2, 3, 4, 5, 6, 8)
+> aVals = c(6, 12, 15, 20, 30, 40)
+> 
+> for (i in 1:length(aVals)) {
++   a = aVals[i]
++   
++   dlist = lapply(dd, function(d) {
++     all.res = list()
++     fnm = paste0("Test_Run_Results/output_paper1029_2_", n, "_", a, "_0.5_", d, ".RData")
++     load(fnm)
++     all.res = c(all.res, raw_rets)
++     all.res
++   })
++   
++   res.short = lapply(dlist, function(res) {
++     results.mat = Reduce(rbind, res)
++     rownames(results.mat) = 1:nrow(results.mat)
++     results = data.frame(results.mat)
++     RR.mu = colMeans(results)
++     RR.var = sapply(results, var) / (nrow(results) - 1)
++     RR = rbind("mu"=RR.mu, "se"=sqrt(RR.var))
++     apply(RR, 2, function(arg) {
++       paste0(round(arg[1], 2), " (", round(100 * arg[2], 0), ")")
++     })
++   })
++   
++   save.image(paste0("Test_Run_Results/output_paper1029_2_", n, "_", a, "_0.5.RData"))
++ 
++   results.pretty = data.frame(cbind("d"=dd, Reduce(rbind, res.short)))
++   
++   idxvec = c(1, 6, 11, 16, 2, 17, 7, 12)
++   results.table = results.pretty[,idxvec]
++   names(results.table) = names(results.pretty)[idxvec]
++   #xtab = xtable(results.table, caption = 'Test 2 Result - subsample.fraction =', round(a, 2))
++   xtab = xtable(results.table)
++   cat("Test 2 Result - subsample.fraction = ", a, "\n")
++   #print(xtab, caption.placement = 'top', include.rownames = FALSE)
++   print(xtab, include.rownames = FALSE)
++ }
+Test 2 Result - subsample.fraction =  6 
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Fri Oct 30 13:30:18 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+  \hline
+d & rf.mse & knn.mse & knnbig.mse & rf.covered & rf.ave.var & knn.covered & knnbig.covered \\ 
+  \hline
+2 & 0.02 (0) & 0.28 (1) & 0.04 (0) & 0.9 (1) & 0.01 (0) & 0.93 (0) & 0.95 (0) \\ 
+  3 & 0.02 (0) & 0.29 (0) & 0.05 (0) & 0.87 (2) & 0.01 (0) & 0.93 (0) & 0.93 (0) \\ 
+  4 & 0.02 (0) & 0.3 (1) & 0.06 (0) & 0.83 (2) & 0.01 (0) & 0.92 (0) & 0.89 (1) \\ 
+  5 & 0.02 (0) & 0.31 (0) & 0.08 (0) & 0.78 (2) & 0.01 (0) & 0.92 (0) & 0.83 (1) \\ 
+  6 & 0.02 (0) & 0.31 (0) & 0.11 (0) & 0.76 (2) & 0.01 (0) & 0.92 (0) & 0.76 (1) \\ 
+  8 & 0.02 (0) & 0.36 (1) & 0.17 (0) & 0.71 (3) & 0.01 (0) & 0.91 (0) & 0.64 (1) \\ 
+   \hline
+\end{tabular}
+\end{table}
+Test 2 Result - subsample.fraction =  12 
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Fri Oct 30 13:30:19 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+  \hline
+d & rf.mse & knn.mse & knnbig.mse & rf.covered & rf.ave.var & knn.covered & knnbig.covered \\ 
+  \hline
+2 & 0.03 (0) & 0.28 (1) & 0.04 (0) & 0.93 (1) & 0.02 (0) & 0.93 (0) & 0.95 (0) \\ 
+  3 & 0.02 (0) & 0.29 (0) & 0.05 (0) & 0.91 (1) & 0.02 (0) & 0.93 (0) & 0.93 (0) \\ 
+  4 & 0.02 (0) & 0.3 (1) & 0.06 (0) & 0.89 (1) & 0.01 (0) & 0.92 (0) & 0.89 (1) \\ 
+  5 & 0.02 (0) & 0.31 (0) & 0.08 (0) & 0.85 (1) & 0.01 (0) & 0.92 (0) & 0.83 (1) \\ 
+  6 & 0.02 (0) & 0.31 (0) & 0.11 (0) & 0.83 (2) & 0.01 (0) & 0.92 (0) & 0.76 (1) \\ 
+  8 & 0.02 (0) & 0.36 (1) & 0.17 (0) & 0.8 (1) & 0.01 (0) & 0.91 (0) & 0.64 (1) \\ 
+   \hline
+\end{tabular}
+\end{table}
+Test 2 Result - subsample.fraction =  15 
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Fri Oct 30 13:30:19 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+  \hline
+d & rf.mse & knn.mse & knnbig.mse & rf.covered & rf.ave.var & knn.covered & knnbig.covered \\ 
+  \hline
+2 & 0.03 (0) & 0.28 (1) & 0.04 (0) & 0.93 (1) & 0.03 (0) & 0.93 (0) & 0.95 (0) \\ 
+  3 & 0.02 (0) & 0.29 (0) & 0.05 (0) & 0.92 (1) & 0.02 (0) & 0.93 (0) & 0.93 (0) \\ 
+  4 & 0.02 (0) & 0.3 (1) & 0.06 (0) & 0.9 (1) & 0.02 (0) & 0.92 (0) & 0.89 (1) \\ 
+  5 & 0.02 (0) & 0.31 (0) & 0.08 (0) & 0.87 (1) & 0.01 (0) & 0.92 (0) & 0.83 (1) \\ 
+  6 & 0.02 (0) & 0.31 (0) & 0.11 (0) & 0.86 (1) & 0.01 (0) & 0.92 (0) & 0.76 (1) \\ 
+  8 & 0.02 (0) & 0.36 (1) & 0.17 (0) & 0.83 (1) & 0.01 (0) & 0.91 (0) & 0.64 (1) \\ 
+   \hline
+\end{tabular}
+\end{table}
+Test 2 Result - subsample.fraction =  20 
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Fri Oct 30 13:30:19 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+  \hline
+d & rf.mse & knn.mse & knnbig.mse & rf.covered & rf.ave.var & knn.covered & knnbig.covered \\ 
+  \hline
+2 & 0.04 (0) & 0.28 (1) & 0.04 (0) & 0.95 (1) & 0.04 (0) & 0.93 (0) & 0.95 (0) \\ 
+  3 & 0.03 (0) & 0.29 (0) & 0.05 (0) & 0.94 (0) & 0.02 (0) & 0.93 (0) & 0.93 (0) \\ 
+  4 & 0.02 (0) & 0.3 (1) & 0.06 (0) & 0.93 (1) & 0.02 (0) & 0.92 (0) & 0.89 (1) \\ 
+  5 & 0.02 (0) & 0.31 (0) & 0.08 (0) & 0.9 (1) & 0.02 (0) & 0.92 (0) & 0.83 (1) \\ 
+  6 & 0.02 (0) & 0.31 (0) & 0.11 (0) & 0.89 (1) & 0.02 (0) & 0.92 (0) & 0.76 (1) \\ 
+  8 & 0.02 (0) & 0.36 (1) & 0.17 (0) & 0.87 (1) & 0.01 (0) & 0.91 (0) & 0.64 (1) \\ 
+   \hline
+\end{tabular}
+\end{table}
+Test 2 Result - subsample.fraction =  30 
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Fri Oct 30 13:30:19 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+  \hline
+d & rf.mse & knn.mse & knnbig.mse & rf.covered & rf.ave.var & knn.covered & knnbig.covered \\ 
+  \hline
+2 & 0.05 (0) & 0.28 (1) & 0.04 (0) & 0.95 (0) & 0.05 (0) & 0.93 (0) & 0.95 (0) \\ 
+  3 & 0.03 (0) & 0.29 (0) & 0.05 (0) & 0.95 (0) & 0.04 (0) & 0.93 (0) & 0.93 (0) \\ 
+  4 & 0.03 (0) & 0.3 (1) & 0.06 (0) & 0.95 (0) & 0.03 (0) & 0.92 (0) & 0.89 (1) \\ 
+  5 & 0.03 (0) & 0.31 (0) & 0.08 (0) & 0.93 (1) & 0.02 (0) & 0.92 (0) & 0.83 (1) \\ 
+  6 & 0.02 (0) & 0.31 (0) & 0.11 (0) & 0.93 (1) & 0.02 (0) & 0.92 (0) & 0.76 (1) \\ 
+  8 & 0.02 (0) & 0.36 (1) & 0.17 (0) & 0.92 (1) & 0.02 (0) & 0.91 (0) & 0.64 (1) \\ 
+   \hline
+\end{tabular}
+\end{table}
+Test 2 Result - subsample.fraction =  40 
+% latex table generated in R 3.2.1 by xtable 1.7-4 package
+% Fri Oct 30 13:30:20 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+  \hline
+d & rf.mse & knn.mse & knnbig.mse & rf.covered & rf.ave.var & knn.covered & knnbig.covered \\ 
+  \hline
+2 & 0.06 (0) & 0.28 (1) & 0.04 (0) & 0.97 (0) & 0.07 (0) & 0.93 (0) & 0.95 (0) \\ 
+  3 & 0.04 (0) & 0.29 (0) & 0.05 (0) & 0.97 (0) & 0.05 (0) & 0.93 (0) & 0.93 (0) \\ 
+  4 & 0.03 (0) & 0.3 (1) & 0.06 (0) & 0.97 (0) & 0.04 (0) & 0.92 (0) & 0.89 (1) \\ 
+  5 & 0.03 (0) & 0.31 (0) & 0.08 (0) & 0.95 (1) & 0.03 (0) & 0.92 (0) & 0.83 (1) \\ 
+  6 & 0.03 (0) & 0.31 (0) & 0.11 (0) & 0.94 (1) & 0.03 (0) & 0.92 (0) & 0.76 (1) \\ 
+  8 & 0.02 (0) & 0.36 (1) & 0.17 (0) & 0.94 (1) & 0.02 (0) & 0.91 (0) & 0.64 (1) \\ 
+   \hline
+\end{tabular}
+\end{table}
+Warning messages:
+1: In data.row.names(row.names, rowsi, i) :
+  some row.names duplicated: 3,4,5,6 --> row.names NOT used
+2: In data.row.names(row.names, rowsi, i) :
+  some row.names duplicated: 3,4,5,6 --> row.names NOT used
+3: In data.row.names(row.names, rowsi, i) :
+  some row.names duplicated: 3,4,5,6 --> row.names NOT used
+4: In data.row.names(row.names, rowsi, i) :
+  some row.names duplicated: 3,4,5,6 --> row.names NOT used
+5: In data.row.names(row.names, rowsi, i) :
+  some row.names duplicated: 3,4,5,6 --> row.names NOT used
+6: In data.row.names(row.names, rowsi, i) :
+  some row.names duplicated: 3,4,5,6 --> row.names NOT used
+> 
+> proc.time()
+   user  system elapsed 
+  0.490   0.111   1.866 

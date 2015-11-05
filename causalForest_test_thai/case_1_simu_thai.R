@@ -5,7 +5,8 @@ library(FNN)
 library(Hmisc)
 library(xtable)
 
-setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+#setwd("/Users/thaipham/Desktop/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
+setwd("/farmshare/user_data/thaipham/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
 
 rm(list = ls())
 
@@ -16,7 +17,7 @@ sigma = 1
 n.test = 100
 
 dvals = c(2, 5, 10, 15, 20, 30)
-simu.reps = 20  #500 --> true version (extremely slow)
+simu.reps = 2  #500 --> true version (extremely slow)
 
 baseline = function(x) {
   2 * (x[1] - 0.5)
