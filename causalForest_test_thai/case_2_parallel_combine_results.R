@@ -2,7 +2,7 @@ library(xtable)
 
 setwd("/farmshare/user_data/thaipham/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
 
-n = 10000 #1000, 2000, 5000, 10000
+n = 5000 #1000, 2000, 5000, 10000
 dd = c(2, 3, 4, 5, 6, 8)
 aVals = c(6, 12, 15, 20, 30, 40)
 
@@ -11,7 +11,7 @@ for (i in 1:length(aVals)) {
   
   dlist = lapply(dd, function(d) {
     all.res = list()
-    fnm = paste0("Test_Run_Results/output_paper1029_2_", n, "_", a, "_0.5_", d, ".RData")
+    fnm = paste0("Test_New_Splitting_Rule/output_paper1103_2_0.25_", n, "_", a, "_0.5_", d, ".RData")
     load(fnm)
     all.res = c(all.res, raw_rets)
     all.res
@@ -29,7 +29,7 @@ for (i in 1:length(aVals)) {
     })
   })
   
-  save.image(paste0("Test_Run_Results/output_paper1029_2_", n, "_", a, "_0.5.RData"))
+  save.image(paste0("Test_New_Splitting_Rule/output_paper1103_2_0.25_", n, "_", a, "_0.5.RData"))
 
   results.pretty = data.frame(cbind("d"=dd, Reduce(rbind, res.short)))
   

@@ -1,4 +1,4 @@
-library(causalTree)
+library(causalForest)
 library(randomForestCI)
 library(FNN)
 library(xtable)

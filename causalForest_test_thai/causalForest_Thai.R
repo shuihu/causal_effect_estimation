@@ -6,7 +6,7 @@ causalForest_Thai <- function(X, Y, W, num.trees, subsample.fraction, Jsample.fr
   }
 
   num.obs <-nrow(X)
-  causalForest.honest <- causalTree:::init.causalForest(X, Y, W, num.trees)
+  causalForest.honest <- causalForest:::init.causalForest(X, Y, W, num.trees)
 
   # I sample size
   sample.size <- num.obs * subsample.fraction * (1 - Jsample.fraction)
@@ -19,11 +19,12 @@ causalForest_Thai <- function(X, Y, W, num.trees, subsample.fraction, Jsample.fr
     
     full.idx <- sample.int(num.obs, num.obs * subsample.fraction, replace = FALSE)
     train.idx <- full.idx[1:sample.size]
-    reestimation.idx <- full.idx[(sample.size + 1) : num.obs * subsample.fraction]
+    reestimation.idx <- full.idx[(sample.size + 1) : (num.obs * subsample.fraction)]
     
     tree.standard <- causalTree(Y ~ ., data = data.frame(X = X[train.idx,], Y = Y[train.idx]), treatment = W[train.idx], method = "anova", cp = 0, minbucket = nodesize, cv.option = "matching", split.option = "CT", xval = 0)
+    #tree.standard <- causalTree(Y ~ ., data = data.frame(X[train.idx,], Y = Y[train.idx]), treatment = W[train.idx], method = "anova", cp = 0, minbucket = nodesize, cv.option = "matching", split.option = "CT", xval = 0)
     
-    tree.honest <- causalTree:::reestimate.tau(tree.standard, Y[reestimation.idx], data.frame(X = X[reestimation.idx,]), W[reestimation.idx])
+    tree.honest <- causalForest:::reestimate.tau(tree.standard, Y[reestimation.idx], data.frame(X = X[reestimation.idx,]), W[reestimation.idx])
     
     causalForest.honest$trees[[tree.index]] <- tree.honest
     causalForest.honest$inbag[full.idx, tree.index] <- 1

@@ -11,7 +11,7 @@ for (i in 1:length(JsamVals)) {
   
   dlist = lapply(dd, function(d) {
     all.res = list()
-    fnm = paste0("Test_Run_Results/output_paper1027_3_0.5_0.", Jsam, "_", d, ".RData")
+    fnm = paste0("Test_Run_Results/output_paper1128_3_0.5_0.", Jsam, "_", d, ".RData")
     #fnm = paste0("Test_Run_Results/output_paper1027_3_0.1_0.", Jsam, "_", d, ".RData")
     #fnm = paste0("Test_Run_Results/output_paper1027_3_0.3_0.", Jsam, "_", d, ".RData")
     load(fnm)
@@ -31,7 +31,7 @@ for (i in 1:length(JsamVals)) {
     })
   })
   
-  save.image(paste0("Test_Run_Results/output_paper1027_3_0.5_0.", Jsam, ".RData"))
+  save.image(paste0("Test_Run_Results/output_paper1128_3_0.5_0.", Jsam, ".RData"))
   #save.image(paste0("Test_Run_Results/output_paper1027_3_0.1_0.", Jsam, ".RData"))
   #save.image(paste0("Test_Run_Results/output_paper1027_3_0.3_0.", Jsam, ".RData"))
 

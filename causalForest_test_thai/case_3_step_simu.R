@@ -1,4 +1,4 @@
-library(causalTree)
+library(causalForest)
 library(randomForestCI)
 library(FNN)
 library(xtable)
@@ -51,7 +51,7 @@ true.eff = apply(X.test, 1, effect)
 
 JsamFrac = Jsam / 10
 
-forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.3, Jsample.fraction = JsamFrac, nodesize = 1)
+forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = 0.5, Jsample.fraction = JsamFrac, nodesize = 1)
 predictions = predict(forest, X.test)
 forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 
@@ -122,7 +122,7 @@ raw_rets = lapply(start.time + 1:NREP, simu.fun, d, Jsam);
 
 proc.time();
 
-save.image(paste0("Test_Run_Results/output_paper1027_3_0.3_0.", Jsam, "_", d, ".RData"))
+save.image(paste0("Test_Run_Results/output_paper1128_3_0.5_0.", Jsam, "_", d, ".RData"))
 
 results.mat = Reduce(rbind, raw_rets)
 rownames(results.mat) = 1:nrow(results.mat)

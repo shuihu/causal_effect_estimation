@@ -1,10 +1,10 @@
-library(causalTree)
+library(causalForest)
 library(randomForestCI)
 library(FNN)
 library(xtable)
 
 setwd("/farmshare/user_data/thaipham/R-Simulation/causal_effect_estimation/causalForest_test_thai/")
-source("causalForest_Thai.R")
+source("causalForest_Thai_2.R")
 
 args=(commandArgs(TRUE))
 d = as.numeric(args[1])
@@ -18,7 +18,7 @@ start.time
 
 NREP = 10
 
-n = 10000  # 1000, 2000, 5000, 10000
+n = 5000  # 1000, 2000, 5000, 10000
 ntree = n
 sigma = 1
 
@@ -49,9 +49,9 @@ simu.fun = function(seed.idx, d, a) {
   # random forest
   #
   
-  alpha = a/60
+  alp = a/60
 
-  forest = causalForest_Thai(X, Y, W, num.trees = ntree, subsample.fraction = alpha, Jsample.fraction = 0.5, nodesize = 1)
+  forest = causalForest_Thai_2(X, Y, W, num.trees = ntree, subsample.fraction = alp, Jsample.fraction = 0.5, nodesize = 1)
   predictions = predict(forest, X.test)
   forest.ci = randomForestInfJack(forest, X.test, calibrate = TRUE)
 
@@ -125,7 +125,7 @@ raw_rets = lapply(start.time + 1:NREP, simu.fun, d, a);
 
 proc.time();
 
-save.image(paste0("Test_Run_Results/output_paper1029_2_", n, "_", a, "_0.5_", d, ".RData"))
+save.image(paste0("Test_New_Splitting_Rule/output_paper1103_2_0.25_", n, "_", a, "_0.5_", d, ".RData"))
 
 results.mat = Reduce(rbind, raw_rets)
 rownames(results.mat) = 1:nrow(results.mat)
